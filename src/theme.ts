@@ -180,11 +180,11 @@ class ThemeOptionsProvider implements IThemeOptionsProvider {
   };
 }
 
-// const themeOptionsProvider = new ThemeOptionsProvider(
-//   baseTheme,
-//   iOSlightTheme,
-//   iOSDarkTheme
-// );
+const themeOptionsProvider = new ThemeOptionsProvider(
+  baseTheme,
+  iOSlightTheme,
+  iOSDarkTheme
+);
 
 const AlwayDarkThemeOptionsProvider = new ThemeOptionsProvider(
   baseTheme,
@@ -193,4 +193,4 @@ const AlwayDarkThemeOptionsProvider = new ThemeOptionsProvider(
   ThemePaletteType.DARK
 );
 
-export default AlwayDarkThemeOptionsProvider;
+export default themeOptionsProvider;

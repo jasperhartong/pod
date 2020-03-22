@@ -309,9 +309,9 @@ const FeedGridRow = ({
                   aria-label={`play ${item.title}`}
                 >
                   {item.id === playingId && !isPaused ? (
-                    <PauseIcon />
+                    <PauseIcon style={{ color: "white" }} />
                   ) : (
-                    <PlayIcon />
+                    <PlayIcon style={{ color: "white" }} />
                   )}
                 </IconButton>
               }

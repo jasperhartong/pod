@@ -96,16 +96,16 @@ export default async (
   const xmlItems = items.map(item => ({
     item: [
       {
-        title: item.title
+        title: item.title || ""
       },
       {
         "itunes:author": author.name
       },
       {
-        "itunes:subtitle": item.description
+        "itunes:subtitle": item.description || ""
       },
       {
-        "itunes:summary": item.description
+        "itunes:summary": item.description || ""
       },
       {
         "itunes:image": item.image_file.data.full_url

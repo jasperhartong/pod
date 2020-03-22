@@ -22,6 +22,7 @@ import {
 } from "@material-ui/core";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import NewWindowIcon from "@material-ui/icons/OpenInNew";
 import useWindowSize from "../../src/hooks/useWindowSize";
 
 const useStyles = makeStyles(theme => ({
@@ -133,6 +134,11 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
                 button
                 href={link.url}
               >
+                <NewWindowIcon
+                  fontSize="small"
+                  color="secondary"
+                  style={{ marginRight: 8 }}
+                />{" "}
                 <ListItemText primary={link.label} />
               </ListItem>
             ))}

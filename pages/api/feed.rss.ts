@@ -5,7 +5,11 @@ import { DateTime } from "luxon";
 
 const url =
   "http://api.directus.cloud/dcMJTq1b80lIY4CT/items/pods?filter[status][eq]=published&fields=*,audio_file.data,image_file.data";
-const token = "7f73f787065982ea";
+const token = process.env.DIRECTUS_CLOUD_TOKEN;
+
+if (!token) {
+  throw Error(`process.env.DIRECTUS_CLOUD_TOKEN not set`);
+}
 
 interface Thumbnail {
   url: string;

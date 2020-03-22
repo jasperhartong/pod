@@ -50,7 +50,7 @@ const getItems = async (url: string) => {
     const itemsReponse = await axios.get<{ data: DbItem[] }>(url, {
       headers: { authorization: `Bearer ${token}` }
     });
-
+    // TODO: Add Yup validation per item!
     items = itemsReponse.data.data.map(item => {
       item.date = DateTime.fromFormat(
         (item.date as unknown) as string,

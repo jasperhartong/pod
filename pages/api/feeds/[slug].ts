@@ -8,6 +8,7 @@ const url =
 const token = process.env.DIRECTUS_CLOUD_TOKEN;
 
 if (!token) {
+  console.warn(process.env);
   throw Error(`process.env.DIRECTUS_CLOUD_TOKEN not set`);
 }
 
@@ -203,6 +204,6 @@ export default async (
   );
 
   // TODO: Add CDN caching
-  res.setHeader("Content-type", "text/xml;charset=UTF-8");
+  // res.setHeader("Content-type", "text/xml;charset=UTF-8");
   res.send(feed);
 };

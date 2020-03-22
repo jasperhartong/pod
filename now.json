@@ -1,7 +1,11 @@
 {
   "version": 2,
-  "name": "pod",
   "env": {
     "DIRECTUS_CLOUD_TOKEN": "@production-directus-cloud-token"
+  },
+  "build": {
+    "env": {
+      "DIRECTUS_CLOUD_TOKEN": "@production-directus-cloud-token"
+    }
   }
 }

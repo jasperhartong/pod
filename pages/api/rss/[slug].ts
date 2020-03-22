@@ -205,6 +205,6 @@ export default async (
   );
 
   // TODO: Add CDN caching
-  // res.setHeader("Content-type", "text/xml;charset=UTF-8");
+  res.setHeader("Content-type", "text/xml;charset=UTF-8");
   res.send(feed);
 };

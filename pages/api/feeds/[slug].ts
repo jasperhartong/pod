@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { Feed } from "feed";
 import axios from "axios";
 import { DateTime } from "luxon";
+import { toXML } from "jstoxml";
 
 const url =
   "http://api.directus.cloud/dcMJTq1b80lIY4CT/items/pods?filter[status][eq]=published&fields=*,audio_file.data,image_file.data";
@@ -77,43 +77,132 @@ export default async (
   if (warning) {
     return res.status(400).json({ ok: false, msg: warning });
   }
-  const feed = new Feed({
-    title: "Oma Els leest voor",
-    id: "http://example.com/",
-    description: "Uit pinkeltje en nog meer.",
-    link: "http://example.com/",
-    language: "nl", // optional, used only in RSS 2.0, possible values: http://www.w3.org/TR/REC-html40/struct/dirlang.html#langcodes
-    image: "http://example.com/image.png",
-    favicon: "http://example.com/favicon.ico",
-    copyright: "All rights reserved 2013, John Doe",
-    generator: "awesome", // optional, default = 'Feed for Node.js'
-    feedLinks: {
-      json: "https://example.com/json",
-      atom: "https://example.com/atom"
-    },
-    author: {
-      name: "Els Hartong",
-      email: "johndoe@example.com",
-      link: "https://example.com/johndoe"
-    }
-  });
-  items.forEach(item => {
-    feed.addItem({
-      title: item.title,
-      id: item.id.toString(),
-      link: item.audio_file.data.full_url,
-      description: item.description,
-      content: item.content,
-      author: [
-        {
-          name: "Els Hartong",
-          email: "els@hartong.nl"
+  const title = "Oma Els leest voor..";
+  const description = "Uit pinkeltje en meer";
+  const author = {
+    name: "Els Hartong",
+    email: "els@hartong.nl",
+    link: ""
+  };
+  const link = "https://pod.jasperhartongprivate.now.sh";
+  const rssUrl = "https://pod.jasperhartongprivate.now.sh/feeds/elshartong";
+  const cover = items ? items[items.length - 1].image_file.data.full_url : "";
+  const xmlOptions = {
+    header: true,
+    indent: "  "
+  };
+
+  const xmlItems = items.map(item => ({
+    item: [
+      {
+        title: item.title
+      },
+      {
+        "itunes:author": author.name
+      },
+      {
+        "itunes:subtitle": item.description
+      },
+      {
+        "itunes:summary": item.description
+      },
+      {
+        "itunes:image": item.image_file.data.full_url
+      },
+      {
+        _name: "enclosure",
+        _attrs: {
+          url: item.audio_file.data.full_url,
+          // length: "8727310",
+          type: "audio/x-mp4"
         }
-      ],
-      date: item.date,
-      image: item.image_file.data.full_url
-    });
-  });
+      },
+      {
+        guid: item.id.toString()
+      },
+      {
+        pubDate: item.date.toString()
+      },
+      // {
+      //   "itunes:duration": "7:04"
+      // },
+      {
+        "itunes:keywords": "oma"
+      }
+    ]
+  }));
+
+  const feed = toXML(
+    {
+      _name: "rss",
+      _attrs: {
+        "xmlns:itunes": "http://www.itunes.com/dtds/podcast-1.0.dtd",
+        version: "2.0"
+      },
+      _content: {
+        channel: [
+          {
+            title
+          },
+          {
+            link
+          },
+          {
+            language: "nl"
+          },
+          {
+            copyright: "Copyright 202"
+          },
+          {
+            "itunes:subtitle": description
+          },
+          {
+            "itunes:author": author.name
+          },
+          {
+            "itunes:summary": description
+          },
+          {
+            description
+          },
+          {
+            "itunes:owner": {
+              "itunes:name": author.name,
+              "itunes:email": author.email
+            }
+          },
+          {
+            _name: "itunes:image",
+            _attrs: {
+              href: cover
+            }
+          },
+          {
+            _name: "itunes:category",
+            _attrs: {
+              text: "Technology"
+            },
+            _content: {
+              _name: "itunes:category",
+              _attrs: {
+                text: "Gadgets"
+              }
+            }
+          },
+          {
+            _name: "itunes:category",
+            _attrs: {
+              text: "TV &amp; Film"
+            }
+          },
+          ...xmlItems
+        ]
+      }
+    },
+    xmlOptions
+  );
+
   // TODO: Add CDN caching
-  res.send(feed.rss2());
+  res.setHeader("Content-type", "text/xml;charset=UTF-8");
+  res.send(feed);
 };

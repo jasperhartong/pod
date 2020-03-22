@@ -115,7 +115,16 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
         </GridList>
       </Box>
 
-      <ExpansionPanel style={{ maxWidth: 480 }}>
+      <ExpansionPanel
+        style={{ maxWidth: 480 }}
+        onChange={(_, isExpanded) => {
+          if (isExpanded) {
+            window.setTimeout(() => {
+              window.scrollBy({ top: 1000 });
+            }, 300);
+          }
+        }}
+      >
         <ExpansionPanelSummary
           expandIcon={<ExpandMoreIcon />}
           aria-controls="subscribe-content"

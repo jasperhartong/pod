@@ -29,7 +29,7 @@ interface FileData {
 interface DbItem {
   id: number;
   status: "published" | "draft" | "deleted";
-  date: Date;
+  date: DateTime;
   title: string | null;
   description: string | null;
   content: string | null;
@@ -44,6 +44,7 @@ interface ErrorResponse {
 
 type SuccessResponse = string;
 
+const DIRECTUS_DATE_TIME_FORMAT = "y-MM-dd HH:mm:ss";
 const getItems = async (url: string) => {
   let items: DbItem[] = [];
   let warning: string | undefined = undefined;
@@ -55,8 +56,8 @@ const getItems = async (url: string) => {
     items = itemsReponse.data.data.map(item => {
       item.date = DateTime.fromFormat(
         (item.date as unknown) as string,
-        "y-MM-dd HH:mm:ss"
-      ).toJSDate();
+        DIRECTUS_DATE_TIME_FORMAT
+      );
       return item;
     });
   } catch (error) {
@@ -122,7 +123,7 @@ export default async (
         guid: `${baseUrl}/pods/${slug}/${item.id.toString()}`
       },
       {
-        pubDate: item.date.toString()
+        pubDate: item.date.toRFC2822()
       },
       // {
       //   "itunes:duration": "7:04"

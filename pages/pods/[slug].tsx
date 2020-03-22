@@ -1,6 +1,5 @@
-import { getFeedItem } from "../../src/storage/methods";
-import { DbFeedItem } from "../../src/storage/interfaces";
-import { rssUrl } from "../../src/storage/urls";
+import { useState, useEffect } from "react";
+
 import {
   List,
   ListItem,
@@ -16,22 +15,145 @@ import {
   ExpansionPanel,
   ExpansionPanelSummary,
   Typography,
-  ExpansionPanelDetails
+  ExpansionPanelDetails,
+  Snackbar,
+  SnackbarContent,
+  LinearProgress,
+  ListItemSecondaryAction
 } from "@material-ui/core";
+import ReactPlayer from "react-player";
 import PlayIcon from "@material-ui/icons/PlayArrow";
+import PauseIcon from "@material-ui/icons/Pause";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import NewWindowIcon from "@material-ui/icons/OpenInNew";
+import CloseIcon from "@material-ui/icons/Close";
+import { getFeedItem } from "../../src/storage/methods";
+import { DbFeedItem, DbPodItem } from "../../src/storage/interfaces";
+import { rssUrl } from "../../src/storage/urls";
 import useWindowSize from "../../src/hooks/useWindowSize";
 
 const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
+  const [playingId, setPlayingId] = useState<number>();
+  const [isPaused, setIsPaused] = useState<boolean>(false);
+
+  const playingItem: DbPodItem | undefined = playingId
+    ? feed.items.find(i => i.id === playingId)
+    : undefined;
+
+  useEffect(() => {
+    setIsPaused(false);
+  }, [playingId]);
+
   return (
     <Box pt={2} p={2}>
       <h1>Luister bibliotheek</h1>
       <Box pb={4}>
-        <FeedGridRow slug={slug} feed={feed} />
+        <FeedGridRow
+          feed={feed}
+          playingId={playingId}
+          setPlayingId={setPlayingId}
+          isPaused={isPaused}
+          setIsPaused={setIsPaused}
+        />
       </Box>
       <SubscribePanel slug={slug} />
+      <SnackBarPlayer
+        playingItem={playingItem}
+        isPaused={isPaused}
+        setPlayingId={setPlayingId}
+        setIsPaused={setIsPaused}
+      />
     </Box>
+  );
+};
+
+const SnackBarPlayer = ({
+  playingItem,
+  isPaused,
+  setPlayingId,
+  setIsPaused
+}: {
+  playingItem?: DbPodItem;
+  isPaused: boolean;
+  setPlayingId: (id: number | undefined) => void;
+  setIsPaused: (paused: boolean) => void;
+}) => {
+  const [progress, setProgress] = useState<number>(0);
+
+  useEffect(() => {
+    setProgress(0);
+  }, [playingItem]);
+
+  return (
+    <Snackbar
+      // Ensure that the Safari bottom-buttonbar is not triggered when interacting with snackbarcontent
+      style={{ marginBottom: 44 }}
+      open={!!playingItem}
+      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+    >
+      <SnackbarContent
+        message={
+          !!playingItem && (
+            <Box>
+              <ReactPlayer
+                url={playingItem.audio_file.data.full_url}
+                playing={!isPaused}
+                width="0px"
+                height="0px"
+                config={{
+                  file: { forceAudio: true }
+                }}
+                onProgress={({ played }) => {
+                  setProgress(played * 100);
+                }}
+              />
+              <List style={{ padding: 0 }}>
+                <ListItem button onClick={() => setIsPaused(!isPaused)}>
+                  <ListItemAvatar>
+                    <Avatar>
+                      {!isPaused ? (
+                        <PauseIcon color="secondary" />
+                      ) : (
+                        <PlayIcon color="secondary" />
+                      )}
+                    </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={playingItem.title}
+                    secondary={
+                      <Box
+                        padding={1}
+                        mt={1}
+                        mb={1}
+                        style={{
+                          background: "rgba(0,0,0,0.2)",
+                          borderRadius: 100
+                        }}
+                      >
+                        <LinearProgress
+                          variant="determinate"
+                          value={progress}
+                          color="secondary"
+                        />
+                      </Box>
+                    }
+                  />
+                  <ListItemSecondaryAction>
+                    <IconButton
+                      edge="end"
+                      aria-label="close"
+                      onClick={() => setPlayingId(undefined)}
+                    >
+                      <CloseIcon color="primary" />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+              </List>
+            </Box>
+          )
+        }
+      />
+    </Snackbar>
   );
 };
 
@@ -122,7 +244,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const FeedGridRow = ({ slug, feed }: { feed: DbFeedItem; slug: string }) => {
+const FeedGridRow = ({
+  feed,
+  playingId,
+  setPlayingId,
+  isPaused,
+  setIsPaused
+}: {
+  feed: DbFeedItem;
+  setPlayingId: (id: number | undefined) => void;
+  playingId?: number;
+  isPaused: boolean;
+  setIsPaused: (paused: boolean) => void;
+}) => {
   const classes = useStyles();
   const [width, _] = useWindowSize();
 
@@ -142,7 +276,16 @@ const FeedGridRow = ({ slug, feed }: { feed: DbFeedItem; slug: string }) => {
       </ListItem>
       <GridList cellHeight={cellHeight} cols={cols}>
         {feed.items.map(item => (
-          <GridListTile key={item.id} cols={1} style={{ position: "relative" }}>
+          <GridListTile
+            style={{
+              border:
+                item.id === playingId
+                  ? "1px solid white"
+                  : "1px solid transparent"
+            }}
+            key={item.id}
+            cols={1}
+          >
             <img
               src={
                 item.image_file.data.thumbnails.find(t => t.height > 100).url
@@ -157,10 +300,19 @@ const FeedGridRow = ({ slug, feed }: { feed: DbFeedItem; slug: string }) => {
               }}
               actionIcon={
                 <IconButton
-                  href={item.audio_file.data.full_url}
+                  // href={item.audio_file.data.full_url}
+                  onClick={() =>
+                    item.id === playingId
+                      ? setIsPaused(!isPaused)
+                      : setPlayingId(item.id)
+                  }
                   aria-label={`play ${item.title}`}
                 >
-                  <PlayIcon />
+                  {item.id === playingId && !isPaused ? (
+                    <PauseIcon />
+                  ) : (
+                    <PlayIcon />
+                  )}
                 </IconButton>
               }
             />

@@ -85,7 +85,7 @@ export default async (
     email: "els@hartong.nl",
     link: ""
   };
-  const link = "https://pod.jasperhartongprivate.now.sh";
+  const baseUrl = "https://pod.jasperhartongprivate.now.sh";
   const rssUrl = "https://pod.jasperhartongprivate.now.sh/feeds/elshartong";
   const cover = items ? items[items.length - 1].image_file.data.full_url : "";
   const xmlOptions = {
@@ -119,7 +119,7 @@ export default async (
         }
       },
       {
-        guid: item.id.toString()
+        guid: `${baseUrl}/pods/${slug}/${item.id.toString()}`
       },
       {
         pubDate: item.date.toString()
@@ -146,7 +146,7 @@ export default async (
             title
           },
           {
-            link
+            link: baseUrl
           },
           {
             language: "nl"

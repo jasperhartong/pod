@@ -1,6 +1,7 @@
 import axios from "axios";
 import { DateTime } from "luxon";
 import { DbPodItem, DbDateString, DbFeedItem } from "./interfaces";
+import { podPageUrl } from "./urls";
 
 const token = process.env.DIRECTUS_CLOUD_TOKEN;
 
@@ -20,7 +21,7 @@ export const getFeedItem = async (slug: string): Promise<DbFeedItem | null> => {
     return null;
   }
   const cover_file =
-    items.length > 1
+    items.length > 0
       ? items[items.length - 1].image_file
       : { data: { url: "", full_url: "", thumbnails: null } };
 
@@ -28,10 +29,10 @@ export const getFeedItem = async (slug: string): Promise<DbFeedItem | null> => {
     id: 1,
     date: "",
     title: "Oma Els leest voor..",
-    description: "Uit pinkeltje en meer",
+    description: `Uit pinkeltje en meer. Visit ${podPageUrl(slug)} to share`,
     content: "Uit pinkeltje en meer",
     author_name: "Els Hartong",
-    author_email: "els@h,artong.nl",
+    author_email: "els@hartong.nl",
     cover_file,
     items
   };

@@ -85,7 +85,7 @@ export default async (
             language: "nl"
           },
           {
-            copyright: "Copyright 202"
+            copyright: "Copyright 2020"
           },
           {
             "itunes:subtitle": feed.description

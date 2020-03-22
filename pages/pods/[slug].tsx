@@ -7,15 +7,24 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
     <div>
       <h1>{feed.title}</h1>
       <p>{feed.description}</p>
-      <h2>Episodes:</h2>
+      <h3>Episodes:</h3>
       <ul>
         {feed.items.map(item => (
           <li>{item.title}</li>
         ))}
       </ul>
-      <hr />
+      <h3>Subscribe:</h3>
       <sub>
-        <a href={rssUrl(slug) + "?preview=true"}>RSS Feed</a>
+        <a href={rssUrl(slug, "podcast")}>Apple Podcast (iPad / iPhone)</a>
+        <hr />
+        <a href={rssUrl(slug, "pcast")}>Apple Podcast (Mac)</a>
+        <hr />
+        <a href={rssUrl(slug, "podto")}>Other podcast clients</a>
+        <hr />
+        <a href={rssUrl(slug, "feed")}>RSS Feed</a>
+        <hr />
+        <a href={rssUrl(slug)}>XML</a>
+        <hr />
       </sub>
     </div>
   );

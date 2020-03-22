@@ -69,6 +69,10 @@ export default async (
   req: NextApiRequest,
   res: NextApiResponse<ErrorResponse | SuccessResponse>
 ) => {
+  const { slug } = req.query;
+  if (slug !== "elshartong") {
+    return res.status(404).json({ ok: false, msg: "Not Found" });
+  }
   const { items, warning } = await getItems(url);
   if (warning) {
     return res.status(400).json({ ok: false, msg: warning });

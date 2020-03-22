@@ -31,7 +31,7 @@ export const getFeedItem = async (slug: string): Promise<DbFeedItem | null> => {
     title: "Oma Els leest voor..",
     description: `Uit pinkeltje en meer.`,
     content: "Uit pinkeltje en meer",
-    author_name: "Els Hartong",
+    author_name: "Oma Els",
     author_email: "els@hartong.nl",
     cover_file,
     items

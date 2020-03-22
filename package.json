@@ -8,6 +8,9 @@
     "start": "next start"
   },
   "dependencies": {
+    "@material-ui/core": "^4.9.7",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/styles": "^4.9.6",
     "@zeit/next-css": "^1.0.1",
     "axios": "^0.19.2",
     "jstoxml": "^1.6.4",

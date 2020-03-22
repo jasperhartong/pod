@@ -100,7 +100,7 @@ export default async (
         title: item.title || ""
       },
       {
-        "itunes:author": author.name
+        "itunes:author": author.name || ""
       },
       {
         "itunes:subtitle": item.description || ""
@@ -109,12 +109,12 @@ export default async (
         "itunes:summary": item.description || ""
       },
       {
-        "itunes:image": item.image_file.data.full_url
+        "itunes:image": item.image_file.data.full_url || ""
       },
       {
         _name: "enclosure",
         _attrs: {
-          url: item.audio_file.data.full_url,
+          url: item.audio_file.data.full_url || "",
           // length: "8727310",
           type: "audio/x-mp4"
         }

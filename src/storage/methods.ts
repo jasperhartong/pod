@@ -29,7 +29,7 @@ export const getFeedItem = async (slug: string): Promise<DbFeedItem | null> => {
     id: 1,
     date: "",
     title: "Oma Els leest voor..",
-    description: `Uit pinkeltje en meer. Visit ${podPageUrl(slug)} to share`,
+    description: `Uit pinkeltje en meer.`,
     content: "Uit pinkeltje en meer",
     author_name: "Els Hartong",
     author_email: "els@hartong.nl",

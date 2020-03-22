@@ -10,7 +10,11 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
       <h3>Episodes:</h3>
       <ul>
         {feed.items.map(item => (
-          <li>{item.title}</li>
+          <li style={{ listStyle: "none" }}>
+            <img src={item.image_file.data.thumbnails[0].url} />
+            <h2 style={{ display: "inline-block" }}>{item.title}</h2>
+            <a href={item.audio_file.data.full_url}>▶️</a>
+          </li>
         ))}
       </ul>
       <h3>Subscribe:</h3>

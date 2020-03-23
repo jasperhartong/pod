@@ -19,7 +19,9 @@ import {
   Snackbar,
   SnackbarContent,
   LinearProgress,
-  ListItemSecondaryAction
+  ListItemSecondaryAction,
+  Tabs,
+  Tab
 } from "@material-ui/core";
 import ReactPlayer from "react-player";
 import PlayIcon from "@material-ui/icons/PlayArrow";
@@ -46,7 +48,13 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
 
   return (
     <Box pt={2} p={2}>
-      <h1>Luister bibliotheek</h1>
+      <h1 style={{ marginBottom: 0 }}>Mijn Tapes</h1>
+      <Box pb={2}>
+        <Tabs value={0} indicatorColor="secondary" textColor="secondary">
+          <Tab label="Verzonden" />
+          <Tab label="Ontvangen" />
+        </Tabs>
+      </Box>
       <Box pb={4}>
         <FeedGridRow
           feed={feed}
@@ -272,7 +280,7 @@ const FeedGridRow = ({
             src={feed.cover_file.data.thumbnails.find(t => t.height < 100).url}
           />
         </ListItemAvatar>
-        <ListItemText primary={feed.author_name} secondary={feed.description} />
+        <ListItemText primary={feed.title} secondary={feed.description} />
       </ListItem>
       <GridList cellHeight={cellHeight} cols={cols}>
         {feed.items.map(item => (

@@ -47,7 +47,7 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
   }, [playingId]);
 
   return (
-    <Box pt={2} p={2}>
+    <Box pt={0} p={2}>
       <h1 style={{ marginBottom: 0 }}>Mijn Tapes</h1>
       <Box pb={2}>
         <Tabs value={0} indicatorColor="secondary" textColor="secondary">

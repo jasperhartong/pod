@@ -28,7 +28,7 @@ export const getFeedItem = async (slug: string): Promise<DbFeedItem | null> => {
   return {
     id: 1,
     date: "",
-    title: "Aan Loïs & Robin",
+    title: "Voor Loïs & Robin",
     description: `Van Oma`,
     content: "Uit pinkeltje en meer",
     author_name: "Oma Els",

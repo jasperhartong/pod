@@ -21,7 +21,6 @@ const SubscribePanel = ({ slug }: { slug: string }) => {
 
   return (
     <ExpansionPanel
-      style={{ maxWidth: 480 }}
       onChange={(_, isExpanded) => {
         if (isExpanded) {
           window.setTimeout(() => {

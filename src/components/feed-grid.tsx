@@ -3,13 +3,14 @@ import {
   GridList,
   GridListTile,
   GridListTileBar,
-  makeStyles,
-  Badge
+  makeStyles
 } from "@material-ui/core";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import { DbFeedItem } from "../../src/storage/interfaces";
 import useWindowSize from "../../src/hooks/useWindowSize";
+import themeOptionsProvider from "../theme";
+import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -42,19 +43,24 @@ const FeedGrid = ({
   playingId,
   setPlayingId,
   isPaused,
-  setIsPaused
+  setIsPaused,
+  maxWidth
 }: {
   feed: DbFeedItem;
   setPlayingId: (id: number | undefined) => void;
   playingId?: number;
   isPaused: boolean;
   setIsPaused: (paused: boolean) => void;
+  maxWidth?: Breakpoint;
 }) => {
   const classes = useStyles();
   const [width, _] = useWindowSize();
 
+  const maxPixelWidth = maxWidth
+    ? Math.min(themeOptionsProvider.theme.breakpoints.width(maxWidth), width)
+    : width;
   const cellHeight = 160;
-  const cols = Math.floor(width / cellHeight);
+  const cols = Math.floor(maxPixelWidth / cellHeight);
 
   return (
     <>
@@ -84,28 +90,21 @@ const FeedGrid = ({
                 title: classes.title
               }}
               actionIcon={
-                <Badge
-                  color="secondary"
-                  anchorOrigin={{ vertical: "top", horizontal: "right" }}
-                  overlap="circle"
-                  badgeContent={String(item.download_count)}
+                <IconButton
+                  // href={item.audio_file.data.full_url}
+                  onClick={() =>
+                    item.id === playingId
+                      ? setIsPaused(!isPaused)
+                      : setPlayingId(item.id)
+                  }
+                  aria-label={`play ${item.title}`}
                 >
-                  <IconButton
-                    // href={item.audio_file.data.full_url}
-                    onClick={() =>
-                      item.id === playingId
-                        ? setIsPaused(!isPaused)
-                        : setPlayingId(item.id)
-                    }
-                    aria-label={`play ${item.title}`}
-                  >
-                    {item.id === playingId && !isPaused ? (
-                      <PauseIcon style={{ color: "white" }} />
-                    ) : (
-                      <PlayIcon style={{ color: "white" }} />
-                    )}
-                  </IconButton>
-                </Badge>
+                  {item.id === playingId && !isPaused ? (
+                    <PauseIcon style={{ color: "white" }} />
+                  ) : (
+                    <PlayIcon style={{ color: "white" }} />
+                  )}
+                </IconButton>
               }
             />
           </GridListTile>

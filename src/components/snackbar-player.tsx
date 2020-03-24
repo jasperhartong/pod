@@ -37,10 +37,12 @@ const SnackbarPlayer = ({
   setIsPaused: (paused: boolean) => void;
 }) => {
   const [progress, setProgress] = useState<number>(0);
+  const [didLoad, setDidLoad] = useState<boolean>(false);
   const classes = useStyles();
 
   useEffect(() => {
     setProgress(0);
+    setDidLoad(false);
   }, [playingItem]);
 
   return (
@@ -63,8 +65,9 @@ const SnackbarPlayer = ({
                 config={{
                   file: { forceAudio: true }
                 }}
-                onProgress={({ played }) => {
+                onProgress={({ played, loaded }) => {
                   setProgress(played * 100);
+                  setDidLoad(loaded === 1);
                 }}
               />
               <Grid container direction="column">
@@ -101,7 +104,6 @@ const SnackbarPlayer = ({
                     <Grid item>
                       <IconButton
                         color="primary"
-                        edge="end"
                         aria-label="close"
                         onClick={() => setPlayingId(undefined)}
                       >
@@ -113,7 +115,7 @@ const SnackbarPlayer = ({
                 <Grid item>
                   <Box mt={1}>
                     <LinearProgress
-                      variant="determinate"
+                      variant={didLoad ? "determinate" : "indeterminate"}
                       value={progress}
                       color="primary"
                     />

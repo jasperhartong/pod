@@ -16,10 +16,7 @@ export const rssUrl = (
   profileId: string,
   scheme: string = "https",
   playlistId: string = "voorloisenrobin"
-) =>
-  `${baseUrl}/api/rss/${profileId}/${playlistId}`
-    .replace("http", "https")
-    .replace("https", scheme);
+) => `${baseUrl}/api/rss/${profileId}/${playlistId}`.replace("https", scheme);
 
 export const podPageUrl = (slug: string) => `${baseUrl}/pods/${slug}`;
 

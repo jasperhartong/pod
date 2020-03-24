@@ -34,7 +34,7 @@ class MyApp extends App {
     return (
       <>
         <Head>
-          <title>tapes.me</title>
+          <title>Tapes.me</title>
         </Head>
         <style>
           @import url(https://fonts.googleapis.com/css?family=Questrial);

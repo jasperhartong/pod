@@ -7,7 +7,7 @@ import themeOptionsProvider from "../src/theme";
  * @see https://github.com/mui-org/material-ui/blob/master/examples/nextjs-with-typescript/pages/_document.tsx
  */
 
-const siteName = "pod";
+const siteName = "Tapes.me";
 
 class MyDocument extends Document {
   render() {

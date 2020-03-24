@@ -72,7 +72,7 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
       <Box p={3} textAlign="center">
         <Typography variant="subtitle2" color="textSecondary">
           Je kijkt nu naar een preview van "{feed.title}", later zul je deze ook
-          kunnen toevoegen aan je eigen luister bibliotheeek in Tapes.me
+          kunnen toevoegen aan je eigen luister bibliotheek in Tapes.me
         </Typography>
       </Box>
       {/* <Box p={3} textAlign="center">

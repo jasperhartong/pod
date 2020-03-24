@@ -10,8 +10,9 @@ export enum ThemePaletteType {
 }
 
 export enum AppColors {
-  BLUE = "rgb(120,213,198)",
+  BLUE = "rgb(38,124,255)",
   PURPLE = "rgb(121,122,202)",
+  RED = "rgb(140,30,58)",
   MAGENTA = "rgb(221,70,98)",
   YELLOW = "rgb(241,197,47)",
   IOS_LIGHT_BACKGROUND = "rgb(250,250,250)",
@@ -47,7 +48,7 @@ const baseTheme: ThemeOptions = {
   },
   palette: {
     primary: {
-      main: AppColors.PURPLE
+      main: AppColors.BLUE
     },
     secondary: {
       main: AppColors.IOS_DARK_BACKGROUND
@@ -65,7 +66,7 @@ const iOSlightTheme: ThemeOptions = {
       default: AppColors.IOS_LIGHT_BACKGROUND
     },
     primary: {
-      main: AppColors.PURPLE
+      main: AppColors.BLUE
     },
     secondary: {
       main: AppColors.IOS_DARK_BACKGROUND
@@ -83,7 +84,7 @@ const iOSDarkTheme: ThemeOptions = {
       default: AppColors.IOS_DARK_BACKGROUND
     },
     primary: {
-      main: AppColors.PURPLE
+      main: AppColors.BLUE
     },
     secondary: {
       main: AppColors.IOS_LIGHT_BACKGROUND

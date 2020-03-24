@@ -40,7 +40,11 @@ export const podcastXMLFromFeed = (slug: string, feed: DbFeedItem): string => {
       {
         _name: "enclosure",
         _attrs: {
-          url: rssMediaRedirectUrl(slug, item.audio_file.data.full_url || ""),
+          url: rssMediaRedirectUrl(
+            slug,
+            item.id.toString(),
+            item.audio_file.data.full_url || ""
+          ),
           // length: "8727310",
           type: "audio/x-mp4"
         }

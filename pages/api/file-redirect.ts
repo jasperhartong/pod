@@ -1,10 +1,18 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import axios from "axios";
+import { rpcUrl } from "../../src/api/urls";
+import { RequestData } from "../../src/api/episode.count";
+
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const { url, utm_content } = req.query;
+  const { url, episodeId, playlistId } = req.query;
   if (!url) {
     return res.status(401).json({ ok: false });
   }
-  console.warn(`Count download for: ${utm_content}`);
+  const reqData: RequestData = {
+    episodeId: episodeId as string,
+    playlistId: playlistId as string
+  };
+  axios.post(rpcUrl("episode", "count"), reqData);
   res.writeHead(302, { Location: decodeURIComponent(url as string) });
   return res.end();
 };

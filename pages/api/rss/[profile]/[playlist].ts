@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getFeedItem } from "../../../src/storage/methods";
-import { podcastXMLFromFeed } from "../../../src/utils/podcast";
+import { getFeedItem } from "../../../../src/storage/methods";
+import { podcastXMLFromFeed } from "../../../../src/utils/podcast";
 
 interface ErrorResponse {
   ok: false;
@@ -13,12 +13,13 @@ export default async (
   req: NextApiRequest,
   res: NextApiResponse<ErrorResponse | SuccessResponse>
 ) => {
-  const { slug } = req.query;
-  if (slug !== "elshartong") {
+  // For now use profile, should of should be based on profile + playlist
+  const profile = req.query.profile;
+  if (profile !== "elshartong") {
     return res.status(404).json({ ok: false, msg: "Not Found" });
   }
-  const feed = await getFeedItem(slug);
-  const podcastXML = podcastXMLFromFeed(slug, feed);
+  const feed = await getFeedItem(profile);
+  const podcastXML = podcastXMLFromFeed(profile, feed);
 
   // TODO: Add CDN caching
   res.setHeader("Content-type", "text/xml;charset=UTF-8");

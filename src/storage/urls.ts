@@ -12,8 +12,11 @@ export const rssMediaRedirectUrl = (
     originalUrl
   )}&amp;playlistId=${playlistId}&amp;episodeId=${episodeId}`;
 
-export const rssUrl = (slug: string, scheme: string = "https") =>
-  `${baseUrl}/api/rss/${slug}`.replace("https", scheme);
+export const rssUrl = (
+  profileId: string,
+  playlistId: string = "voorloisenrobin",
+  scheme: string = "https"
+) => `${baseUrl}/api/rss/${profileId}/${playlistId}`.replace("https", scheme);
 
 export const podPageUrl = (slug: string) => `${baseUrl}/pods/${slug}`;
 

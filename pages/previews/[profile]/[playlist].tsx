@@ -7,7 +7,8 @@ import {
   Typography,
   Container,
   Chip,
-  Divider
+  Divider,
+  Link
 } from "@material-ui/core";
 
 import { DbFeedItem, DbPodItem } from "../../../src/storage/interfaces";
@@ -42,7 +43,7 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
               margin: 16
             }}
             alt={feed.author_name}
-            src={feed.cover_file.data.full_url}
+            src="/elshartong.png"
           />
           <Typography variant="h4">{feed.title}</Typography>
           <Typography variant="h5" color="textSecondary">
@@ -75,6 +76,11 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
             ook kunnen toevoegen aan je eigen luister bibliotheeek in Tapes.me
           </Typography>
         </Box>
+        {/* <Box p={3} textAlign="center">
+          <Typography variant="subtitle2" color="textSecondary">
+            Ben je {feed.author_name}? <Link href="#">Log in</Link>
+          </Typography>
+        </Box> */}
         <Box p={4} textAlign="center">
           <SurroundSound fontSize="large" color="disabled" />
           <Typography component="div" variant="overline">

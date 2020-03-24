@@ -20,15 +20,7 @@ const SubscribePanel = ({ slug }: { slug: string }) => {
   ];
 
   return (
-    <ExpansionPanel
-      onChange={(_, isExpanded) => {
-        if (isExpanded) {
-          window.setTimeout(() => {
-            window.scrollBy({ top: 1000 });
-          }, 300);
-        }
-      }}
-    >
+    <ExpansionPanel>
       <ExpansionPanelSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="subscribe-content"

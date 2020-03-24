@@ -33,60 +33,58 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
 
   return (
     <Container maxWidth="sm">
-      <Box pt={0} p={2}>
-        <Box textAlign="center" pt={1} pb={2}>
-          <Avatar
-            style={{
-              width: 200,
-              height: 200,
-              display: "inline-block",
-              margin: 16
-            }}
-            alt={feed.author_name}
-            src="/elshartong.png"
-          />
-          <Typography variant="h4">{feed.title}</Typography>
-          <Typography variant="h5" color="textSecondary">
-            {feed.description}
-          </Typography>
-        </Box>
-        <Box pb={4}>
-          <FeedGrid
-            feed={feed}
-            playingId={playingId}
-            setPlayingId={setPlayingId}
-            isPaused={isPaused}
-            setIsPaused={setIsPaused}
-            maxWidth="sm"
-          />
-        </Box>
-        <SubscribePanel slug={slug} />
-        <SnackbarPlayer
-          playingItem={playingItem}
-          isPaused={isPaused}
-          setPlayingId={setPlayingId}
-          setIsPaused={setIsPaused}
+      <Box textAlign="center" pt={1} pb={4}>
+        <Avatar
+          style={{
+            width: 160,
+            height: 160,
+            display: "inline-block",
+            margin: 16
+          }}
+          alt={feed.author_name}
+          src="/elshartong.png"
         />
-        <Box p={3} pt={6}>
-          <Divider />
-        </Box>
-        <Box p={3} textAlign="center">
-          <Typography variant="subtitle2" color="textSecondary">
-            Je kijkt nu naar een preview van "{feed.title}", later zul je deze
-            ook kunnen toevoegen aan je eigen luister bibliotheeek in Tapes.me
-          </Typography>
-        </Box>
-        {/* <Box p={3} textAlign="center">
+        <Typography component="div" variant="overline" color="textSecondary">
+          van {feed.description}, voor:
+        </Typography>
+        <Typography variant="h4">{feed.title}</Typography>
+      </Box>
+      <Box pb={4}>
+        <FeedGrid
+          feed={feed}
+          playingId={playingId}
+          setPlayingId={setPlayingId}
+          isPaused={isPaused}
+          setIsPaused={setIsPaused}
+          maxWidth="sm"
+        />
+      </Box>
+      <SubscribePanel slug={slug} />
+      <SnackbarPlayer
+        playingItem={playingItem}
+        isPaused={isPaused}
+        setPlayingId={setPlayingId}
+        setIsPaused={setIsPaused}
+      />
+      <Box p={3} pt={6}>
+        <Divider />
+      </Box>
+      <Box p={3} textAlign="center">
+        <Typography variant="subtitle2" color="textSecondary">
+          Je kijkt nu naar een preview van "{feed.title}", later zul je deze ook
+          kunnen toevoegen aan je eigen luister bibliotheeek in Tapes.me
+        </Typography>
+      </Box>
+      {/* <Box p={3} textAlign="center">
           <Typography variant="subtitle2" color="textSecondary">
             Ben je {feed.author_name}? <Link href="#">Log in</Link>
           </Typography>
         </Box> */}
-        <Box p={4} textAlign="center">
-          <SurroundSound fontSize="large" color="disabled" />
-          <Typography component="div" variant="overline">
-            Tapes.me ©2020
-          </Typography>
-        </Box>
+      <Box p={4} textAlign="center">
+        <SurroundSound fontSize="large" color="disabled" />
+        <Typography component="div" variant="overline">
+          Tapes.me ©2020
+        </Typography>
       </Box>
     </Container>
   );

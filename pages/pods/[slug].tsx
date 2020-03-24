@@ -57,7 +57,8 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
         </Tabs>
       </Box>
       <Box pb={4}>
-        <FeedGridRow
+        <FeedHeader feed={feed} />
+        <FeedGrid
           feed={feed}
           playingId={playingId}
           setPlayingId={setPlayingId}
@@ -253,7 +254,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const FeedGridRow = ({
+const FeedHeader = ({ feed }: { feed: DbFeedItem }) => (
+  <ListItem style={{ paddingLeft: 0 }}>
+    <ListItemAvatar>
+      <Avatar
+        alt={feed.author_name}
+        src={feed.cover_file.data.thumbnails.find(t => t.height < 100).url}
+      />
+    </ListItemAvatar>
+    <ListItemText primary={feed.title} secondary={feed.description} />
+  </ListItem>
+);
+
+const FeedGrid = ({
   feed,
   playingId,
   setPlayingId,
@@ -274,15 +287,6 @@ const FeedGridRow = ({
 
   return (
     <>
-      <ListItem style={{ paddingLeft: 0 }}>
-        <ListItemAvatar>
-          <Avatar
-            alt={feed.author_name}
-            src={feed.cover_file.data.thumbnails.find(t => t.height < 100).url}
-          />
-        </ListItemAvatar>
-        <ListItemText primary={feed.title} secondary={feed.description} />
-      </ListItem>
       <GridList cellHeight={cellHeight} cols={cols}>
         {feed.items.map(item => (
           <GridListTile
@@ -310,8 +314,9 @@ const FeedGridRow = ({
               }}
               actionIcon={
                 <Badge
-                  color="primary"
-                  anchorOrigin={{ vertical: "top", horizontal: "left" }}
+                  color="secondary"
+                  anchorOrigin={{ vertical: "top", horizontal: "right" }}
+                  overlap="circle"
                   badgeContent={String(item.download_count)}
                 >
                   <IconButton

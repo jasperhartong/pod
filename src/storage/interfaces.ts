@@ -21,6 +21,7 @@ export interface DbPodItem {
   title: string | null;
   description: string | null;
   content: string | null;
+  download_count: number;
   image_file: { data: FileData };
   audio_file: { data: FileData };
 }

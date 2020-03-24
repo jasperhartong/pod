@@ -38,9 +38,9 @@ export const getFeedItem = async (slug: string): Promise<DbFeedItem | null> => {
   };
 };
 
+const episodeFields = "*,audio_file.data,image_file.data";
 export const getItems = async (slug: string) => {
-  const url =
-    "http://api.directus.cloud/dcMJTq1b80lIY4CT/items/pods?filter[status][eq]=published&fields=*,audio_file.data,image_file.data";
+  const url = `http://api.directus.cloud/dcMJTq1b80lIY4CT/items/pods?filter[status][eq]=published&fields=${episodeFields}`;
   let items: DbPodItem[] = [];
   let warning: string | null = null;
   try {
@@ -53,5 +53,46 @@ export const getItems = async (slug: string) => {
     console.error(error);
     warning = "Items could not be fetched";
   }
+  console.warn(items);
   return { items, warning };
+};
+
+export const getEpisode = async (playlistId: string, episodeId: string) => {
+  const url = `http://api.directus.cloud/dcMJTq1b80lIY4CT/items/pods/${episodeId}?fields=${episodeFields}`;
+  let item: DbPodItem = undefined;
+  let warning: string | null = null;
+  try {
+    const itemsReponse = await axios.get<{ data: DbPodItem }>(url, {
+      headers: { authorization: `Bearer ${token}` }
+    });
+    // TODO: Add Yup validation per item!
+    item = itemsReponse.data.data;
+  } catch (error) {
+    console.error(error);
+    warning = "Items could not be patched";
+  }
+  return { item, warning };
+};
+
+export const updateEpisode = async (
+  playlistId: string,
+  episodeId: string,
+  episode: Partial<DbPodItem>
+) => {
+  const url = `http://api.directus.cloud/dcMJTq1b80lIY4CT/items/pods/${episodeId}`;
+  let item: DbPodItem = undefined;
+  let warning: string | null = null;
+  try {
+    console.warn(episode);
+    const itemReponse = await axios.patch<{ data: DbPodItem }>(url, episode, {
+      headers: { authorization: `Bearer ${token}` }
+    });
+    // TODO: Add Yup validation per item!
+    item = itemReponse.data.data;
+    console.warn(itemReponse);
+  } catch (error) {
+    console.error(error);
+    warning = "Item could not be patched";
+  }
+  return { item, warning };
 };

@@ -21,7 +21,8 @@ import {
   LinearProgress,
   ListItemSecondaryAction,
   Tabs,
-  Tab
+  Tab,
+  Badge
 } from "@material-ui/core";
 import ReactPlayer from "react-player";
 import PlayIcon from "@material-ui/icons/PlayArrow";
@@ -300,6 +301,7 @@ const FeedGridRow = ({
               }
               alt={item.title}
             />
+
             <GridListTileBar
               title={item.title}
               classes={{
@@ -307,21 +309,27 @@ const FeedGridRow = ({
                 title: classes.title
               }}
               actionIcon={
-                <IconButton
-                  // href={item.audio_file.data.full_url}
-                  onClick={() =>
-                    item.id === playingId
-                      ? setIsPaused(!isPaused)
-                      : setPlayingId(item.id)
-                  }
-                  aria-label={`play ${item.title}`}
+                <Badge
+                  color="primary"
+                  anchorOrigin={{ vertical: "top", horizontal: "left" }}
+                  badgeContent={String(item.download_count)}
                 >
-                  {item.id === playingId && !isPaused ? (
-                    <PauseIcon style={{ color: "white" }} />
-                  ) : (
-                    <PlayIcon style={{ color: "white" }} />
-                  )}
-                </IconButton>
+                  <IconButton
+                    // href={item.audio_file.data.full_url}
+                    onClick={() =>
+                      item.id === playingId
+                        ? setIsPaused(!isPaused)
+                        : setPlayingId(item.id)
+                    }
+                    aria-label={`play ${item.title}`}
+                  >
+                    {item.id === playingId && !isPaused ? (
+                      <PauseIcon style={{ color: "white" }} />
+                    ) : (
+                      <PlayIcon style={{ color: "white" }} />
+                    )}
+                  </IconButton>
+                </Badge>
               }
             />
           </GridListTile>

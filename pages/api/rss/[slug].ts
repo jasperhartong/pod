@@ -18,9 +18,9 @@ export default async (
     return res.status(404).json({ ok: false, msg: "Not Found" });
   }
   const feed = await getFeedItem(slug);
-  const podcastXML = podcastXMLFromFeed(feed);
+  const podcastXML = podcastXMLFromFeed(slug, feed);
 
   // TODO: Add CDN caching
   res.setHeader("Content-type", "text/xml;charset=UTF-8");
-  res.send(podcastXML);
+  return res.send(podcastXML);
 };

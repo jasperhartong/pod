@@ -1,12 +1,23 @@
 import { DbFeedItem } from "../storage/interfaces";
 import { toXML } from "jstoxml";
-import { podItemPageUrl, podPageUrl } from "../storage/urls";
+import {
+  podItemPageUrl,
+  podPageUrl,
+  rssMediaRedirectUrl
+} from "../storage/urls";
 import { parseDbDate } from "../storage/methods";
 
-export const podcastXMLFromFeed = (feed: DbFeedItem): string => {
+export const podcastXMLFromFeed = (slug: string, feed: DbFeedItem): string => {
   const xmlOptions = {
     header: true,
-    indent: "  "
+    indent: "  ",
+    filter: {
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&apos;",
+      "&": "&amp;"
+    }
   };
 
   const xmlItems = feed.items.map(item => ({
@@ -29,7 +40,7 @@ export const podcastXMLFromFeed = (feed: DbFeedItem): string => {
       {
         _name: "enclosure",
         _attrs: {
-          url: item.audio_file.data.full_url || "",
+          url: rssMediaRedirectUrl(slug, item.audio_file.data.full_url || ""),
           // length: "8727310",
           type: "audio/x-mp4"
         }

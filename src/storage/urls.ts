@@ -1,4 +1,14 @@
-export const baseUrl = "https://pod.jasperhartongprivate.now.sh";
+export const baseUrl =
+  process.env.NODE_ENV === "development"
+    ? "http://localhost:3000"
+    : "https://tapes.me";
+
+console.warn(process.env);
+
+export const rssMediaRedirectUrl = (slug: string, originalUrl: string) =>
+  `${baseUrl}/api/file-redirect?url=${encodeURIComponent(
+    originalUrl
+  )}&amp;utm_source=Tapes&amp;utm_campaign=rss&amp;utm_content=${slug}`;
 
 export const rssUrl = (slug: string, scheme: string = "https") =>
   `${baseUrl}/api/rss/${slug}`.replace("https", scheme);

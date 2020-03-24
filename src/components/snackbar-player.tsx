@@ -115,7 +115,11 @@ const SnackbarPlayer = ({
                 <Grid item>
                   <Box mt={1}>
                     <LinearProgress
-                      variant={didLoad ? "determinate" : "indeterminate"}
+                      variant={
+                        didLoad || progress !== 0
+                          ? "determinate"
+                          : "indeterminate"
+                      }
                       value={progress}
                       color="primary"
                     />

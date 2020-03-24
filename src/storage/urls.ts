@@ -3,8 +3,6 @@ export const baseUrl =
     ? "http://localhost:3000"
     : "https://tapes.me";
 
-console.warn(process.env);
-
 export const rssMediaRedirectUrl = (slug: string, originalUrl: string) =>
   `${baseUrl}/api/file-redirect?url=${encodeURIComponent(
     originalUrl

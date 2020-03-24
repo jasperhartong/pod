@@ -29,8 +29,6 @@ import PauseIcon from "@material-ui/icons/Pause";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import NewWindowIcon from "@material-ui/icons/OpenInNew";
 import CloseIcon from "@material-ui/icons/Close";
-import ShareIcon from "@material-ui/icons/Share";
-import AddIcon from "@material-ui/icons/Add";
 import { getFeedItem } from "../../src/storage/methods";
 import { DbFeedItem, DbPodItem } from "../../src/storage/interfaces";
 import { rssUrl } from "../../src/storage/urls";
@@ -283,14 +281,6 @@ const FeedGridRow = ({
           />
         </ListItemAvatar>
         <ListItemText primary={feed.title} secondary={feed.description} />
-        <ListItemSecondaryAction>
-          <IconButton aria-label="share">
-            <ShareIcon />
-          </IconButton>
-          <IconButton edge="end" aria-label="add">
-            <AddIcon />
-          </IconButton>
-        </ListItemSecondaryAction>
       </ListItem>
       <GridList cellHeight={cellHeight} cols={cols}>
         {feed.items.map(item => (

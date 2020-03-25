@@ -3,8 +3,10 @@ import {
   GridList,
   GridListTile,
   GridListTileBar,
-  makeStyles
+  makeStyles,
+  Chip
 } from "@material-ui/core";
+import HeadPhoneIcon from "@material-ui/icons/Headset";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import { DbPlaylist } from "../../src/storage/interfaces";
@@ -76,6 +78,13 @@ const FeedGrid = ({
             key={item.id}
             cols={1}
           >
+            <Chip
+              size="small"
+              icon={<HeadPhoneIcon />}
+              label={item.download_count}
+              color="secondary"
+              style={{ position: "absolute", zIndex: 2, top: 8, left: 8 }}
+            />
             <img
               src={
                 item.image_file &&
@@ -87,7 +96,6 @@ const FeedGrid = ({
               }
               alt={item.title || undefined}
             />
-
             <GridListTileBar
               title={item.title}
               classes={{

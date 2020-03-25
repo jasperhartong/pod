@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-import { Box, Tabs, Tab } from "@material-ui/core";
+import { Container, Box, Tabs, Tab } from "@material-ui/core";
 import { getFeedItem } from "../../src/storage/methods";
 import { DbFeedItem, DbPodItem } from "../../src/storage/interfaces";
 import SnackbarPlayer from "../../src/components/snackbar-player";
@@ -21,7 +21,7 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
   }, [playingId]);
 
   return (
-    <Box pt={0} p={2}>
+    <Container maxWidth="lg">
       <h1 style={{ marginBottom: 0 }}>Mijn Tapes</h1>
       <Box pb={2}>
         <Tabs value={0} indicatorColor="secondary" textColor="secondary">
@@ -37,6 +37,7 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
           setPlayingId={setPlayingId}
           isPaused={isPaused}
           setIsPaused={setIsPaused}
+          maxWidth="lg"
         />
       </Box>
       <SubscribePanel slug={slug} />
@@ -46,7 +47,7 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
         setPlayingId={setPlayingId}
         setIsPaused={setIsPaused}
       />
-    </Box>
+    </Container>
   );
 };
 

@@ -70,7 +70,7 @@ const FeedGrid = ({
             style={{
               border:
                 item.id === playingId
-                  ? "1px solid white"
+                  ? `1px solid ${themeOptionsProvider.theme.palette.primary.main}`
                   : "1px solid transparent"
             }}
             key={item.id}

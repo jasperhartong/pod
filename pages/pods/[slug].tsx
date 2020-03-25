@@ -1,18 +1,19 @@
 import { useState, useEffect } from "react";
 
 import { Container, Box, Tabs, Tab } from "@material-ui/core";
-import { getFeedItem } from "../../src/storage/methods";
-import { DbFeedItem, DbPodItem } from "../../src/storage/interfaces";
+import { getPlaylist } from "../../src/storage/methods";
+import { DbPlaylist, DbEpisode } from "../../src/storage/interfaces";
 import SnackbarPlayer from "../../src/components/snackbar-player";
 import SubscribePanel from "../../src/components/subscribe-panel";
 import FeedHeader from "../../src/components/feed-header";
 import FeedGrid from "../../src/components/feed-grid";
+import { NextPageContext } from "next";
 
-const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
+const PodPage = ({ feed, slug }: { feed: DbPlaylist; slug: string }) => {
   const [playingId, setPlayingId] = useState<number>();
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
-  const playingItem: DbPodItem | undefined = playingId
+  const playingItem: DbEpisode | undefined = playingId
     ? feed.items.find(i => i.id === playingId)
     : undefined;
 
@@ -42,6 +43,7 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
       </Box>
       <SubscribePanel slug={slug} />
       <SnackbarPlayer
+        playlistId={slug}
         playingItem={playingItem}
         isPaused={isPaused}
         setPlayingId={setPlayingId}
@@ -51,11 +53,11 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
   );
 };
 
-export async function getServerSideProps(context) {
-  const slug = context.query.slug || null; // null is serializable
-  const feed = await getFeedItem(slug);
+export async function getServerSideProps(context: NextPageContext) {
+  const slug = context.query.slug as string;
+  const feed = await getPlaylist(slug);
   return {
-    props: { feed, slug }
+    props: { feed, slug: slug || null } // null is serializable
   };
 }
 

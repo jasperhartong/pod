@@ -1,6 +1,6 @@
 export type DbDateString = string;
 
-export interface Thumbnail {
+export interface DbThumbnail {
   url: string;
   relative_url: string;
   dimension: string;
@@ -8,13 +8,13 @@ export interface Thumbnail {
   height: number;
 }
 
-export interface FileData {
+export interface DbFileData {
   full_url: string;
   url: string;
-  thumbnails: Thumbnail[] | null;
+  thumbnails: DbThumbnail[] | null;
 }
 
-export interface DbPodItem {
+export interface DbEpisode {
   id: number;
   status: "published" | "draft" | "deleted";
   date: DbDateString;
@@ -22,11 +22,11 @@ export interface DbPodItem {
   description: string | null;
   content: string | null;
   download_count: number;
-  image_file: { data: FileData };
-  audio_file: { data: FileData };
+  image_file: { data: DbFileData };
+  audio_file: { data: DbFileData };
 }
 
-export interface DbFeedItem {
+export interface DbPlaylist {
   id: number;
   date: DbDateString;
   title: string | null;
@@ -34,6 +34,6 @@ export interface DbFeedItem {
   content: string | null;
   author_name: string | null;
   author_email: string | null;
-  cover_file: { data: FileData };
-  items: DbPodItem[];
+  cover_file: { data: DbFileData };
+  items: DbEpisode[];
 }

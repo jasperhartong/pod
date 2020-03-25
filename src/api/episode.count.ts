@@ -21,7 +21,6 @@ export const handle = async (reqData: RequestData): Promise<ResponseData> => {
     reqData.episodeId
   );
   if (episode) {
-    console.warn(`Patch episode: ${reqData.episodeId}`);
     await updateEpisode(reqData.playlistId, reqData.episodeId, {
       download_count: episode.download_count + 1
     });

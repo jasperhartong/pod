@@ -1,7 +1,6 @@
-import axios from "axios";
 import { DateTime } from "luxon";
-import { DbPodItem, DbDateString, DbFeedItem } from "./interfaces";
-import { podPageUrl } from "./urls";
+import DirectusSDK from "@directus/sdk-js";
+import { DbEpisode, DbDateString, DbPlaylist } from "./interfaces";
 
 const token = process.env.DIRECTUS_CLOUD_TOKEN;
 
@@ -10,13 +9,22 @@ if (!token) {
   throw Error(`process.env.DIRECTUS_CLOUD_TOKEN not set`);
 }
 
+const project = "dcMJTq1b80lIY4CT";
+
+const client = new DirectusSDK({
+  url: "https://api.directus.cloud/",
+  project,
+  token,
+  mode: "jwt"
+});
+
 const DIRECTUS_DATE_TIME_FORMAT = "y-MM-dd HH:mm:ss";
 
 export const parseDbDate = (date: DbDateString): DateTime =>
   DateTime.fromFormat(date, DIRECTUS_DATE_TIME_FORMAT);
 
-export const getFeedItem = async (slug: string): Promise<DbFeedItem | null> => {
-  const { items, warning } = await getItems(slug);
+export const getPlaylist = async (slug: string): Promise<DbPlaylist | null> => {
+  const { items, warning } = await getEpisodes(slug);
   if (!items) {
     return null;
   }
@@ -38,38 +46,43 @@ export const getFeedItem = async (slug: string): Promise<DbFeedItem | null> => {
   };
 };
 
-const episodeFields = "*,audio_file.data,image_file.data";
-export const getItems = async (slug: string) => {
-  const url = `http://api.directus.cloud/dcMJTq1b80lIY4CT/items/pods?filter[status][eq]=published&fields=${episodeFields}`;
-  let items: DbPodItem[] = [];
+const episodeFields = ["*", "audio_file.data", "image_file.data"];
+export const getEpisodes = async (slug: string) => {
+  let items: DbEpisode[] = [];
   let warning: string | null = null;
+
   try {
-    const itemsReponse = await axios.get<{ data: DbPodItem[] }>(url, {
-      headers: { authorization: `Bearer ${token}` }
+    const itemsReponse = await client.getItems<DbEpisode[]>("pods", {
+      filter: {
+        status: {
+          eq: "published"
+        }
+      },
+      fields: episodeFields
     });
+
     // TODO: Add Yup validation per item!
-    items = itemsReponse.data.data;
+    items = itemsReponse.data;
   } catch (error) {
     console.error(error);
     warning = "Items could not be fetched";
   }
-  console.warn(items);
   return { items, warning };
 };
 
 export const getEpisode = async (playlistId: string, episodeId: string) => {
-  const url = `http://api.directus.cloud/dcMJTq1b80lIY4CT/items/pods/${episodeId}?fields=${episodeFields}`;
-  let item: DbPodItem = undefined;
+  let item: DbEpisode | undefined = undefined;
   let warning: string | null = null;
+
   try {
-    const itemsReponse = await axios.get<{ data: DbPodItem }>(url, {
-      headers: { authorization: `Bearer ${token}` }
+    const itemResponse = await client.getItem<DbEpisode>("pods", episodeId, {
+      fields: episodeFields
     });
-    // TODO: Add Yup validation per item!
-    item = itemsReponse.data.data;
+    // TODO: Add Yup validation
+    item = itemResponse.data;
   } catch (error) {
     console.error(error);
-    warning = "Items could not be patched";
+    warning = "Items could not be get";
   }
   return { item, warning };
 };
@@ -77,19 +90,20 @@ export const getEpisode = async (playlistId: string, episodeId: string) => {
 export const updateEpisode = async (
   playlistId: string,
   episodeId: string,
-  episode: Partial<DbPodItem>
+  episode: Partial<DbEpisode>
 ) => {
   const url = `http://api.directus.cloud/dcMJTq1b80lIY4CT/items/pods/${episodeId}`;
-  let item: DbPodItem = undefined;
+  let item: Partial<DbEpisode> | undefined = undefined;
   let warning: string | null = null;
+
   try {
-    console.warn(episode);
-    const itemReponse = await axios.patch<{ data: DbPodItem }>(url, episode, {
-      headers: { authorization: `Bearer ${token}` }
-    });
+    const itemResponse = await client.updateItem<Partial<DbEpisode>>(
+      "pods",
+      episodeId,
+      episode
+    );
     // TODO: Add Yup validation per item!
-    item = itemReponse.data.data;
-    console.warn(itemReponse);
+    item = itemResponse.data;
   } catch (error) {
     console.error(error);
     warning = "Item could not be patched";

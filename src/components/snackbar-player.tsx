@@ -15,8 +15,9 @@ import ReactPlayer from "react-player";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import CloseIcon from "@material-ui/icons/Close";
-import { DbPodItem } from "../../src/storage/interfaces";
+import { DbEpisode } from "../../src/storage/interfaces";
 import { makeStyles } from "@material-ui/styles";
+import { mediaRedirectUrl } from "../storage/urls";
 
 const useStyles = makeStyles(theme => ({
   snackbarMessage: {
@@ -26,12 +27,14 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const SnackbarPlayer = ({
+  playlistId,
   playingItem,
   isPaused,
   setPlayingId,
   setIsPaused
 }: {
-  playingItem?: DbPodItem;
+  playlistId: string;
+  playingItem?: DbEpisode;
   isPaused: boolean;
   setPlayingId: (id: number | undefined) => void;
   setIsPaused: (paused: boolean) => void;
@@ -58,7 +61,11 @@ const SnackbarPlayer = ({
           !!playingItem && (
             <Box>
               <ReactPlayer
-                url={playingItem.audio_file.data.full_url}
+                url={mediaRedirectUrl(
+                  playlistId,
+                  playingItem.id.toString(),
+                  playingItem.audio_file.data.full_url
+                )}
                 playing={!isPaused}
                 width="0px"
                 height="0px"
@@ -89,7 +96,7 @@ const SnackbarPlayer = ({
                       <Avatar
                         variant="square"
                         src={playingItem.image_file.data.full_url}
-                        alt={playingItem.title}
+                        alt={playingItem.title || undefined}
                       />
                     </Grid>
                     <Grid item>

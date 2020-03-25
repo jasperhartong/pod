@@ -11,19 +11,19 @@ import {
   Link
 } from "@material-ui/core";
 
-import { DbFeedItem, DbPodItem } from "../../../src/storage/interfaces";
+import { DbPlaylist, DbEpisode } from "../../../src/storage/interfaces";
 import FeedGrid from "../../../src/components/feed-grid";
 import SubscribePanel from "../../../src/components/subscribe-panel";
 import SnackbarPlayer from "../../../src/components/snackbar-player";
-import { getFeedItem } from "../../../src/storage/methods";
+import { getPlaylist } from "../../../src/storage/methods";
 import SurroundSound from "@material-ui/icons/SurroundSound";
 
 // http://localhost:3000/previews/elshartong/voorloisenrobin?guest=2020-12-31_on9y8y
-const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
+const PodPage = ({ feed, slug }: { feed: DbPlaylist; slug: string }) => {
   const [playingId, setPlayingId] = useState<number>();
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
-  const playingItem: DbPodItem | undefined = playingId
+  const playingItem: DbEpisode | undefined = playingId
     ? feed.items.find(i => i.id === playingId)
     : undefined;
 
@@ -41,7 +41,7 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
             display: "inline-block",
             margin: 16
           }}
-          alt={feed.author_name}
+          alt={feed.author_name || undefined}
           src="/elshartong.png"
         />
         <Typography component="div" variant="overline" color="textSecondary">
@@ -61,6 +61,7 @@ const PodPage = ({ feed, slug }: { feed: DbFeedItem; slug: string }) => {
       </Box>
       <SubscribePanel slug={slug} />
       <SnackbarPlayer
+        playlistId={slug}
         playingItem={playingItem}
         isPaused={isPaused}
         setPlayingId={setPlayingId}
@@ -95,10 +96,15 @@ export async function getServerSideProps(context: NextPageContext) {
   const slug = context.query.profile || null; // null is serializable
   const guest = context.query.guest;
   if (guest !== "2020-12-31_on9y8y") {
-    context.res.writeHead(401);
-    return context.res.end();
+    // TODO: improve and implement this authentication
+    if (context.res) {
+      context.res.writeHead(401);
+      return context.res.end();
+    } else {
+      return {};
+    }
   }
-  const feed = await getFeedItem(slug as string);
+  const feed = await getPlaylist(slug as string);
   return {
     props: { feed, slug }
   };

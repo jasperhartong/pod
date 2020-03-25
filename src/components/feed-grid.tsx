@@ -7,7 +7,7 @@ import {
 } from "@material-ui/core";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
-import { DbFeedItem } from "../../src/storage/interfaces";
+import { DbPlaylist } from "../../src/storage/interfaces";
 import useWindowSize from "../../src/hooks/useWindowSize";
 import themeOptionsProvider from "../theme";
 import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
@@ -46,7 +46,7 @@ const FeedGrid = ({
   setIsPaused,
   maxWidth
 }: {
-  feed: DbFeedItem;
+  feed: DbPlaylist;
   setPlayingId: (id: number | undefined) => void;
   playingId?: number;
   isPaused: boolean;
@@ -78,9 +78,14 @@ const FeedGrid = ({
           >
             <img
               src={
-                item.image_file.data.thumbnails.find(t => t.height > 100).url
+                item.image_file &&
+                item.image_file.data &&
+                item.image_file.data.thumbnails !== null
+                  ? item.image_file.data.thumbnails.find(t => t.height > 100)!
+                      .url
+                  : ""
               }
-              alt={item.title}
+              alt={item.title || undefined}
             />
 
             <GridListTileBar

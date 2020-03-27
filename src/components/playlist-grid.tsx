@@ -96,7 +96,7 @@ const PlaylistGrid = ({
               </Grid>
             </Grid>
             <GridListTileBar
-              title={`Voeg toe`}
+              title={`Nieuwe opname`}
               classes={{
                 root: classes.titleBar,
                 title: classes.title
@@ -107,7 +107,7 @@ const PlaylistGrid = ({
                   style={{ marginRight: 4, marginBottom: 4 }}
                   color={"primary"}
                   onClick={() => recording.initiate(playlist)}
-                  aria-label={`Voeg toe`}
+                  aria-label={`Nieuwe opname`}
                 >
                   <AddIcon />
                 </Fab>

@@ -23,13 +23,13 @@ export const podcastXMLFromFeed = (slug: string, feed: DbPlaylist): string => {
     }
   };
 
-  const xmlItems = feed.items.map(item => ({
+  const xmlItems = feed.episodes.map(item => ({
     item: [
       {
         title: item.title || ""
       },
       {
-        "itunes:author": feed.author_name || ""
+        "itunes:author": feed.from || ""
       },
       {
         "itunes:subtitle": item.description || ""
@@ -58,7 +58,7 @@ export const podcastXMLFromFeed = (slug: string, feed: DbPlaylist): string => {
         guid: podItemPageUrl(slug, item.id.toString())
       },
       {
-        pubDate: parseDbDate(item.date).toRFC2822()
+        pubDate: parseDbDate(item.created_on).toRFC2822()
       },
       // {
       //   "itunes:duration": "7:04"
@@ -79,7 +79,7 @@ export const podcastXMLFromFeed = (slug: string, feed: DbPlaylist): string => {
       _content: {
         channel: [
           {
-            title: feed.title
+            title: feed.from
           },
           {
             link: podPageUrl(slug)
@@ -91,21 +91,21 @@ export const podcastXMLFromFeed = (slug: string, feed: DbPlaylist): string => {
             copyright: "Copyright 2020"
           },
           {
-            "itunes:subtitle": feed.description
+            "itunes:subtitle": feed.to
           },
           {
-            "itunes:author": feed.author_name
+            "itunes:author": feed.from
           },
           {
-            "itunes:summary": feed.description
+            "itunes:summary": feed.to
           },
           {
-            description: feed.description
+            description: feed.to
           },
           {
             "itunes:owner": {
-              "itunes:name": feed.author_name,
-              "itunes:email": feed.author_email
+              "itunes:name": feed.from
+              // "itunes:email": feed.author_email
             }
           },
           {

@@ -14,26 +14,34 @@ export interface DbFileData {
   thumbnails: DbThumbnail[] | null;
 }
 
-export interface DbEpisode {
+export interface DbRoom {
   id: number;
-  status: "published" | "draft" | "deleted";
-  date: DbDateString;
-  title: string | null;
-  description: string | null;
-  content: string | null;
-  download_count: number;
-  image_file: { data: DbFileData };
-  audio_file: { data: DbFileData };
+  slug: string;
+  // alias
+  playlists: DbPlaylist[];
 }
 
 export interface DbPlaylist {
   id: number;
-  date: DbDateString;
-  title: string | null;
-  description: string | null;
-  content: string | null;
-  author_name: string | null;
-  author_email: string | null;
+  created_on: DbDateString;
+  from: string;
+  to: string;
   cover_file: { data: DbFileData };
-  items: DbEpisode[];
+  // relationship
+  // room: { slug: string };
+  // alias
+  episodes: DbEpisode[];
+}
+
+export interface DbEpisode {
+  id: number;
+  status: "published" | "draft" | "deleted";
+  created_on: DbDateString;
+  title: string;
+  description: string;
+  download_count: number;
+  image_file: { data: DbFileData };
+  audio_file: { data: DbFileData };
+  // relationship
+  // playlist: number;
 }

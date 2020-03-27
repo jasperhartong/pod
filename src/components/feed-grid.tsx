@@ -67,7 +67,7 @@ const FeedGrid = ({
   return (
     <>
       <GridList cellHeight={cellHeight} cols={cols}>
-        {feed.items.map(item => (
+        {feed.episodes.map(item => (
           <GridListTile
             style={{
               border:

@@ -19,12 +19,18 @@ import { getPlaylist } from "../../../src/storage/methods";
 import SurroundSound from "@material-ui/icons/SurroundSound";
 
 // http://localhost:3000/previews/elshartong/voorloisenrobin?guest=2020-12-31_on9y8y
-const PodPage = ({ feed, slug }: { feed: DbPlaylist; slug: string }) => {
+const PlaylistPreviewPage = ({
+  feed,
+  slug
+}: {
+  feed: DbPlaylist;
+  slug: string;
+}) => {
   const [playingId, setPlayingId] = useState<number>();
   const [isPaused, setIsPaused] = useState<boolean>(false);
 
   const playingItem: DbEpisode | undefined = playingId
-    ? feed.items.find(i => i.id === playingId)
+    ? feed.episodes.find(i => i.id === playingId)
     : undefined;
 
   useEffect(() => {
@@ -41,13 +47,13 @@ const PodPage = ({ feed, slug }: { feed: DbPlaylist; slug: string }) => {
             display: "inline-block",
             margin: 16
           }}
-          alt={feed.author_name || undefined}
+          alt={feed.from || undefined}
           src="/elshartong.png"
         />
         <Typography component="div" variant="overline" color="textSecondary">
-          van {feed.description}, voor:
+          van {feed.from}, voor:
         </Typography>
-        <Typography variant="h4">{feed.title}</Typography>
+        <Typography variant="h4">{feed.to}</Typography>
       </Box>
       <Box pb={4}>
         <FeedGrid
@@ -72,7 +78,7 @@ const PodPage = ({ feed, slug }: { feed: DbPlaylist; slug: string }) => {
       </Box>
       <Box p={3} textAlign="center">
         <Typography variant="subtitle2" color="textSecondary">
-          Je kijkt nu naar een preview van "{feed.title}", later zul je deze ook
+          Je kijkt nu naar een preview van "{feed.to}", later zul je deze ook
           kunnen toevoegen aan je eigen luister bibliotheek in Tapes.me
         </Typography>
       </Box>
@@ -110,4 +116,4 @@ export async function getServerSideProps(context: NextPageContext) {
   };
 }
 
-export default PodPage;
+export default PlaylistPreviewPage;

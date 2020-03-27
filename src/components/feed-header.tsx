@@ -10,7 +10,7 @@ const FeedHeader = ({ feed }: { feed: DbPlaylist }) => (
   <ListItem style={{ paddingLeft: 0 }}>
     <ListItemAvatar>
       <Avatar
-        alt={feed.author_name || undefined}
+        alt={feed.from || undefined}
         src={
           feed.cover_file &&
           feed.cover_file.data &&
@@ -20,7 +20,7 @@ const FeedHeader = ({ feed }: { feed: DbPlaylist }) => (
         }
       />
     </ListItemAvatar>
-    <ListItemText primary={feed.title} secondary={feed.description} />
+    <ListItemText primary={feed.to} secondary={feed.from} />
   </ListItem>
 );
 

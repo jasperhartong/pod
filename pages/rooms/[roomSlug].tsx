@@ -35,7 +35,7 @@ const getEpisodeById = (room: DbRoom, episodeId?: number) => {
 
 const RoomPageContainer = ({ room, slug }: { room: DbRoom; slug: string }) => {
   const defaultState: RoomState = {
-    mode: "record",
+    mode: "listen",
     recordingFor: undefined,
     room,
     slug

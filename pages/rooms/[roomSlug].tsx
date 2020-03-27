@@ -25,6 +25,7 @@ import {
   useRoomContext,
   RoomState
 } from "../../src/hooks/useRoomContext";
+import EpisodeCreateDrawer from "../../src/components/episode-create-form";
 
 const getEpisodeById = (room: DbRoom, episodeId?: number) => {
   return ([] as DbEpisode[])
@@ -35,6 +36,7 @@ const getEpisodeById = (room: DbRoom, episodeId?: number) => {
 const RoomPageContainer = ({ room, slug }: { room: DbRoom; slug: string }) => {
   const defaultState: RoomState = {
     mode: "record",
+    recordingFor: undefined,
     room,
     slug
   };
@@ -137,6 +139,7 @@ const RoomPage = () => {
         setPlayingId={setPlayingId}
         setIsPaused={setIsPaused}
       />
+      <EpisodeCreateDrawer />
     </Container>
   );
 };

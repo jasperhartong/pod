@@ -1,6 +1,6 @@
 import React from "react";
 import { useImmer } from "use-immer";
-import { DbRoom } from "../storage/interfaces";
+import { DbRoom, DbPlaylist } from "../storage/interfaces";
 
 type RoomMode = "listen" | "record";
 
@@ -8,11 +8,12 @@ export interface RoomState {
   room: DbRoom;
   slug: string;
   mode: RoomMode;
+  // Recording state
+  recordingFor: DbPlaylist | undefined;
 }
 
 const RoomContext = React.createContext<
-  | [RoomState, (f: (draft: { mode: RoomMode }) => void | RoomState) => void]
-  | undefined
+  [RoomState, (f: (draft: RoomState) => void | RoomState) => void] | undefined
 >(undefined);
 
 const RoomProvider = (props: {
@@ -33,9 +34,22 @@ const useRoomContext = () => {
   if (!roomContext) {
     throw Error("No Room Context Founf");
   }
-
   const [state, dispatch] = roomContext;
-  return { roomState: state, roomDispatch: dispatch };
+
+  const recording = {
+    initiate: (playlist: DbPlaylist) => {
+      dispatch(room => {
+        room.recordingFor = playlist;
+      });
+    },
+    cancel: () => {
+      dispatch(room => {
+        room.recordingFor = undefined;
+      });
+    }
+  };
+
+  return { roomState: state, roomDispatch: dispatch, recording };
 };
 
 export { RoomProvider, useRoomContext };

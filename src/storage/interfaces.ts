@@ -24,8 +24,8 @@ export interface DbRoom {
 export interface DbPlaylist {
   id: number;
   created_on: DbDateString;
-  from: string;
-  to: string;
+  title: string;
+  description: string;
   cover_file: { data: DbFileData };
   // alias
   episodes: DbEpisode[];

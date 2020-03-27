@@ -30,23 +30,23 @@ const PlaylistHeader = ({ playlist }: { playlist: DbPlaylist }) => {
               display: "inline-block",
               margin: 16
             }}
-            alt={playlist.from}
+            alt={playlist.title}
             src={cover}
           />
           <Typography component="div" variant="overline" color="textSecondary">
-            van {playlist.from}, voor:
+            {playlist.description}
           </Typography>
-          <Typography variant="h4">{playlist.to}</Typography>
+          <Typography variant="h4">{playlist.title}</Typography>
         </Box>
       </Collapse>
       <Collapse in={roomState.mode === "record"}>
         <ListItem style={{ paddingLeft: 0 }}>
           <ListItemAvatar>
-            <Avatar alt={playlist.from} src={cover} />
+            <Avatar alt={playlist.title} src={cover} />
           </ListItemAvatar>
           <ListItemText
-            primary={`Voor ${playlist.to}`}
-            secondary={`Van ${playlist.from}`}
+            primary={playlist.title}
+            secondary={playlist.description}
           />
         </ListItem>
       </Collapse>

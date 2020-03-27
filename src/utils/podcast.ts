@@ -29,7 +29,7 @@ export const podcastXMLFromFeed = (slug: string, feed: DbPlaylist): string => {
         title: item.title || ""
       },
       {
-        "itunes:author": feed.from || ""
+        "itunes:author": feed.description || ""
       },
       {
         "itunes:subtitle": item.description || ""
@@ -79,7 +79,7 @@ export const podcastXMLFromFeed = (slug: string, feed: DbPlaylist): string => {
       _content: {
         channel: [
           {
-            title: feed.from
+            title: feed.title
           },
           {
             link: podPageUrl(slug)
@@ -91,20 +91,20 @@ export const podcastXMLFromFeed = (slug: string, feed: DbPlaylist): string => {
             copyright: "Copyright 2020"
           },
           {
-            "itunes:subtitle": feed.to
+            "itunes:subtitle": feed.title
           },
           {
-            "itunes:author": feed.from
+            "itunes:author": feed.title
           },
           {
-            "itunes:summary": feed.to
+            "itunes:summary": feed.description
           },
           {
-            description: feed.to
+            description: feed.description
           },
           {
             "itunes:owner": {
-              "itunes:name": feed.from
+              "itunes:name": feed.title
               // "itunes:email": feed.author_email
             }
           },

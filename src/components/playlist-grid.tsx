@@ -61,7 +61,7 @@ const PlaylistGrid = ({
   maxWidth?: Breakpoint;
 }) => {
   const classes = useStyles();
-  const { roomState } = useRoomContext();
+  const { roomState, roomDispatch, recording } = useRoomContext();
   const { mode } = roomState;
   const [width, _] = useWindowSize();
 
@@ -106,11 +106,7 @@ const PlaylistGrid = ({
                   size="small"
                   style={{ marginRight: 4, marginBottom: 4 }}
                   color={"primary"}
-                  // onClick={() =>
-                  //   episode.id === playingId
-                  //     ? setIsPaused(!isPaused)
-                  //     : setPlayingId(episode.id)
-                  // }
+                  onClick={() => recording.initiate(playlist)}
                   aria-label={`Voeg toe`}
                 >
                   <AddIcon />

@@ -1,7 +1,14 @@
 import { useState, useEffect } from "react";
 import { NextPageContext } from "next";
 
-import { Container, Box, Divider, Typography } from "@material-ui/core";
+import {
+  Container,
+  Box,
+  Divider,
+  Typography,
+  Fade,
+  Collapse
+} from "@material-ui/core";
 import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab";
 import SurroundSound from "@material-ui/icons/SurroundSound";
 import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
@@ -52,7 +59,10 @@ const RoomPage = () => {
   }, [playingId]);
 
   return (
-    <Container maxWidth={maxWidth}>
+    <Container
+      maxWidth={maxWidth}
+      style={{ transition: "all 500ms", width: "auto" }}
+    >
       <h1 style={{ marginBottom: 0 }}>Mijn Tapes</h1>
 
       {room.playlists.map(playlist => (
@@ -69,7 +79,12 @@ const RoomPage = () => {
         </Box>
       ))}
 
-      <SubscribePanel slug={slug} />
+      <Collapse in={mode === "listen"}>
+        <div>
+          <SubscribePanel slug={slug} />
+        </div>
+      </Collapse>
+
       <Box p={3} pt={6}>
         <Divider />
       </Box>

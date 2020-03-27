@@ -1,23 +1,25 @@
 import React from "react";
 import { useImmer } from "use-immer";
+import { DbRoom } from "../storage/interfaces";
 
 type RoomMode = "listen" | "record";
 
-interface RoomState {
+export interface RoomState {
+  room: DbRoom;
+  slug: string;
   mode: RoomMode;
 }
-
-const defaultState: RoomState = {
-  mode: "listen"
-};
 
 const RoomContext = React.createContext<
   | [RoomState, (f: (draft: { mode: RoomMode }) => void | RoomState) => void]
   | undefined
 >(undefined);
 
-const RoomProvider = (props: { children: JSX.Element }) => {
-  const [state, dispatch] = useImmer<RoomState>({ ...defaultState });
+const RoomProvider = (props: {
+  children: JSX.Element;
+  defaultState: RoomState;
+}) => {
+  const [state, dispatch] = useImmer<RoomState>({ ...props.defaultState });
 
   return (
     <RoomContext.Provider value={[state, dispatch]}>

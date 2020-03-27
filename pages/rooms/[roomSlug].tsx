@@ -11,7 +11,11 @@ import SnackbarPlayer from "../../src/components/snackbar-player";
 import SubscribePanel from "../../src/components/subscribe-panel";
 import FeedHeader from "../../src/components/feed-header";
 import FeedGrid from "../../src/components/feed-grid";
-import { RoomProvider, useRoomContext } from "../../src/hooks/useRoomContext";
+import {
+  RoomProvider,
+  useRoomContext,
+  RoomState
+} from "../../src/hooks/useRoomContext";
 
 const getEpisodeById = (room: DbRoom, episodeId?: number) => {
   return ([] as DbEpisode[])
@@ -19,20 +23,29 @@ const getEpisodeById = (room: DbRoom, episodeId?: number) => {
     .find(episode => episode.id === episodeId);
 };
 
-const RoomPageContainer = ({ room, slug }: { room: DbRoom; slug: string }) => (
-  <RoomProvider>
-    <RoomPage room={room} slug={slug} />
-  </RoomProvider>
-);
+const RoomPageContainer = ({ room, slug }: { room: DbRoom; slug: string }) => {
+  const defaultState: RoomState = {
+    mode: "listen",
+    room,
+    slug
+  };
 
-const RoomPage = ({ room, slug }: { room: DbRoom; slug: string }) => {
+  return (
+    <RoomProvider defaultState={defaultState}>
+      <RoomPage />
+    </RoomProvider>
+  );
+};
+
+const RoomPage = () => {
   const [playingId, setPlayingId] = useState<number>();
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const { roomState, roomDispatch } = useRoomContext();
+  const { room, mode, slug } = roomState;
 
   // derived state
   const playingItem: DbEpisode | undefined = getEpisodeById(room, playingId);
-  const maxWidth: Breakpoint = roomState.mode === "listen" ? "sm" : "lg";
+  const maxWidth: Breakpoint = mode === "listen" ? "sm" : "lg";
 
   useEffect(() => {
     setIsPaused(false);
@@ -68,7 +81,7 @@ const RoomPage = ({ room, slug }: { room: DbRoom; slug: string }) => {
       </Box>
       <Box p={4} textAlign="center">
         <ToggleButtonGroup
-          value={roomState.mode}
+          value={mode}
           size="small"
           exclusive
           onChange={(_, value) =>

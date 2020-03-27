@@ -11,13 +11,15 @@ import {
 } from "@material-ui/core";
 import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab";
 import SurroundSound from "@material-ui/icons/SurroundSound";
+import RecordIcon from "@material-ui/icons/Mic";
+import ListenIcon from "@material-ui/icons/Headset";
 import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
 import { getRoomBySlug } from "../../src/storage/methods";
 import { DbEpisode, DbRoom } from "../../src/storage/interfaces";
 import SnackbarPlayer from "../../src/components/snackbar-player";
 import SubscribePanel from "../../src/components/subscribe-panel";
-import FeedHeader from "../../src/components/feed-header";
-import FeedGrid from "../../src/components/feed-grid";
+import PlaylistHeader from "../../src/components/playlist-header";
+import PlaylistGrid from "../../src/components/playlist-grid";
 import {
   RoomProvider,
   useRoomContext,
@@ -32,7 +34,7 @@ const getEpisodeById = (room: DbRoom, episodeId?: number) => {
 
 const RoomPageContainer = ({ room, slug }: { room: DbRoom; slug: string }) => {
   const defaultState: RoomState = {
-    mode: "listen",
+    mode: "record",
     room,
     slug
   };
@@ -63,13 +65,11 @@ const RoomPage = () => {
       maxWidth={maxWidth}
       style={{ transition: "all 500ms", width: "auto" }}
     >
-      <h1 style={{ marginBottom: 0 }}>Mijn Tapes</h1>
-
       {room.playlists.map(playlist => (
         <Box pb={4} key={playlist.id}>
-          <FeedHeader feed={playlist} />
-          <FeedGrid
-            feed={playlist}
+          <PlaylistHeader playlist={playlist} />
+          <PlaylistGrid
+            playlist={playlist}
             playingId={playingId}
             setPlayingId={setPlayingId}
             isPaused={isPaused}
@@ -109,9 +109,11 @@ const RoomPage = () => {
           aria-label="text alignment"
         >
           <ToggleButton value="listen" aria-label="listen">
+            <ListenIcon fontSize="inherit" style={{ marginRight: 4 }} />
             Luisteren
           </ToggleButton>
           <ToggleButton value="record" aria-label="record">
+            <RecordIcon fontSize="inherit" style={{ marginRight: 4 }} />
             Opnemen
           </ToggleButton>
         </ToggleButtonGroup>

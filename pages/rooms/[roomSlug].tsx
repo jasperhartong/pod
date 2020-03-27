@@ -65,6 +65,12 @@ const RoomPage = () => {
       maxWidth={maxWidth}
       style={{ transition: "all 500ms", width: "auto" }}
     >
+      <Collapse in={mode === "record"}>
+        <Box pt={4} pb={2}>
+          <Typography variant="h4">Tapes voor {room.slug}</Typography>
+        </Box>
+      </Collapse>
+
       {room.playlists.map(playlist => (
         <Box pb={4} key={playlist.id}>
           <PlaylistHeader playlist={playlist} />

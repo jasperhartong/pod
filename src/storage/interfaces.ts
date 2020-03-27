@@ -27,10 +27,11 @@ export interface DbPlaylist {
   from: string;
   to: string;
   cover_file: { data: DbFileData };
-  // relationship
-  // room: { slug: string };
   // alias
   episodes: DbEpisode[];
+
+  // relationship
+  // room: { slug: string };
 }
 
 export interface DbEpisode {
@@ -42,6 +43,7 @@ export interface DbEpisode {
   download_count: number;
   image_file: { data: DbFileData };
   audio_file: { data: DbFileData };
+
   // relationship
   // playlist: number;
 }

@@ -11,6 +11,7 @@ import SnackbarPlayer from "../../src/components/snackbar-player";
 import SubscribePanel from "../../src/components/subscribe-panel";
 import FeedHeader from "../../src/components/feed-header";
 import FeedGrid from "../../src/components/feed-grid";
+import { RoomProvider, useRoomContext } from "../../src/hooks/useRoomContext";
 
 const getEpisodeById = (room: DbRoom, episodeId?: number) => {
   return ([] as DbEpisode[])
@@ -18,14 +19,20 @@ const getEpisodeById = (room: DbRoom, episodeId?: number) => {
     .find(episode => episode.id === episodeId);
 };
 
+const RoomPageContainer = ({ room, slug }: { room: DbRoom; slug: string }) => (
+  <RoomProvider>
+    <RoomPage room={room} slug={slug} />
+  </RoomProvider>
+);
+
 const RoomPage = ({ room, slug }: { room: DbRoom; slug: string }) => {
   const [playingId, setPlayingId] = useState<number>();
   const [isPaused, setIsPaused] = useState<boolean>(false);
-  const [roomMode, setRoomMode] = useState<"listen" | "record">("listen");
+  const { roomState, roomDispatch } = useRoomContext();
 
   // derived state
   const playingItem: DbEpisode | undefined = getEpisodeById(room, playingId);
-  const maxWidth: Breakpoint = roomMode === "listen" ? "sm" : "lg";
+  const maxWidth: Breakpoint = roomState.mode === "listen" ? "sm" : "lg";
 
   useEffect(() => {
     setIsPaused(false);
@@ -61,10 +68,16 @@ const RoomPage = ({ room, slug }: { room: DbRoom; slug: string }) => {
       </Box>
       <Box p={4} textAlign="center">
         <ToggleButtonGroup
-          value={roomMode}
+          value={roomState.mode}
           size="small"
           exclusive
-          onChange={(_, value) => setRoomMode(value)}
+          onChange={(_, value) =>
+            roomDispatch(room => {
+              if (value) {
+                room.mode = value;
+              }
+            })
+          }
           aria-label="text alignment"
         >
           <ToggleButton value="listen" aria-label="listen">
@@ -102,4 +115,4 @@ export async function getServerSideProps(context: NextPageContext) {
   };
 }
 
-export default RoomPage;
+export default RoomPageContainer;

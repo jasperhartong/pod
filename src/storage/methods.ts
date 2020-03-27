@@ -44,7 +44,6 @@ export const getRoomBySlug = async (roomSlug: string) => {
       },
       fields: roomFields
     });
-    console.warn(JSON.stringify(roomResponse));
 
     if (roomResponse.data.length == 1) {
       room = roomResponse.data[0];

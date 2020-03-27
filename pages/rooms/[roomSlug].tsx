@@ -1,13 +1,16 @@
 import { useState, useEffect } from "react";
+import { NextPageContext } from "next";
 
-import { Container, Box, Tabs, Tab } from "@material-ui/core";
+import { Container, Box, Divider, Typography } from "@material-ui/core";
+import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab";
+import SurroundSound from "@material-ui/icons/SurroundSound";
+import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
 import { getRoomBySlug } from "../../src/storage/methods";
-import { DbEpisode, DbRoom, DbPlaylist } from "../../src/storage/interfaces";
+import { DbEpisode, DbRoom } from "../../src/storage/interfaces";
 import SnackbarPlayer from "../../src/components/snackbar-player";
 import SubscribePanel from "../../src/components/subscribe-panel";
 import FeedHeader from "../../src/components/feed-header";
 import FeedGrid from "../../src/components/feed-grid";
-import { NextPageContext } from "next";
 
 const getEpisodeById = (room: DbRoom, episodeId?: number) => {
   return ([] as DbEpisode[])
@@ -18,22 +21,19 @@ const getEpisodeById = (room: DbRoom, episodeId?: number) => {
 const RoomPage = ({ room, slug }: { room: DbRoom; slug: string }) => {
   const [playingId, setPlayingId] = useState<number>();
   const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [roomMode, setRoomMode] = useState<"listen" | "record">("listen");
 
+  // derived state
   const playingItem: DbEpisode | undefined = getEpisodeById(room, playingId);
+  const maxWidth: Breakpoint = roomMode === "listen" ? "sm" : "lg";
 
   useEffect(() => {
     setIsPaused(false);
   }, [playingId]);
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth={maxWidth}>
       <h1 style={{ marginBottom: 0 }}>Mijn Tapes</h1>
-      <Box pb={2}>
-        <Tabs value={0} indicatorColor="secondary" textColor="secondary">
-          <Tab label="Verzonden" />
-          <Tab label="Ontvangen" />
-        </Tabs>
-      </Box>
 
       {room.playlists.map(playlist => (
         <Box pb={4} key={playlist.id}>
@@ -44,12 +44,45 @@ const RoomPage = ({ room, slug }: { room: DbRoom; slug: string }) => {
             setPlayingId={setPlayingId}
             isPaused={isPaused}
             setIsPaused={setIsPaused}
-            maxWidth="lg"
+            maxWidth={maxWidth}
           />
         </Box>
       ))}
 
       <SubscribePanel slug={slug} />
+      <Box p={3} pt={6}>
+        <Divider />
+      </Box>
+      <Box p={3} textAlign="center">
+        <Typography variant="subtitle2" color="textSecondary">
+          Je kijkt nu naar een preview van "{room.slug}", later zul je deze ook
+          kunnen toevoegen aan je eigen luister bibliotheek in Tapes.me
+        </Typography>
+      </Box>
+      <Box p={4} textAlign="center">
+        <ToggleButtonGroup
+          value={roomMode}
+          size="small"
+          exclusive
+          onChange={(_, value) => setRoomMode(value)}
+          aria-label="text alignment"
+        >
+          <ToggleButton value="listen" aria-label="listen">
+            Luisteren
+          </ToggleButton>
+          <ToggleButton value="record" aria-label="record">
+            Opnemen
+          </ToggleButton>
+        </ToggleButtonGroup>
+      </Box>
+
+      <Box p={4} textAlign="center">
+        <SurroundSound fontSize="large" color="disabled" />
+        <Typography component="div" variant="overline">
+          Tapes.me ©2020
+        </Typography>
+      </Box>
+
       <SnackbarPlayer
         playlistId={slug}
         playingItem={playingItem}

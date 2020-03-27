@@ -94,13 +94,11 @@ const RoomPage = () => {
       <Box p={3} pt={6}>
         <Divider />
       </Box>
-      <Box p={3} textAlign="center">
-        <Typography variant="subtitle2" color="textSecondary">
-          Je kijkt nu naar een preview van "{room.slug}", later zul je deze ook
-          kunnen toevoegen aan je eigen luister bibliotheek in Tapes.me
-        </Typography>
-      </Box>
+
       <Box p={4} textAlign="center">
+        <Typography component="div" variant="overline">
+          {room.slug}
+        </Typography>
         <ToggleButtonGroup
           value={mode}
           size="small"

@@ -112,8 +112,8 @@ export const getPlaylist = async (slug: string): Promise<DbPlaylist | null> => {
   return {
     id: 1,
     created_on: "",
-    to: "Loïs & Robin",
-    from: `Oma`,
+    title: "Pinkeltje voor Loïs & Robin",
+    description: `Voorgelezen door Oma`,
     cover_file,
     episodes: items
   };

@@ -63,9 +63,13 @@ export const getEpisode = async (playlistId: string, episodeId: string) => {
   let warning: string | null = null;
 
   try {
-    const itemResponse = await client.getItem<DbEpisode>("pods", episodeId, {
-      fields: episodeFields
-    });
+    const itemResponse = await client.getItem<DbEpisode>(
+      "episodes",
+      episodeId,
+      {
+        fields: episodeFields
+      }
+    );
     // TODO: Add Yup validation
     item = itemResponse.data;
   } catch (error) {
@@ -85,7 +89,7 @@ export const updateEpisode = async (
 
   try {
     const itemResponse = await client.updateItem<Partial<DbEpisode>>(
-      "pods",
+      "episodes",
       episodeId,
       episode
     );

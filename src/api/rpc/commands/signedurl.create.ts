@@ -11,7 +11,7 @@ const signedUrlCreate = new BaseRpcCommand<RequestData, ResponseData>(
     const reqData = req.body;
     return await fileStorageBackend.getSignedUrl(
       reqData.fileName,
-      reqData.fileName
+      reqData.fileType
     );
   }
 );

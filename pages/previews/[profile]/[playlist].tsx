@@ -1,8 +1,8 @@
 import { NextPageContext } from "next";
 import { Box, Typography, Container } from "@material-ui/core";
 
-import { DbPlaylist } from "../../../src/storage/interfaces";
-import { getPlaylist } from "../../../src/storage/methods";
+import { IDbPlaylist } from "../../../src/api/collections/interfaces/IDbPlaylist";
+import { getPlaylist } from "../../../src/api/collections/backend/adaptors/directus";
 import SurroundSound from "@material-ui/icons/SurroundSound";
 
 // http://localhost:3000/previews/elshartong/voorloisenrobin?guest=2020-12-31_on9y8y
@@ -10,7 +10,7 @@ const PlaylistPreviewPage = ({
   feed,
   slug
 }: {
-  feed: DbPlaylist;
+  feed: IDbPlaylist;
   slug: string;
 }) => {
   return (

@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import NewWindowIcon from "@material-ui/icons/OpenInNew";
-import { rssUrl } from "../../src/storage/urls";
+import { rssUrl } from "../urls";
 
 const SubscribePanel = ({ slug }: { slug: string }) => {
   const subscribeLinks: { url: string; label: string }[] = [

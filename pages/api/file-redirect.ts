@@ -1,7 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import axios from "axios";
-import { rpcUrl } from "../../src/api/urls";
-import { RequestData } from "../../src/api/episode.count";
+import { RequestData, ResponseData } from "../../src/api/rpc/episode.count";
+import rpcClient from "../../src/api/rpc/client";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { url, episodeId, playlistId } = req.query;
@@ -13,8 +12,7 @@ export default async (req: NextApiRequest, res: NextApiResponse) => {
     episodeId: episodeId as string,
     playlistId: playlistId as string
   };
-
-  axios.post(rpcUrl("episode", "count"), reqData);
+  await rpcClient.call<RequestData, ResponseData>("episode", "count", reqData);
 
   res.writeHead(302, { Location: decodeURIComponent(url as string) });
   return res.end();

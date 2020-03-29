@@ -14,8 +14,8 @@ import SurroundSound from "@material-ui/icons/SurroundSound";
 import RecordIcon from "@material-ui/icons/Mic";
 import ListenIcon from "@material-ui/icons/Headset";
 import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
-import { getRoomBySlug } from "../../src/storage/methods";
-import { DbEpisode, DbRoom } from "../../src/storage/interfaces";
+import { IDbRoom } from "../../src/api/collections/interfaces/IDbRoom";
+import { IDbEpisode } from "../../src/api/collections/interfaces/IDbEpisode";
 import SnackbarPlayer from "../../src/components/snackbar-player";
 import SubscribePanel from "../../src/components/subscribe-panel";
 import PlaylistHeader from "../../src/components/playlist-header";
@@ -26,14 +26,15 @@ import {
   RoomState
 } from "../../src/hooks/useRoomContext";
 import EpisodeCreateDrawer from "../../src/components/episode-create-form";
+import { backend } from "../../src/api/collections/backend/index";
 
-const getEpisodeById = (room: DbRoom, episodeId?: number) => {
-  return ([] as DbEpisode[])
+const getEpisodeById = (room: IDbRoom, episodeId?: number) => {
+  return ([] as IDbEpisode[])
     .concat(...[...room.playlists].map(playlist => playlist.episodes))
     .find(episode => episode.id === episodeId);
 };
 
-const RoomPageContainer = ({ room, slug }: { room: DbRoom; slug: string }) => {
+const RoomPageContainer = ({ room, slug }: { room: IDbRoom; slug: string }) => {
   const defaultState: RoomState = {
     mode: "listen",
     recordingFor: undefined,
@@ -55,7 +56,7 @@ const RoomPage = () => {
   const { room, mode, slug } = roomState;
 
   // derived state
-  const playingItem: DbEpisode | undefined = getEpisodeById(room, playingId);
+  const playingItem: IDbEpisode | undefined = getEpisodeById(room, playingId);
   const maxWidth: Breakpoint = mode === "listen" ? "sm" : "lg";
 
   useEffect(() => {
@@ -146,10 +147,16 @@ const RoomPage = () => {
 
 export async function getServerSideProps(context: NextPageContext) {
   const roomSlug = context.query.roomSlug as string;
-  const { room, warning } = await getRoomBySlug(roomSlug);
-  return {
-    props: { room, slug: roomSlug || null } // null is serializable
-  };
+  const response = await backend.getRoomBySlug(roomSlug);
+  if (response.ok) {
+    return {
+      props: { room: response.data, slug: roomSlug || null } // null is serializable
+    };
+  } else {
+    return {
+      props: {}
+    };
+  }
 }
 
 export default RoomPageContainer;

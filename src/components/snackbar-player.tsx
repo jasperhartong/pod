@@ -15,9 +15,9 @@ import ReactPlayer from "react-player";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import CloseIcon from "@material-ui/icons/Close";
-import { DbEpisode } from "../../src/storage/interfaces";
+import { IDbEpisode } from "../api/collections/interfaces/IDbEpisode";
 import { makeStyles } from "@material-ui/styles";
-import { mediaRedirectUrl } from "../storage/urls";
+import { mediaRedirectUrl } from "../urls";
 
 const useStyles = makeStyles(theme => ({
   snackbarMessage: {
@@ -34,7 +34,7 @@ const SnackbarPlayer = ({
   setIsPaused
 }: {
   playlistId: string;
-  playingItem?: DbEpisode;
+  playingItem?: IDbEpisode;
   isPaused: boolean;
   setPlayingId: (id: number | undefined) => void;
   setIsPaused: (paused: boolean) => void;

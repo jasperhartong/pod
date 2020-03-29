@@ -1,15 +1,16 @@
 import React from "react";
 import { useImmer } from "use-immer";
-import { DbRoom, DbPlaylist } from "../storage/interfaces";
+import { IDbRoom } from "../api/collections/interfaces/IDbRoom";
+import { IDbPlaylist } from "../api/collections/interfaces/IDbPlaylist";
 
 type RoomMode = "listen" | "record";
 
 export interface RoomState {
-  room: DbRoom;
+  room: IDbRoom;
   slug: string;
   mode: RoomMode;
   // Recording state
-  recordingFor: DbPlaylist | undefined;
+  recordingFor: IDbPlaylist | undefined;
 }
 
 const RoomContext = React.createContext<
@@ -37,7 +38,7 @@ const useRoomContext = () => {
   const [state, dispatch] = roomContext;
 
   const recording = {
-    initiate: (playlist: DbPlaylist) => {
+    initiate: (playlist: IDbPlaylist) => {
       dispatch(room => {
         room.recordingFor = playlist;
       });

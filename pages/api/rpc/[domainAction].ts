@@ -1,14 +1,24 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import * as feedCount from "../../../src/api/episode.count";
+import * as episodeCount from "../../../src/api/rpc/episode.count";
+import * as episodeCreate from "../../../src/api/rpc/episode.create";
+import { IResponse, ERR } from "../../../src/api/interfaces";
+import HttpStatus from "http-status-codes";
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse<IResponse<any>>
+) => {
   const { domainAction } = req.query;
-  const reqData = req.body;
   const [domain, action] = (domainAction as string).split(".");
 
-  if (feedCount.domain === domain && feedCount.action === action) {
-    feedCount.handle(reqData);
+  let responseData = ERR("No RPC found to handle", HttpStatus.NOT_IMPLEMENTED);
+
+  if (episodeCount.domain === domain && episodeCount.action === action) {
+    responseData = await episodeCount.handle(req, res);
+  }
+  if (episodeCreate.domain === domain && episodeCreate.action === action) {
+    responseData = await episodeCreate.handle(req, res);
   }
 
-  return res.json({ ok: true, domain: domain, action: action });
+  return res.json(responseData);
 };

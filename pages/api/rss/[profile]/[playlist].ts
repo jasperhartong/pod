@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { getPlaylist } from "../../../../src/storage/methods";
+import { getPlaylist } from "../../../../src/api/collections/backend/adaptors/directus";
 import { podcastXMLFromFeed } from "../../../../src/utils/podcast";
 
 interface ErrorResponse {

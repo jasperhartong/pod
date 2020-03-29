@@ -8,7 +8,11 @@ import {
 } from "@material-ui/core";
 import { useForm, Controller } from "react-hook-form";
 import { useRoomContext } from "../hooks/useRoomContext";
-import { DbPlaylist } from "../storage/interfaces";
+import { IDbPlaylist } from "../api/collections/interfaces/IDbPlaylist";
+import axios from "axios";
+import { rpcUrl } from "../api/rpc/urls";
+import { RequestData, ResponseData } from "../api/rpc/episode.create";
+import rpcClient from "../api/rpc/client";
 
 const EpisodeCreateDrawer = () => {
   const { roomState, roomDispatch, recording } = useRoomContext();
@@ -29,15 +33,33 @@ const EpisodeCreateDrawer = () => {
   );
 };
 
-const EpisodeCreateForm = ({ playlist }: { playlist: DbPlaylist }) => {
+const EpisodeCreateForm = ({ playlist }: { playlist: IDbPlaylist }) => {
   const error = false;
 
+  const defaultValues: RequestData = {
+    title: "",
+    description: "",
+    image_url: "",
+    audio_url: "",
+    status: "published",
+    playlist: playlist.id.toString()
+  };
+
   const { handleSubmit, control, watch, formState } = useForm({
-    mode: "onChange"
+    mode: "onChange",
+    defaultValues
   });
 
   return (
-    <form onSubmit={handleSubmit(data => console.warn(data))}>
+    <form
+      onSubmit={handleSubmit(data => {
+        const reqData = data as RequestData;
+        rpcClient.call<RequestData, ResponseData>("episode", "create", {
+          ...defaultValues,
+          ...reqData
+        });
+      })}
+    >
       <FormGroup>
         <Controller
           control={control}
@@ -54,6 +76,22 @@ const EpisodeCreateForm = ({ playlist }: { playlist: DbPlaylist }) => {
           label=""
           placeholder="De omschrijving"
           name="description"
+        />
+        <Controller
+          control={control}
+          rules={{ required: true }}
+          as={TextField}
+          label=""
+          placeholder="Audio url"
+          name="audio_url"
+        />
+        <Controller
+          control={control}
+          rules={{ required: true }}
+          as={TextField}
+          label=""
+          placeholder="Image url"
+          name="image_url"
         />
         {error && (
           <Box p={2}>

@@ -1,4 +1,4 @@
-import { IResponse } from "../../interfaces";
+import { IResponse } from "../../IResponse";
 type BackendMethod = (...args: any[]) => Promise<IResponse<any>>;
 
 export type BackendBase = {

@@ -26,7 +26,7 @@ import {
   RoomState
 } from "../../src/hooks/useRoomContext";
 import EpisodeCreateDrawer from "../../src/components/episode-create-form";
-import { backend } from "../../src/api/collections/backend/index";
+import { collectionsBackend } from "../../src/api/collections/backend";
 
 const getEpisodeById = (room: IDbRoom, episodeId?: number) => {
   return ([] as IDbEpisode[])
@@ -147,7 +147,7 @@ const RoomPage = () => {
 
 export async function getServerSideProps(context: NextPageContext) {
   const roomSlug = context.query.roomSlug as string;
-  const response = await backend.getRoomBySlug(roomSlug);
+  const response = await collectionsBackend.getRoomBySlug(roomSlug);
   if (response.ok) {
     return {
       props: { room: response.data, slug: roomSlug || null } // null is serializable

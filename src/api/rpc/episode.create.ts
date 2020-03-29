@@ -1,7 +1,7 @@
 import { NextApiResponse, NextApiRequest } from "next";
 import { IDbEpisode } from "../collections/interfaces/IDbEpisode";
-import { IResponse, OK } from "../interfaces";
-import { backend } from "../collections/backend/index";
+import { IResponse, OK } from "../IResponse";
+import { collectionsBackend } from "../collections/backend";
 
 export const domain = "episode";
 export const action = "create";
@@ -24,15 +24,19 @@ export const handle = async (
   const reqData: RequestData = req.body;
   console.warn(reqData);
 
-  const audioUpload = await backend.addExternalImage(reqData.audio_url);
+  const audioUpload = await collectionsBackend.addExternalImage(
+    reqData.audio_url
+  );
   if (!audioUpload.ok) {
     return audioUpload;
   }
-  const imageUpload = await backend.addExternalImage(reqData.image_url);
+  const imageUpload = await collectionsBackend.addExternalImage(
+    reqData.image_url
+  );
   if (!imageUpload.ok) {
     return imageUpload;
   }
-  const episodeCreation = await backend.createEpisode(
+  const episodeCreation = await collectionsBackend.createEpisode(
     {
       title: reqData.title,
       description: reqData.description,

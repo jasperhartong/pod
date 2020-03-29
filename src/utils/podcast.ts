@@ -1,7 +1,7 @@
 import { IDbPlaylist } from "../api/collections/interfaces/IDbPlaylist";
 import { toXML } from "jstoxml";
 import { podItemPageUrl, podPageUrl, mediaRedirectUrl } from "../urls";
-import { parseDbDate } from "../api/collections/backend/adaptors/directus-utils";
+import { parseDbDate } from "../api/collections/backends/directus/utils";
 
 export const podcastXMLFromFeed = (slug: string, feed: IDbPlaylist): string => {
   const xmlOptions = {

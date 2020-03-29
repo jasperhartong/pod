@@ -1,11 +1,10 @@
 import DirectusSDK from "@directus/sdk-js";
 import axios, { AxiosResponse } from "axios";
 import { IDbRoom } from "../../interfaces/IDbRoom";
-import { IDbPlaylist } from "../../interfaces/IDbPlaylist";
 import { IDbEpisode } from "../../interfaces/IDbEpisode";
 import { IDBFileUpload, IDbFileData } from "../../interfaces/IDbFileData";
 import { ITapesMeBackend } from "../ITapesMeBackend";
-import { OK, ERR } from "../../../interfaces";
+import { OK, ERR } from "../../../IResponse";
 
 const token = process.env.DIRECTUS_CLOUD_TOKEN;
 const project = "dcMJTq1b80lIY4CT";

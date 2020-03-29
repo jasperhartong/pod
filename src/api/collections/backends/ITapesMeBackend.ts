@@ -1,7 +1,7 @@
 import { IDbRoom } from "../interfaces/IDbRoom";
 import { IDbEpisode } from "../interfaces/IDbEpisode";
 import { IDbFileData } from "../interfaces/IDbFileData";
-import { IResponse } from "../../interfaces";
+import { IResponse } from "../../IResponse";
 import { BackendBase } from "./base";
 
 export interface ITapesMeBackend extends BackendBase {

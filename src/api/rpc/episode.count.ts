@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { IResponse, ERR } from "../interfaces";
+import { IResponse, ERR } from "../IResponse";
 import { IDbEpisode } from "../collections/interfaces/IDbEpisode";
-import { backend } from "../collections/backend/index";
+import { collectionsBackend } from "../collections/backend";
 
 export const domain = "episode";
 export const action = "count";
@@ -25,12 +25,14 @@ export const handle = async (
 
   console.warn(`Count download for episode: ${reqData.episodeId}`);
 
-  const episodeRetrieval = await backend.getEpisode(reqData.episodeId);
+  const episodeRetrieval = await collectionsBackend.getEpisode(
+    reqData.episodeId
+  );
   if (!episodeRetrieval.ok) {
     return episodeRetrieval;
   }
 
-  return await backend.updateEpisode(reqData.episodeId, {
+  return await collectionsBackend.updateEpisode(reqData.episodeId, {
     download_count: episodeRetrieval.data.download_count + 1
   });
 };

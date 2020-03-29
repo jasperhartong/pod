@@ -1,6 +1,6 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { rpcUrl, RpcDomains, RpcActions } from "./urls";
-import { IResponse } from "../interfaces";
+import { IResponse } from "../IResponse";
 
 class RpcClient {
   constructor(

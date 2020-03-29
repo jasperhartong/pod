@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import * as episodeCount from "../../../src/api/rpc/episode.count";
 import * as episodeCreate from "../../../src/api/rpc/episode.create";
-import { IResponse, ERR } from "../../../src/api/interfaces";
+import { IResponse, ERR } from "../../../src/api/IResponse";
 import HttpStatus from "http-status-codes";
 
 export default async (

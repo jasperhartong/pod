@@ -3,10 +3,12 @@ import episodeCount from "../../../src/api/rpc/commands/episode.count";
 import episodeCreate from "../../../src/api/rpc/commands/episode.create";
 import { IResponse, ERR } from "../../../src/api/IResponse";
 import HttpStatus from "http-status-codes";
+import signedUrlCreate from "../../../src/api/rpc/commands/signedurl.create";
 
 const handlers = {
   [episodeCreate.commandId]: episodeCreate,
-  [episodeCount.commandId]: episodeCount
+  [episodeCount.commandId]: episodeCount,
+  [signedUrlCreate.commandId]: signedUrlCreate
 };
 
 export default async (

@@ -10,7 +10,7 @@ export const rpcUrl = (domain: string, action: string) =>
 class RpcClient {
   constructor(
     private client = axios.create({
-      timeout: 4000
+      timeout: 10000
     })
   ) {}
   public async call<ReqData, ResData>(
@@ -23,10 +23,11 @@ class RpcClient {
         rpcUrl(domain, action),
         data
       );
+
       return { ok: true, data: response.data };
     } catch (error) {
       const axiosError = error as AxiosError;
-      console.error(axiosError);
+      console.error("RpcClient.call", axiosError.message);
       return { ok: false, status: 500, error: axiosError.message };
     }
   }

@@ -1,5 +1,5 @@
 import * as Yup from "yup";
-import IMeta, { Domains } from "./base/IMeta";
+import IMeta from "./base/IMeta";
 
 import { IDbEpisode } from "../../collection-storage/interfaces/IDbEpisode";
 
@@ -40,7 +40,7 @@ export type ResponseData = IDbEpisode;
  */
 
 class Meta implements IMeta {
-  domain: Domains = "episode";
+  domain = "episode";
   action = "create";
   reqDataSchema = reqDataSchema;
   // TODO: add resDataSchema

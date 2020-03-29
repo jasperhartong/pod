@@ -1,38 +1,38 @@
 import * as Yup from "yup";
 import IMeta from "./base/IMeta";
 
-import { IDbEpisode } from "../../collection-storage/interfaces/IDbEpisode";
+import { ISignedUrl } from "../../file-storage/interfaces/ISignedUrl";
 
 /**
  * Request
  */
 
 export interface RequestData {
-  playlistId: string;
-  episodeId: string;
+  fileName: string;
+  fileType: string;
 }
 
 export const reqDataSchema: Yup.ObjectSchema<Yup.Shape<
   object,
   RequestData
 >> = Yup.object().shape({
-  playlistId: Yup.string().required(),
-  episodeId: Yup.string().required()
+  fileName: Yup.string().required(),
+  fileType: Yup.string().required()
 });
 
 /**
  * Response
  */
 
-export type ResponseData = IDbEpisode;
+export type ResponseData = ISignedUrl;
 
 /**
  * Meta
  */
 
 class Meta implements IMeta {
-  domain = "episode";
-  action = "count";
+  domain = "signedurl";
+  action = "create";
   reqDataSchema = reqDataSchema;
   // TODO: add resDataSchema
 }

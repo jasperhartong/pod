@@ -14,8 +14,8 @@ import SurroundSound from "@material-ui/icons/SurroundSound";
 import RecordIcon from "@material-ui/icons/Mic";
 import ListenIcon from "@material-ui/icons/Headset";
 import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
-import { IDbRoom } from "../../src/api/collections/interfaces/IDbRoom";
-import { IDbEpisode } from "../../src/api/collections/interfaces/IDbEpisode";
+import { IDbRoom } from "../../src/api/collection-storage/interfaces/IDbRoom";
+import { IDbEpisode } from "../../src/api/collection-storage/interfaces/IDbEpisode";
 import SnackbarPlayer from "../../src/components/snackbar-player";
 import SubscribePanel from "../../src/components/subscribe-panel";
 import PlaylistHeader from "../../src/components/playlist-header";
@@ -26,7 +26,7 @@ import {
   RoomState
 } from "../../src/hooks/useRoomContext";
 import EpisodeCreateDrawer from "../../src/components/episode-create-form";
-import { collectionsBackend } from "../../src/api/collections/backend";
+import { collectionsBackend } from "../../src/api/collection-storage";
 
 const getEpisodeById = (room: IDbRoom, episodeId?: number) => {
   return ([] as IDbEpisode[])

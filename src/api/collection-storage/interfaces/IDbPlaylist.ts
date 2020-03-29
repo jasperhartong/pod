@@ -1,5 +1,5 @@
 import { IDbEpisode } from "./IDbEpisode";
-import { IDbDateString } from "./common";
+import { IDbDateString } from "./IDbDateString";
 import { IDbFileData } from "./IDbFileData";
 export interface IDbPlaylist {
   id: number;

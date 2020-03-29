@@ -1,7 +1,7 @@
 import { NextApiResponse, NextApiRequest } from "next";
-import { IDbEpisode } from "../collections/interfaces/IDbEpisode";
+import { IDbEpisode } from "../collection-storage/interfaces/IDbEpisode";
 import { IResponse, OK } from "../IResponse";
-import { collectionsBackend } from "../collections/backend";
+import { collectionsBackend } from "../collection-storage";
 
 export const domain = "episode";
 export const action = "create";

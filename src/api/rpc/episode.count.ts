@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { IResponse, ERR } from "../IResponse";
-import { IDbEpisode } from "../collections/interfaces/IDbEpisode";
-import { collectionsBackend } from "../collections/backend";
+import { IDbEpisode } from "../collection-storage/interfaces/IDbEpisode";
+import { collectionsBackend } from "../collection-storage";
 
 export const domain = "episode";
 export const action = "count";

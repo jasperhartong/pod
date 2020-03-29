@@ -1,10 +1,9 @@
-import { IDbRoom } from "../interfaces/IDbRoom";
-import { IDbEpisode } from "../interfaces/IDbEpisode";
-import { IDbFileData } from "../interfaces/IDbFileData";
+import { IDbRoom } from "./IDbRoom";
+import { IDbEpisode } from "./IDbEpisode";
+import { IDbFileData } from "./IDbFileData";
 import { IResponse } from "../../IResponse";
-import { BackendBase } from "./base";
 
-export interface ITapesMeBackend extends BackendBase {
+export interface ITapesMeBackend {
   getRoomBySlug: (roomSlug: string) => Promise<IResponse<IDbRoom>>;
   getEpisode: (episodeId: string) => Promise<IResponse<IDbEpisode>>;
   createEpisode: (

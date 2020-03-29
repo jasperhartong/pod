@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { IDbDateString } from "../../interfaces/common";
+import { IDbDateString } from "../interfaces/IDbDateString";
 
 const DIRECTUS_DATE_TIME_FORMAT = "y-MM-dd HH:mm:ss";
 export const parseDbDate = (date: IDbDateString): DateTime =>

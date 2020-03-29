@@ -8,7 +8,7 @@ import {
 } from "@material-ui/core";
 import { useForm, Controller } from "react-hook-form";
 import { useRoomContext } from "../hooks/useRoomContext";
-import { IDbPlaylist } from "../api/collections/interfaces/IDbPlaylist";
+import { IDbPlaylist } from "../api/collection-storage/interfaces/IDbPlaylist";
 import axios from "axios";
 import { rpcUrl } from "../api/rpc/urls";
 import { RequestData, ResponseData } from "../api/rpc/episode.create";

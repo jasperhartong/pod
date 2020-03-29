@@ -1,7 +1,7 @@
 import { NextPageContext } from "next";
 import { Box, Typography, Container } from "@material-ui/core";
 
-import { IDbPlaylist } from "../../../src/api/collections/interfaces/IDbPlaylist";
+import { IDbPlaylist } from "../../../src/api/collection-storage/interfaces/IDbPlaylist";
 // import { getPlaylist } from "../../../src/api/collections/backend/adaptors/directus";
 import SurroundSound from "@material-ui/icons/SurroundSound";
 

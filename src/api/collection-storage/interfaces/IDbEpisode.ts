@@ -1,4 +1,4 @@
-import { IDbDateString } from "./common";
+import { IDbDateString } from "./IDbDateString";
 
 import { IDbFileData } from "./IDbFileData";
 export interface IDbEpisode {

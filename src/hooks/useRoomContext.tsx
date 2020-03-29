@@ -1,7 +1,7 @@
 import React from "react";
 import { useImmer } from "use-immer";
-import { IDbRoom } from "../api/collections/interfaces/IDbRoom";
-import { IDbPlaylist } from "../api/collections/interfaces/IDbPlaylist";
+import { IDbRoom } from "../api/collection-storage/interfaces/IDbRoom";
+import { IDbPlaylist } from "../api/collection-storage/interfaces/IDbPlaylist";
 
 type RoomMode = "listen" | "record";
 

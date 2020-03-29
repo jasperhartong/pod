@@ -7,7 +7,7 @@ import {
   Typography,
   Collapse
 } from "@material-ui/core";
-import { IDbPlaylist } from "../api/collections/interfaces/IDbPlaylist";
+import { IDbPlaylist } from "../api/collection-storage/interfaces/IDbPlaylist";
 import { useRoomContext } from "../hooks/useRoomContext";
 
 const PlaylistHeader = ({ playlist }: { playlist: IDbPlaylist }) => {

@@ -1,6 +1,11 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
-import { rpcUrl, RpcDomains, RpcActions } from "./urls";
 import { IResponse } from "../IResponse";
+import { baseUrl } from "../../urls";
+
+export const rpcBasePath = `${baseUrl}/api/rpc/`;
+
+export const rpcUrl = (domain: string, action: string) =>
+  `${rpcBasePath}${domain}.${action}`;
 
 class RpcClient {
   constructor(
@@ -8,13 +13,13 @@ class RpcClient {
       timeout: 4000
     })
   ) {}
-  public async call<Req, Res>(
-    domain: RpcDomains,
-    action: RpcActions,
-    data: Req
-  ): Promise<IResponse<Res>> {
+  public async call<ReqData, ResData>(
+    domain: string,
+    action: string,
+    data: ReqData
+  ): Promise<IResponse<ResData>> {
     try {
-      const response = await this.client.post<Req, AxiosResponse<Res>>(
+      const response = await this.client.post<ReqData, AxiosResponse<ResData>>(
         rpcUrl(domain, action),
         data
       );

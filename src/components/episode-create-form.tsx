@@ -9,9 +9,10 @@ import {
 import { useForm, Controller } from "react-hook-form";
 import { useRoomContext } from "../hooks/useRoomContext";
 import { IDbPlaylist } from "../api/collection-storage/interfaces/IDbPlaylist";
-import axios from "axios";
-import { rpcUrl } from "../api/rpc/urls";
-import { RequestData, ResponseData } from "../api/rpc/episode.create";
+import {
+  RequestData,
+  ResponseData
+} from "../api/rpc/commands/episode.create.meta";
 import rpcClient from "../api/rpc/client";
 
 const EpisodeCreateDrawer = () => {

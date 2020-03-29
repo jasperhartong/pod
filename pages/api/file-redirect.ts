@@ -1,5 +1,8 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { RequestData, ResponseData } from "../../src/api/rpc/episode.count";
+import {
+  RequestData,
+  ResponseData
+} from "../../src/api/rpc/commands/episode.count.meta";
 import rpcClient from "../../src/api/rpc/client";
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {

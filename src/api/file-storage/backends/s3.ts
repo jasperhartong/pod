@@ -51,7 +51,7 @@ class S3FileStorage implements IFileStorage {
         uploadUrl: data
       });
     } catch (error) {
-      console.error(console.error());
+      console.error(error);
       return ERR<ISignedUrl>("Signed url could not be retrieved");
     }
   };

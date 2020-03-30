@@ -14,6 +14,7 @@ import {
   ResponseData
 } from "../api/rpc/commands/episode.create.meta";
 import rpcClient from "../api/rpc/client";
+import MediaDropZone from "./media-dropzone";
 
 const EpisodeCreateDrawer = () => {
   const { roomState, roomDispatch, recording } = useRoomContext();
@@ -102,6 +103,11 @@ const EpisodeCreateForm = ({ playlist }: { playlist: IDbPlaylist }) => {
           </Box>
         )}
       </FormGroup>
+      <MediaDropZone
+        instructions={"drop it"}
+        acceptedMimeTypes={["image/jpeg"]}
+        onSuccess={downloadUrl => console.warn(downloadUrl)}
+      />
       <Box pt={3}>
         <Button
           variant="contained"

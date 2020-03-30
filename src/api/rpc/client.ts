@@ -19,12 +19,12 @@ class RpcClient {
     data: ReqData
   ): Promise<IResponse<ResData>> {
     try {
-      const response = await this.client.post<ReqData, AxiosResponse<ResData>>(
-        rpcUrl(domain, action),
-        data
-      );
+      const response = await this.client.post<
+        ReqData,
+        AxiosResponse<IResponse<ResData>>
+      >(rpcUrl(domain, action), data);
 
-      return { ok: true, data: response.data };
+      return response.data;
     } catch (error) {
       const axiosError = error as AxiosError;
       console.error("RpcClient.call", axiosError.message);

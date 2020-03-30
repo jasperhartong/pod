@@ -36,7 +36,7 @@ export const getPlaylist = async (slug: string): Promise<DbPlaylist | null> => {
   return {
     id: 1,
     date: "",
-    title: "Loïs & Robin",
+    title: "Loïs, Robin & Alexander",
     description: `Oma`,
     content: "Uit pinkeltje en meer",
     author_name: "Oma Els",

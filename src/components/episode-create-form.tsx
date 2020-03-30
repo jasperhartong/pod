@@ -47,7 +47,7 @@ const EpisodeCreateForm = ({ playlist }: { playlist: IDbPlaylist }) => {
     playlist: playlist.id.toString()
   };
 
-  const { handleSubmit, control, watch, formState } = useForm({
+  const { handleSubmit, control, formState, register, setValue } = useForm({
     mode: "onChange",
     defaultValues
   });
@@ -79,22 +79,6 @@ const EpisodeCreateForm = ({ playlist }: { playlist: IDbPlaylist }) => {
           placeholder="De omschrijving"
           name="description"
         />
-        <Controller
-          control={control}
-          rules={{ required: true }}
-          as={TextField}
-          label=""
-          placeholder="Audio url"
-          name="audio_url"
-        />
-        <Controller
-          control={control}
-          rules={{ required: true }}
-          as={TextField}
-          label=""
-          placeholder="Image url"
-          name="image_url"
-        />
         {error && (
           <Box p={2}>
             <Typography variant="subtitle2" color="error" gutterBottom>
@@ -103,15 +87,17 @@ const EpisodeCreateForm = ({ playlist }: { playlist: IDbPlaylist }) => {
           </Box>
         )}
       </FormGroup>
+      <input name="image_url" type="hidden" ref={register} />
       <MediaDropZone
         instructions={"drop image"}
         acceptedMimeTypes={["image/jpeg"]}
-        onSuccess={downloadUrl => console.warn(downloadUrl)}
+        onSuccess={downloadUrl => setValue("image_url", downloadUrl)}
       />
+      <input name="audio_url" type="hidden" ref={register} />
       <MediaDropZone
         instructions={"drop audio / video"}
         acceptedMimeTypes={["audio/m4a", "video/mp4"]}
-        onSuccess={downloadUrl => console.warn(downloadUrl)}
+        onSuccess={downloadUrl => setValue("audio_url", downloadUrl)}
       />
       <Box pt={3}>
         <Button

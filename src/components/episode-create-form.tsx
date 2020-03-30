@@ -104,8 +104,13 @@ const EpisodeCreateForm = ({ playlist }: { playlist: IDbPlaylist }) => {
         )}
       </FormGroup>
       <MediaDropZone
-        instructions={"drop it"}
+        instructions={"drop image"}
         acceptedMimeTypes={["image/jpeg"]}
+        onSuccess={downloadUrl => console.warn(downloadUrl)}
+      />
+      <MediaDropZone
+        instructions={"drop audio / video"}
+        acceptedMimeTypes={["audio/m4a", "video/mp4"]}
         onSuccess={downloadUrl => console.warn(downloadUrl)}
       />
       <Box pt={3}>

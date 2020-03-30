@@ -8,7 +8,12 @@ import {
   ResponseData
 } from "../api/rpc/commands/signedurl.create.meta";
 
-const useSignedMediaUploader = () => {
+const useSignedMediaUploader = (): {
+  uploadFile: (file: File) => void;
+  loading: boolean;
+  error?: string;
+  success?: ResponseData;
+} => {
   const [file, uploadFile] = useState<File>();
   const {
     loading,

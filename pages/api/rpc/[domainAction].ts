@@ -23,5 +23,7 @@ export default async (
     responseData = await handlers[domainAction].handle(req, res);
   }
 
-  return res.json(responseData);
+  return res
+    .status(!responseData.ok ? responseData.status : HttpStatus.OK)
+    .json(responseData);
 };

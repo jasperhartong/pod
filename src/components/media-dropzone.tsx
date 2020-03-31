@@ -38,9 +38,12 @@ const MediaDropZone = ({
     <div {...getRootProps()}>
       <input {...getInputProps()} />
       {loading && <CircularProgress variant="indeterminate" />}
-      {!!success && "Succes"}
       {error && `Error: ${error}`}
-      <Typography variant="overline">{instructions}</Typography>
+      {!!success ? (
+        `Success: ${success.downloadUrl}`
+      ) : (
+        <Typography variant="overline">{instructions}</Typography>
+      )}
     </div>
   );
 };

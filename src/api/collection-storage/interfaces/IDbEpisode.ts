@@ -11,7 +11,5 @@ export interface IDbEpisode {
   image_file: {
     data: IDbFileData;
   };
-  audio_file: {
-    data: IDbFileData;
-  };
+  audio_file: string;
 }

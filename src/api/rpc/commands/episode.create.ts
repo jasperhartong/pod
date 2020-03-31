@@ -12,12 +12,6 @@ const episodeCreate = new BaseRpcCommand<RequestData, ResponseData>(
     const reqData: RequestData = req.body;
     console.warn(reqData);
 
-    const audioUpload = await collectionsBackend.addExternalImage(
-      reqData.audio_url
-    );
-    if (!audioUpload.ok) {
-      return audioUpload;
-    }
     const imageUpload = await collectionsBackend.addExternalImage(
       reqData.image_url
     );
@@ -28,11 +22,11 @@ const episodeCreate = new BaseRpcCommand<RequestData, ResponseData>(
       {
         title: reqData.title,
         description: reqData.description,
-        status: reqData.status
+        status: reqData.status,
+        audio_file: reqData.audio_url
       },
       reqData.playlist,
-      imageUpload.data.id.toString(),
-      audioUpload.data.id.toString()
+      imageUpload.data.id.toString()
     );
     if (!episodeCreation.ok) {
       return episodeCreation;

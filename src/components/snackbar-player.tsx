@@ -64,7 +64,7 @@ const SnackbarPlayer = ({
                 url={mediaRedirectUrl(
                   playlistId,
                   playingItem.id.toString(),
-                  playingItem.audio_file.data.full_url
+                  playingItem.audio_file
                 )}
                 playing={!isPaused}
                 width="0px"

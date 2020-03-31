@@ -44,11 +44,7 @@ export const podcastXMLFromFeed = (slug: string, feed: IDbPlaylist): string => {
         _name: "enclosure",
         _attrs: {
           url: encodeURI(
-            mediaRedirectUrl(
-              slug,
-              item.id.toString(),
-              item.audio_file.data.full_url || ""
-            )
+            mediaRedirectUrl(slug, item.id.toString(), item.audio_file || "")
           ),
           // length: "8727310",
           type: "audio/x-mp4"

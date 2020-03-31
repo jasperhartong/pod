@@ -5,6 +5,7 @@ import { IDbEpisode } from "../interfaces/IDbEpisode";
 import { IDBFileUpload, IDbFileData } from "../interfaces/IDbFileData";
 import { ITapesMeBackend } from "../interfaces/ITapesMeBackend";
 import { OK, ERR } from "../../IResponse";
+import HttpStatus from "http-status-codes";
 
 const token = process.env.DIRECTUS_CLOUD_TOKEN;
 const project = "dcMJTq1b80lIY4CT";
@@ -41,7 +42,6 @@ class DirectusTapesMeBackend implements ITapesMeBackend {
             "playlists.*",
             "playlists.cover_file.data",
             "playlists.episodes.*",
-            "playlists.episodes.audio_file.data",
             "playlists.episodes.image_file.data"
           ]
         }
@@ -76,8 +76,7 @@ class DirectusTapesMeBackend implements ITapesMeBackend {
   public createEpisode = async (
     episode: Partial<IDbEpisode>,
     playlistId: string,
-    imageFileId: string,
-    audioFileId: string
+    imageFileId: string
   ) => {
     try {
       const itemResponse = await this.client.createItem<
@@ -88,7 +87,6 @@ class DirectusTapesMeBackend implements ITapesMeBackend {
       >(this.episodeCollection, {
         ...episode,
         image_file: imageFileId,
-        audio_file: audioFileId,
         playlist: playlistId
       });
       return OK<IDbEpisode>((itemResponse.data as unknown) as IDbEpisode);

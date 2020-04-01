@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import {
   Box,
   Button,
@@ -17,40 +18,64 @@ import rpcClient from "../api/rpc/client";
 import MediaDropZone from "./media-dropzone";
 
 const EpisodeCreateDrawer = () => {
-  const { roomState, roomDispatch, recording } = useRoomContext();
+  const { roomState, recordingActions } = useRoomContext();
 
   return (
     <SwipeableDrawer
       anchor="bottom"
-      open={!!roomState.recordingFor}
-      onClose={() => recording.cancel()}
+      open={!!roomState.newRecording}
+      onClose={() => recordingActions.cancel()}
       onOpen={() => console.warn("on open")}
     >
-      {roomState.recordingFor && (
+      {roomState.newRecording && (
         <Box p={2} pb={8}>
-          <EpisodeCreateForm playlist={roomState.recordingFor} />
+          <EpisodeCreateForm
+            playlist={roomState.newRecording.playlist}
+            updateRecording={recordingActions.updateRecording}
+          />
         </Box>
       )}
     </SwipeableDrawer>
   );
 };
 
-const EpisodeCreateForm = ({ playlist }: { playlist: IDbPlaylist }) => {
+const EpisodeCreateForm = ({
+  playlist,
+  updateRecording
+}: {
+  playlist: IDbPlaylist;
+  updateRecording: (episode: Partial<RequestData>) => void;
+}) => {
   const error = false;
 
   const defaultValues: RequestData = {
     title: "",
-    description: "",
     image_url: "",
     audio_url: "",
     status: "published",
     playlist: playlist.id.toString()
   };
 
-  const { handleSubmit, control, formState, register, setValue } = useForm({
+  const {
+    handleSubmit,
+    control,
+    formState,
+    register,
+    setValue,
+    watch
+  } = useForm({
     mode: "onChange",
     defaultValues
   });
+
+  const watchedFields = watch(["title", "image_url"]);
+
+  useEffect(() => {
+    updateRecording({
+      title: watchedFields.title as string,
+      image_url: watchedFields.image_url as string
+    });
+  }, [watchedFields.title, watchedFields.image_url]);
 
   return (
     <form
@@ -70,14 +95,6 @@ const EpisodeCreateForm = ({ playlist }: { playlist: IDbPlaylist }) => {
           label=""
           placeholder="De titel"
           name="title"
-        />
-        <Controller
-          control={control}
-          rules={{ required: true }}
-          as={TextField}
-          label=""
-          placeholder="De omschrijving"
-          name="description"
         />
         {error && (
           <Box p={2}>

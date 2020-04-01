@@ -21,7 +21,6 @@ const episodeCreate = new BaseRpcCommand<RequestData, ResponseData>(
     const episodeCreation = await collectionsBackend.createEpisode(
       {
         title: reqData.title,
-        description: reqData.description,
         status: reqData.status,
         audio_file: reqData.audio_url
       },

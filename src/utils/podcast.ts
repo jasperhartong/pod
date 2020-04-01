@@ -32,10 +32,10 @@ export const podcastXMLFromFeed = (slug: string, feed: IDbPlaylist): string => {
         "itunes:author": feed.description || ""
       },
       {
-        "itunes:subtitle": item.description || ""
+        "itunes:subtitle": ""
       },
       {
-        "itunes:summary": item.description || ""
+        "itunes:summary": ""
       },
       {
         "itunes:image": item.image_file.data.full_url || ""

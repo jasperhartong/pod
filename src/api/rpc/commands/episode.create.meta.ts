@@ -9,7 +9,6 @@ import { IDbEpisode } from "../../collection-storage/interfaces/IDbEpisode";
 
 export interface RequestData {
   title: string;
-  description: string;
   status: IDbEpisode["status"];
   playlist: string;
   audio_url: string;
@@ -21,7 +20,6 @@ export const reqDataSchema: Yup.ObjectSchema<Yup.Shape<
   RequestData
 >> = Yup.object().shape({
   title: Yup.string().required(),
-  description: Yup.string().required(),
   // TODO: improve
   status: Yup.string().required() as Yup.StringSchema<IDbEpisode["status"]>,
   playlist: Yup.string().required(),

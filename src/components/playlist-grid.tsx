@@ -61,8 +61,8 @@ const PlaylistGrid = ({
   maxWidth?: Breakpoint;
 }) => {
   const classes = useStyles();
-  const { roomState, roomDispatch, recording } = useRoomContext();
-  const { mode } = roomState;
+  const { roomState, recordingActions } = useRoomContext();
+  const { mode, newRecording } = roomState;
   const [width, _] = useWindowSize();
 
   const maxPixelWidth = maxWidth
@@ -76,27 +76,33 @@ const PlaylistGrid = ({
       <GridList cellHeight={cellHeight} cols={cols}>
         {mode === "record" && (
           <GridListTile key="new" cols={1}>
-            <Grid
-              container
-              style={{
-                height: "100%",
-                width: "100%",
-                background: themeOptionsProvider.theme.palette.background.paper
-              }}
-              justify="space-around"
-              alignContent="center"
-              alignItems="center"
-            >
-              <Grid item>
-                <MicIcon
-                  fontSize="large"
-                  color="secondary"
-                  style={{ opacity: 0.4 }}
-                />
+            {newRecording && newRecording.episodeCreation.image_url ? (
+              <img src={newRecording.episodeCreation.image_url} />
+            ) : (
+              <Grid
+                container
+                style={{
+                  height: "100%",
+                  width: "100%",
+                  background:
+                    themeOptionsProvider.theme.palette.background.paper
+                }}
+                justify="space-around"
+                alignContent="center"
+                alignItems="center"
+              >
+                <Grid item>
+                  <MicIcon
+                    fontSize="large"
+                    color="secondary"
+                    style={{ opacity: 0.4 }}
+                  />
+                </Grid>
               </Grid>
-            </Grid>
+            )}
+
             <GridListTileBar
-              title={`Nieuwe opname`}
+              title={newRecording?.episodeCreation.title || `Nieuwe opname`}
               classes={{
                 root: classes.titleBar,
                 title: classes.title
@@ -106,7 +112,7 @@ const PlaylistGrid = ({
                   size="small"
                   style={{ marginRight: 4, marginBottom: 4 }}
                   color={"primary"}
-                  onClick={() => recording.initiate(playlist)}
+                  onClick={() => recordingActions.initiate(playlist)}
                   aria-label={`Nieuwe opname`}
                 >
                   <AddIcon />

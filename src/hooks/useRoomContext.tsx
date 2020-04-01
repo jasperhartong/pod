@@ -2,6 +2,8 @@ import React from "react";
 import { useImmer } from "use-immer";
 import { IDbRoom } from "../api/collection-storage/interfaces/IDbRoom";
 import { IDbPlaylist } from "../api/collection-storage/interfaces/IDbPlaylist";
+import { IDbEpisode } from "../api/collection-storage/interfaces/IDbEpisode";
+import { RequestData } from "../api/rpc/commands/episode.create.meta";
 
 type RoomMode = "listen" | "record";
 
@@ -9,8 +11,12 @@ export interface RoomState {
   room: IDbRoom;
   slug: string;
   mode: RoomMode;
-  // Recording state
-  recordingFor: IDbPlaylist | undefined;
+  newRecording:
+    | {
+        episodeCreation: Partial<RequestData>;
+        playlist: IDbPlaylist;
+      }
+    | undefined;
 }
 
 const RoomContext = React.createContext<
@@ -37,20 +43,31 @@ const useRoomContext = () => {
   }
   const [state, dispatch] = roomContext;
 
-  const recording = {
+  const recordingActions = {
     initiate: (playlist: IDbPlaylist) => {
       dispatch(room => {
-        room.recordingFor = playlist;
+        room.newRecording = { episodeCreation: {}, playlist };
+      });
+    },
+    updateRecording: (episode: Partial<RequestData>) => {
+      dispatch(room => {
+        if (room.newRecording) {
+          room.newRecording.episodeCreation = episode;
+        }
       });
     },
     cancel: () => {
       dispatch(room => {
-        room.recordingFor = undefined;
+        room.newRecording = undefined;
       });
     }
   };
 
-  return { roomState: state, roomDispatch: dispatch, recording };
+  return {
+    roomState: state,
+    roomDispatch: dispatch,
+    recordingActions
+  };
 };
 
 export { RoomProvider, useRoomContext };

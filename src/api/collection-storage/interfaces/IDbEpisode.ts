@@ -6,7 +6,6 @@ export interface IDbEpisode {
   status: "published" | "draft" | "deleted";
   created_on: IDbDateString;
   title: string;
-  description: string;
   download_count: number;
   image_file: {
     data: IDbFileData;

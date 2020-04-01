@@ -2,10 +2,9 @@ import React from "react";
 import { useImmer } from "use-immer";
 import { IRoom } from "../app-schema/IRoom";
 import { IPlaylist } from "../app-schema/IPlaylist";
-import { IEpisode } from "../app-schema/IEpisode";
 import { RequestData } from "../api/rpc/commands/episode.create.meta";
 
-type RoomMode = "listen" | "record";
+export type RoomMode = "listen" | "record";
 
 export interface RoomState {
   room: IRoom;

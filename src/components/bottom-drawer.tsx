@@ -4,7 +4,7 @@ import { Theme } from "@material-ui/core/styles/createMuiTheme";
 
 const useStyles = makeStyles((theme: Theme) => ({
   drawerPaper: {
-    maxWidth: theme.breakpoints.width("sm"),
+    maxWidth: 360,
     margin: "auto"
   }
 }));

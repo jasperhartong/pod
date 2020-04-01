@@ -4,7 +4,8 @@ import {
   Button,
   Typography,
   FormGroup,
-  TextField
+  TextField,
+  Grid
 } from "@material-ui/core";
 import { useForm, Controller, ErrorMessage } from "react-hook-form";
 import { IPlaylist } from "../app-schema/IPlaylist";
@@ -92,8 +93,8 @@ const EpisodeCreateForm = ({
           control={control}
           rules={{ required: true }}
           as={TextField}
-          label=""
-          placeholder="De titel"
+          label="Titel"
+          placeholder="Nieuwe opname"
           name="title"
           disabled={disabled}
         />
@@ -105,45 +106,62 @@ const EpisodeCreateForm = ({
         message="Vul een titel in"
       />
 
-      {/* Image */}
-      <input
-        name="image_url"
-        type="hidden"
-        ref={register({
-          required: true
-        })}
-      />
-      <MediaDropZone
-        instructions={"drop image"}
-        acceptedMimeTypes={["image/jpeg"]}
-        onSuccess={downloadUrl => setValue("image_url", downloadUrl)}
-      />
-      <ErrorMessage
-        errors={errors}
-        name="image_url"
-        as={<ErrorMessageTypography />}
-        message="Voeg een afbeelding toe"
-      />
+      <Box pt={2}>
+        <Grid
+          container
+          justify="space-between"
+          // alignContent="center"
+          // alignItems="center"
+        >
+          {/* Image */}
+          <Grid item>
+            <Box pt={1} pb={1}>
+              <input
+                name="image_url"
+                type="hidden"
+                ref={register({
+                  required: true
+                })}
+              />
+              <MediaDropZone
+                instructions={"Afbeelding"}
+                acceptedMimeTypes={["image/jpeg", "image/jpg", "image/png"]}
+                onSuccess={downloadUrl => setValue("image_url", downloadUrl)}
+              />
+              <ErrorMessage
+                errors={errors}
+                name="image_url"
+                as={<ErrorMessageTypography />}
+                message="Voeg een afbeelding toe"
+              />
+            </Box>
+          </Grid>
 
-      {/* Audio */}
-      <input
-        name="audio_url"
-        type="hidden"
-        ref={register({
-          required: true
-        })}
-      />
-      <MediaDropZone
-        instructions={"drop audio / video"}
-        acceptedMimeTypes={["audio/m4a", "video/mp4"]}
-        onSuccess={downloadUrl => setValue("audio_url", downloadUrl)}
-      />
-      <ErrorMessage
-        errors={errors}
-        name="image_url"
-        as={<ErrorMessageTypography />}
-        message="Voeg een opname toe"
-      />
+          {/* Audio */}
+          <Grid item>
+            <Box pt={1} pb={1}>
+              <input
+                name="audio_url"
+                type="hidden"
+                ref={register({
+                  required: true
+                })}
+              />
+              <MediaDropZone
+                instructions={"Opname"}
+                acceptedMimeTypes={["audio/m4a", "video/mp4"]}
+                onSuccess={downloadUrl => setValue("audio_url", downloadUrl)}
+              />
+              <ErrorMessage
+                errors={errors}
+                name="image_url"
+                as={<ErrorMessageTypography />}
+                message="Voeg een opname toe"
+              />
+            </Box>
+          </Grid>
+        </Grid>
+      </Box>
 
       {/* Submit Button */}
       <Box pt={3}>
@@ -151,6 +169,7 @@ const EpisodeCreateForm = ({
           variant="contained"
           fullWidth={true}
           type="submit"
+          color="primary"
           disabled={disabled}
         >
           Voeg toe
@@ -160,7 +179,7 @@ const EpisodeCreateForm = ({
       {/* Help & error texts */}
       <Box p={2} textAlign="center">
         <Typography variant="subtitle2" color="textSecondary">
-          De opname wordt toegevoegd aan {playlist ? playlist.title : "..."}
+          De opname wordt toegevoegd aan "{playlist ? playlist.title : "..."}"
         </Typography>
         {serverError && (
           <Typography variant="subtitle2" color="error" gutterBottom>

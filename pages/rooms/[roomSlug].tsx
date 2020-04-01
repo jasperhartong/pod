@@ -63,6 +63,10 @@ const RoomPage = () => {
     setIsPaused(false);
   }, [playingId]);
 
+  useEffect(() => {
+    recordingActions.initiate(room.playlists[0]);
+  }, []);
+
   return (
     <Container
       maxWidth={maxWidth}

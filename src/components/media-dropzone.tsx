@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
 import useSignedMediaUploader from "../hooks/useSignedMediaUploader";
-import { Typography, CircularProgress } from "@material-ui/core";
+import { CircularProgress, Button, Box, Typography } from "@material-ui/core";
+import UploadIcon from "@material-ui/icons/CloudUpload";
+import SuccessIcon from "@material-ui/icons/CloudDone";
 
 interface Props {
   // http://www.iana.org/assignments/media-types/media-types.xhtml
@@ -34,15 +36,36 @@ const MediaDropZone = ({
     }
   }, [success]);
 
+  let icon = (
+    <CircularProgress
+      variant="indeterminate"
+      size="small"
+      style={{ width: 24 }}
+    />
+  );
+  if (!loading) {
+    icon = <UploadIcon color="disabled" />;
+  }
+  if (success) {
+    icon = <SuccessIcon />;
+  }
+
   return (
     <div {...getRootProps()}>
       <input {...getInputProps()} />
-      {loading && <CircularProgress variant="indeterminate" />}
-      {error && `Error: ${error}`}
-      {!!success ? (
-        `Success: ${success.downloadUrl}`
-      ) : (
-        <Typography variant="overline">{instructions}</Typography>
+
+      <Button variant="outlined" component="span">
+        {icon}
+        <Box display="inline-block" pl={1}>
+          {instructions}
+        </Box>
+      </Button>
+      {error && (
+        <Box pt={1} pb={1}>
+          <Typography variant="subtitle2" color="error">
+            {error}
+          </Typography>
+        </Box>
       )}
     </div>
   );

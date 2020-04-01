@@ -6,7 +6,7 @@ import {
   FormGroup,
   TextField
 } from "@material-ui/core";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, ErrorMessage } from "react-hook-form";
 import { IPlaylist } from "../app-schema/IPlaylist";
 import {
   RequestData,
@@ -15,39 +15,45 @@ import {
 import rpcClient from "../api/rpc/client";
 import MediaDropZone from "./media-dropzone";
 
-const EpisodeCreateForm = ({
-  playlist,
-  updateRecording
-}: {
+const defaultValues: RequestData = {
+  title: "",
+  image_url: "",
+  audio_url: "",
+  status: "published",
+  playlist: ""
+};
+
+interface Props {
   playlist?: IPlaylist;
-  updateRecording: (episode: Partial<RequestData>) => void;
-}) => {
-  const error = false;
+  onFormChange: (episode: Partial<RequestData>) => void;
+}
 
-  const defaultValues: RequestData = {
-    title: "",
-    image_url: "",
-    audio_url: "",
-    status: "published",
-    playlist: ""
-  };
+const ErrorMessageTypography = ({ children }: { children?: JSX.Element }) => (
+  <Typography variant="subtitle2" color="error">
+    {children}
+  </Typography>
+);
 
+const EpisodeCreateForm = ({ playlist, onFormChange }: Props) => {
   const {
     handleSubmit,
     control,
     formState,
     register,
     setValue,
-    watch
+    watch,
+    errors
   } = useForm({
     mode: "onChange",
     defaultValues
   });
+  const error = false;
 
+  const disabled = !playlist || formState.isSubmitting;
   const watchedFields = watch(["title", "image_url"]);
 
   useEffect(() => {
-    updateRecording({
+    onFormChange({
       title: watchedFields.title as string,
       image_url: watchedFields.image_url as string
     });
@@ -65,6 +71,7 @@ const EpisodeCreateForm = ({
       })}
     >
       <FormGroup>
+        {/* Title */}
         <Controller
           control={control}
           rules={{ required: true }}
@@ -72,41 +79,78 @@ const EpisodeCreateForm = ({
           label=""
           placeholder="De titel"
           name="title"
+          disabled={disabled}
         />
-        {error && (
-          <Box p={2}>
-            <Typography variant="subtitle2" color="error" gutterBottom>
-              Something went wrong...
-            </Typography>
-          </Box>
-        )}
       </FormGroup>
-      <input name="image_url" type="hidden" ref={register} />
+      <ErrorMessage
+        errors={errors}
+        name="title"
+        as={<ErrorMessageTypography />}
+        message="Vul een titel in"
+      />
+
+      {/* Image */}
+      <input
+        name="image_url"
+        type="hidden"
+        ref={register({
+          required: true
+        })}
+      />
       <MediaDropZone
         instructions={"drop image"}
         acceptedMimeTypes={["image/jpeg"]}
         onSuccess={downloadUrl => setValue("image_url", downloadUrl)}
       />
-      <input name="audio_url" type="hidden" ref={register} />
+      <ErrorMessage
+        errors={errors}
+        name="image_url"
+        as={<ErrorMessageTypography />}
+        message="Voeg een afbeelding toe"
+      />
+
+      {/* Audio */}
+      <input
+        name="audio_url"
+        type="hidden"
+        ref={register({
+          required: true
+        })}
+      />
       <MediaDropZone
         instructions={"drop audio / video"}
         acceptedMimeTypes={["audio/m4a", "video/mp4"]}
         onSuccess={downloadUrl => setValue("audio_url", downloadUrl)}
       />
+      <ErrorMessage
+        errors={errors}
+        name="image_url"
+        as={<ErrorMessageTypography />}
+        message="Voeg een opname toe"
+      />
+
+      {/* Submit Button */}
       <Box pt={3}>
         <Button
           variant="contained"
           fullWidth={true}
           type="submit"
-          disabled={formState.isSubmitting}
+          disabled={disabled}
         >
           Voeg toe
         </Button>
       </Box>
+
+      {/* Help & error texts */}
       <Box p={2} textAlign="center">
         <Typography variant="subtitle2" color="textSecondary">
           De opname wordt toegevoegd aan {playlist ? playlist.title : "..."}
         </Typography>
+        {error && (
+          <Typography variant="subtitle2" color="error" gutterBottom>
+            Something went wrong...
+          </Typography>
+        )}
       </Box>
     </form>
   );

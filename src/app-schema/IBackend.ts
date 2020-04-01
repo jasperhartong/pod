@@ -1,6 +1,6 @@
 import { IRoom } from "./IRoom";
 import { IEpisode } from "./IEpisode";
-import { IFileData } from "./IFileData";
+import { IImageData } from "./IFileData";
 import { IResponse } from "../api/IResponse";
 
 export interface IBackend {
@@ -18,5 +18,5 @@ export interface IBackend {
   ) => Promise<IResponse<IEpisode>>;
   addExternalImage: (
     url: string
-  ) => Promise<IResponse<{ file: IFileData; id: string }>>;
+  ) => Promise<IResponse<{ file: IImageData; id: string }>>;
 }

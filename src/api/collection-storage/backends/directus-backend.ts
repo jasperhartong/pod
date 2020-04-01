@@ -2,7 +2,7 @@ import DirectusSDK from "@directus/sdk-js";
 import axios, { AxiosResponse } from "axios";
 import { IRoom } from "../../../app-schema/IRoom";
 import { IEpisode } from "../../../app-schema/IEpisode";
-import { IFileData } from "../../../app-schema/IFileData";
+import { IImageData } from "../../../app-schema/IFileData";
 import { IBackend } from "../../../app-schema/IBackend";
 import { OK, ERR } from "../../IResponse";
 
@@ -134,14 +134,14 @@ class DirectusTapesMeBackend implements IBackend {
         }
       );
 
-      return OK<{ file: IFileData; id: string }>({
+      return OK<{ file: IImageData; id: string }>({
         file: fileUpload.data.data.data,
         id: fileUpload.data.data.id.toString()
       });
     } catch (error) {
       console.error(error);
     }
-    return ERR<{ file: IFileData; id: string }>(
+    return ERR<{ file: IImageData; id: string }>(
       "External Image could not be added to backend"
     );
   };
@@ -174,5 +174,5 @@ export interface IDBFileUpload {
   tags: string[];
   checksum: string;
   metadata: Record<string, string> | null;
-  data: IFileData;
+  data: IImageData;
 }

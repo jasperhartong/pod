@@ -6,11 +6,7 @@ interface IDbThumbnail {
   height: number;
 }
 
-type ThumbnailWidth = 100 | 200 | 64;
-
-export interface IFileData {
-  full_url: string; // what's the diff?
-  url: string;
+export interface IImageData {
+  full_url: string;
   thumbnails: IDbThumbnail[] | null;
-  // thumbnail: Record<ThumbnailWidth, { dimension: string; url: string }>;
 }

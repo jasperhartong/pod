@@ -1,6 +1,6 @@
 import { IEpisode } from "./IEpisode";
 import { IDateString } from "./IDateString";
-import { IFileData } from "./IFileData";
+import { IImageData } from "./IFileData";
 
 export interface IPlaylist {
   id: number;
@@ -8,7 +8,7 @@ export interface IPlaylist {
   title: string;
   description: string;
   cover_file: {
-    data: IFileData;
+    data: IImageData;
   };
   // alias
   episodes: IEpisode[];

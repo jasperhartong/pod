@@ -1,6 +1,6 @@
 import { IDateString } from "./IDateString";
 
-import { IFileData } from "./IFileData";
+import { IImageData } from "./IFileData";
 
 export interface IEpisode {
   id: number;
@@ -9,7 +9,7 @@ export interface IEpisode {
   title: string;
   download_count: number;
   image_file: {
-    data: IFileData;
+    data: IImageData;
   };
   audio_file: string;
 }

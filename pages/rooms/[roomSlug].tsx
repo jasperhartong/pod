@@ -149,6 +149,7 @@ const RoomPage = () => {
           <EpisodeCreateForm
             playlist={roomState.newRecording?.playlist}
             onFormChange={recordingActions.updateRecording}
+            onFormSuccess={recordingActions.finish}
           />
         </Box>
       </BottomDrawer>

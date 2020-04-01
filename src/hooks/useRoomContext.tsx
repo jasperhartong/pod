@@ -60,6 +60,11 @@ const useRoomContext = () => {
       dispatch(room => {
         room.newRecording = undefined;
       });
+    },
+    finish: () => {
+      dispatch(room => {
+        room.newRecording = undefined;
+      });
     }
   };
 

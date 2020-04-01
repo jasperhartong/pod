@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -14,6 +14,7 @@ import {
 } from "../api/rpc/commands/episode.create.meta";
 import rpcClient from "../api/rpc/client";
 import MediaDropZone from "./media-dropzone";
+import { IEpisode } from "../app-schema/IEpisode";
 
 const defaultValues: RequestData = {
   title: "",
@@ -25,7 +26,8 @@ const defaultValues: RequestData = {
 
 interface Props {
   playlist?: IPlaylist;
-  onFormChange: (episode: Partial<RequestData>) => void;
+  onFormChange: (recording: Partial<RequestData>) => void;
+  onFormSuccess: (episode: IEpisode) => void;
 }
 
 const ErrorMessageTypography = ({ children }: { children?: JSX.Element }) => (
@@ -34,7 +36,11 @@ const ErrorMessageTypography = ({ children }: { children?: JSX.Element }) => (
   </Typography>
 );
 
-const EpisodeCreateForm = ({ playlist, onFormChange }: Props) => {
+const EpisodeCreateForm = ({
+  playlist,
+  onFormChange,
+  onFormSuccess
+}: Props) => {
   const {
     handleSubmit,
     control,
@@ -47,7 +53,7 @@ const EpisodeCreateForm = ({ playlist, onFormChange }: Props) => {
     mode: "onChange",
     defaultValues
   });
-  const error = false;
+  const [serverError, setServerError] = useState<string>();
 
   const disabled = !playlist || formState.isSubmitting;
   const watchedFields = watch(["title", "image_url"]);
@@ -61,13 +67,23 @@ const EpisodeCreateForm = ({ playlist, onFormChange }: Props) => {
 
   return (
     <form
-      onSubmit={handleSubmit(data => {
+      onSubmit={handleSubmit(async data => {
+        setServerError(undefined);
         const reqData = data as RequestData;
-        rpcClient.call<RequestData, ResponseData>("episode", "create", {
-          ...defaultValues,
-          ...reqData,
-          playlist: playlist ? playlist.id.toString() : ""
-        });
+        const submission = await rpcClient.call<RequestData, ResponseData>(
+          "episode",
+          "create",
+          {
+            ...defaultValues,
+            ...reqData,
+            playlist: playlist ? playlist.id.toString() : ""
+          }
+        );
+        if (submission.ok) {
+          onFormSuccess(submission.data);
+        } else {
+          setServerError(submission.error);
+        }
       })}
     >
       <FormGroup>
@@ -146,9 +162,9 @@ const EpisodeCreateForm = ({ playlist, onFormChange }: Props) => {
         <Typography variant="subtitle2" color="textSecondary">
           De opname wordt toegevoegd aan {playlist ? playlist.title : "..."}
         </Typography>
-        {error && (
+        {serverError && (
           <Typography variant="subtitle2" color="error" gutterBottom>
-            Something went wrong...
+            Er is iets mis gegaan, probeer nog een keer, of bel Jasper.
           </Typography>
         )}
       </Box>

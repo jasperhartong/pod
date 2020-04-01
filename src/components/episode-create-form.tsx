@@ -4,11 +4,9 @@ import {
   Button,
   Typography,
   FormGroup,
-  TextField,
-  SwipeableDrawer
+  TextField
 } from "@material-ui/core";
 import { useForm, Controller } from "react-hook-form";
-import { useRoomContext } from "../hooks/useRoomContext";
 import { IPlaylist } from "../app-schema/IPlaylist";
 import {
   RequestData,
@@ -16,34 +14,13 @@ import {
 } from "../api/rpc/commands/episode.create.meta";
 import rpcClient from "../api/rpc/client";
 import MediaDropZone from "./media-dropzone";
+import { BottomDrawer } from "./bottom-drawer";
 
-const EpisodeCreateDrawer = () => {
-  const { roomState, recordingActions } = useRoomContext();
-
-  return (
-    <SwipeableDrawer
-      anchor="bottom"
-      open={!!roomState.newRecording}
-      onClose={() => recordingActions.cancel()}
-      onOpen={() => console.warn("on open")}
-    >
-      {roomState.newRecording && (
-        <Box p={2} pb={8}>
-          <EpisodeCreateForm
-            playlist={roomState.newRecording.playlist}
-            updateRecording={recordingActions.updateRecording}
-          />
-        </Box>
-      )}
-    </SwipeableDrawer>
-  );
-};
-
-const EpisodeCreateForm = ({
+export const EpisodeCreateForm = ({
   playlist,
   updateRecording
 }: {
-  playlist: IPlaylist;
+  playlist?: IPlaylist;
   updateRecording: (episode: Partial<RequestData>) => void;
 }) => {
   const error = false;
@@ -53,7 +30,7 @@ const EpisodeCreateForm = ({
     image_url: "",
     audio_url: "",
     status: "published",
-    playlist: playlist.id.toString()
+    playlist: ""
   };
 
   const {
@@ -83,7 +60,8 @@ const EpisodeCreateForm = ({
         const reqData = data as RequestData;
         rpcClient.call<RequestData, ResponseData>("episode", "create", {
           ...defaultValues,
-          ...reqData
+          ...reqData,
+          playlist: playlist ? playlist.id.toString() : ""
         });
       })}
     >
@@ -126,8 +104,13 @@ const EpisodeCreateForm = ({
           Voeg toe
         </Button>
       </Box>
+      <Box p={2} textAlign="center">
+        <Typography variant="subtitle2" color="textSecondary">
+          De opname wordt toegevoegd aan {playlist ? playlist.title : "..."}
+        </Typography>
+      </Box>
     </form>
   );
 };
 
-export default EpisodeCreateDrawer;
+export default BottomDrawer;

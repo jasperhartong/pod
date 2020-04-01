@@ -24,8 +24,9 @@ import {
   useRoomContext,
   RoomState
 } from "../../src/hooks/useRoomContext";
-import EpisodeCreateDrawer from "../../src/components/episode-create-form";
+import BottomDrawer from "../../src/components/bottom-drawer";
 import { collectionsBackend } from "../../src/api/collection-storage";
+import { EpisodeCreateForm } from "../../src/components/episode-create-form";
 
 const getEpisodeById = (room: IRoom, episodeId?: number) => {
   return ([] as IEpisode[])
@@ -35,7 +36,7 @@ const getEpisodeById = (room: IRoom, episodeId?: number) => {
 
 const RoomPageContainer = ({ room, slug }: { room: IRoom; slug: string }) => {
   const defaultState: RoomState = {
-    mode: "listen",
+    mode: "record",
     newRecording: undefined,
     room,
     slug
@@ -51,7 +52,7 @@ const RoomPageContainer = ({ room, slug }: { room: IRoom; slug: string }) => {
 const RoomPage = () => {
   const [playingId, setPlayingId] = useState<number>();
   const [isPaused, setIsPaused] = useState<boolean>(false);
-  const { roomState, roomDispatch } = useRoomContext();
+  const { roomState, roomDispatch, recordingActions } = useRoomContext();
   const { room, mode, slug } = roomState;
 
   // derived state
@@ -139,7 +140,17 @@ const RoomPage = () => {
         setPlayingId={setPlayingId}
         setIsPaused={setIsPaused}
       />
-      <EpisodeCreateDrawer />
+      <BottomDrawer
+        open={!!roomState.newRecording}
+        onClose={() => recordingActions.cancel()}
+      >
+        <Box p={2}>
+          <EpisodeCreateForm
+            playlist={roomState.newRecording?.playlist}
+            updateRecording={recordingActions.updateRecording}
+          />
+        </Box>
+      </BottomDrawer>
     </Container>
   );
 };

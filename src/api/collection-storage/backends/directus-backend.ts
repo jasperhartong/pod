@@ -115,6 +115,8 @@ class DirectusTapesMeBackend implements ITapesMeBackend {
   };
 
   public addExternalImage = async (url: string) => {
+    console.warn(`addExternalImage:: ${url}`);
+
     try {
       // Needs to be done with raw api; Directus SDK doesn't support this call (...)
       const fileUpload = await axios.post<
@@ -122,8 +124,15 @@ class DirectusTapesMeBackend implements ITapesMeBackend {
         AxiosResponse<{ data: IDBFileUpload }>
       >(
         `${this.client.config.url}${this.client.config.project}/files`,
-        { data: url },
-        { headers: { authorization: `Bearer ${this.client.config.token}` } }
+        {
+          data: url
+        },
+        {
+          headers: {
+            authorization: `Bearer ${this.client.config.token}`,
+            "content-type": "application/json;charset=utf-8"
+          }
+        }
       );
 
       return OK<{ file: IDbFileData; id: string }>({

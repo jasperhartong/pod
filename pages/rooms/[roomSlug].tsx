@@ -26,7 +26,7 @@ import {
 } from "../../src/hooks/useRoomContext";
 import BottomDrawer from "../../src/components/bottom-drawer";
 import { collectionsBackend } from "../../src/api/collection-storage";
-import { EpisodeCreateForm } from "../../src/components/episode-create-form";
+import EpisodeCreateForm from "../../src/components/episode-create-form";
 
 const getEpisodeById = (room: IRoom, episodeId?: number) => {
   return ([] as IEpisode[])
@@ -140,6 +140,7 @@ const RoomPage = () => {
         setPlayingId={setPlayingId}
         setIsPaused={setIsPaused}
       />
+
       <BottomDrawer
         open={!!roomState.newRecording}
         onClose={() => recordingActions.cancel()}

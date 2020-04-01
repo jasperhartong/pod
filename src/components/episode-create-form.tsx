@@ -14,9 +14,8 @@ import {
 } from "../api/rpc/commands/episode.create.meta";
 import rpcClient from "../api/rpc/client";
 import MediaDropZone from "./media-dropzone";
-import { BottomDrawer } from "./bottom-drawer";
 
-export const EpisodeCreateForm = ({
+const EpisodeCreateForm = ({
   playlist,
   updateRecording
 }: {
@@ -113,4 +112,4 @@ export const EpisodeCreateForm = ({
   );
 };
 
-export default BottomDrawer;
+export default EpisodeCreateForm;

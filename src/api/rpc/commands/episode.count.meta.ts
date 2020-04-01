@@ -1,7 +1,7 @@
 import * as Yup from "yup";
 import IMeta from "./base/IMeta";
 
-import { IDbEpisode } from "../../collection-storage/interfaces/IDbEpisode";
+import { IEpisode } from "../../../app-schema/IEpisode";
 
 /**
  * Request
@@ -24,7 +24,7 @@ export const reqDataSchema: Yup.ObjectSchema<Yup.Shape<
  * Response
  */
 
-export type ResponseData = IDbEpisode;
+export type ResponseData = IEpisode;
 
 /**
  * Meta

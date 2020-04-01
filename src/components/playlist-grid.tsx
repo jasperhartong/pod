@@ -13,7 +13,7 @@ import PlayIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import MicIcon from "@material-ui/icons/Mic";
 import AddIcon from "@material-ui/icons/Add";
-import { IDbPlaylist } from "../api/collection-storage/interfaces/IDbPlaylist";
+import { IPlaylist } from "../app-schema/IPlaylist";
 import useWindowSize from "../hooks/useWindowSize";
 import themeOptionsProvider from "../theme";
 import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
@@ -53,7 +53,7 @@ const PlaylistGrid = ({
   setIsPaused,
   maxWidth
 }: {
-  playlist: IDbPlaylist;
+  playlist: IPlaylist;
   setPlayingId: (id: number | undefined) => void;
   playingId?: number;
   isPaused: boolean;

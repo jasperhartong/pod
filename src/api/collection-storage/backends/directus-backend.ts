@@ -1,11 +1,10 @@
 import DirectusSDK from "@directus/sdk-js";
 import axios, { AxiosResponse } from "axios";
-import { IDbRoom } from "../interfaces/IDbRoom";
-import { IDbEpisode } from "../interfaces/IDbEpisode";
-import { IDBFileUpload, IDbFileData } from "../interfaces/IDbFileData";
-import { ITapesMeBackend } from "../interfaces/ITapesMeBackend";
+import { IRoom } from "../../../app-schema/IRoom";
+import { IEpisode } from "../../../app-schema/IEpisode";
+import { IFileData } from "../../../app-schema/IFileData";
+import { IBackend } from "../../../app-schema/IBackend";
 import { OK, ERR } from "../../IResponse";
-import HttpStatus from "http-status-codes";
 
 const token = process.env.DIRECTUS_CLOUD_TOKEN;
 const project = "dcMJTq1b80lIY4CT";
@@ -14,7 +13,7 @@ if (!token) {
   throw Error(`process.env.DIRECTUS_CLOUD_TOKEN not set`);
 }
 
-class DirectusTapesMeBackend implements ITapesMeBackend {
+class DirectusTapesMeBackend implements IBackend {
   constructor(
     private client = new DirectusSDK({
       url: "https://api.directus.cloud/",
@@ -29,7 +28,7 @@ class DirectusTapesMeBackend implements ITapesMeBackend {
 
   public getRoomBySlug = async (roomSlug: string) => {
     try {
-      const roomResponse = await this.client.getItems<IDbRoom[]>(
+      const roomResponse = await this.client.getItems<IRoom[]>(
         this.roomCollection,
         {
           filter: {
@@ -48,40 +47,40 @@ class DirectusTapesMeBackend implements ITapesMeBackend {
       );
 
       if (roomResponse.data.length == 1) {
-        return OK<IDbRoom>(roomResponse.data[0]);
+        return OK<IRoom>(roomResponse.data[0]);
       }
     } catch (error) {
       console.error(error);
     }
 
-    return ERR<IDbRoom>("Room could not be fetched");
+    return ERR<IRoom>("Room could not be fetched");
   };
 
   public getEpisode = async (episodeId: string) => {
     try {
-      const itemResponse = await this.client.getItem<IDbEpisode>(
+      const itemResponse = await this.client.getItem<IEpisode>(
         this.episodeCollection,
         episodeId,
         {
           fields: ["*", "audio_file.data", "image_file.data"]
         }
       );
-      return OK<IDbEpisode>(itemResponse.data);
+      return OK<IEpisode>(itemResponse.data);
     } catch (error) {
       console.error(error);
     }
-    return ERR<IDbEpisode>("Episode could not be fetched");
+    return ERR<IEpisode>("Episode could not be fetched");
   };
 
   public createEpisode = async (
-    episode: Partial<IDbEpisode>,
+    episode: Partial<IEpisode>,
     playlistId: string,
     imageFileId: string
   ) => {
     try {
       const itemResponse = await this.client.createItem<
         Partial<
-          | IDbEpisode
+          | IEpisode
           | { image_file: string; audio_file: string; playlist: string }
         >
       >(this.episodeCollection, {
@@ -89,29 +88,29 @@ class DirectusTapesMeBackend implements ITapesMeBackend {
         image_file: imageFileId,
         playlist: playlistId
       });
-      return OK<IDbEpisode>((itemResponse.data as unknown) as IDbEpisode);
+      return OK<IEpisode>((itemResponse.data as unknown) as IEpisode);
     } catch (error) {
       console.error(error);
     }
-    return ERR<IDbEpisode>("Episode could not be created");
+    return ERR<IEpisode>("Episode could not be created");
   };
 
   public updateEpisode = async (
     episodeId: string,
-    episode: Partial<IDbEpisode>
+    episode: Partial<IEpisode>
   ) => {
     try {
-      const itemResponse = await this.client.updateItem<Partial<IDbEpisode>>(
+      const itemResponse = await this.client.updateItem<Partial<IEpisode>>(
         this.episodeCollection,
         episodeId,
         episode
       );
       // TODO: Add Yup validation per item!
-      return OK<IDbEpisode>((itemResponse.data as unknown) as IDbEpisode);
+      return OK<IEpisode>((itemResponse.data as unknown) as IEpisode);
     } catch (error) {
       console.error(error);
     }
-    return ERR<IDbEpisode>("Episode could not be updated");
+    return ERR<IEpisode>("Episode could not be updated");
   };
 
   public addExternalImage = async (url: string) => {
@@ -135,14 +134,14 @@ class DirectusTapesMeBackend implements ITapesMeBackend {
         }
       );
 
-      return OK<{ file: IDbFileData; id: string }>({
+      return OK<{ file: IFileData; id: string }>({
         file: fileUpload.data.data.data,
         id: fileUpload.data.data.id.toString()
       });
     } catch (error) {
       console.error(error);
     }
-    return ERR<{ file: IDbFileData; id: string }>(
+    return ERR<{ file: IFileData; id: string }>(
       "External Image could not be added to backend"
     );
   };
@@ -151,3 +150,29 @@ class DirectusTapesMeBackend implements ITapesMeBackend {
 const directusTapesMeBackend = new DirectusTapesMeBackend();
 
 export default directusTapesMeBackend;
+
+// Private
+export interface IDBFileUpload {
+  id: number;
+  storage: string;
+  private_hash: string;
+  filename_disk: string;
+  filename_download: string;
+  title: string;
+  type: string;
+  uploaded_by: number;
+  uploaded_on: string;
+  charset: string;
+  filesize: number;
+  width: number;
+  height: number;
+  duration: number;
+  embed: null;
+  folder: null;
+  description: string;
+  location: string;
+  tags: string[];
+  checksum: string;
+  metadata: Record<string, string> | null;
+  data: IFileData;
+}

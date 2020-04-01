@@ -15,7 +15,7 @@ import ReactPlayer from "react-player";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import CloseIcon from "@material-ui/icons/Close";
-import { IDbEpisode } from "../api/collection-storage/interfaces/IDbEpisode";
+import { IEpisode } from "../app-schema/IEpisode";
 import { makeStyles } from "@material-ui/styles";
 import { mediaRedirectUrl } from "../urls";
 
@@ -34,7 +34,7 @@ const SnackbarPlayer = ({
   setIsPaused
 }: {
   playlistId: string;
-  playingItem?: IDbEpisode;
+  playingItem?: IEpisode;
   isPaused: boolean;
   setPlayingId: (id: number | undefined) => void;
   setIsPaused: (paused: boolean) => void;

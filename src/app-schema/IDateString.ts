@@ -1,0 +1,1 @@
+export type IDateString = string;

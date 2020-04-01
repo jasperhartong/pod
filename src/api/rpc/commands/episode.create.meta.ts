@@ -1,7 +1,7 @@
 import * as Yup from "yup";
 import IMeta from "./base/IMeta";
 
-import { IDbEpisode } from "../../collection-storage/interfaces/IDbEpisode";
+import { IEpisode } from "../../../app-schema/IEpisode";
 
 /**
  * Request
@@ -9,7 +9,7 @@ import { IDbEpisode } from "../../collection-storage/interfaces/IDbEpisode";
 
 export interface RequestData {
   title: string;
-  status: IDbEpisode["status"];
+  status: IEpisode["status"];
   playlist: string;
   audio_url: string;
   image_url: string;
@@ -21,7 +21,7 @@ export const reqDataSchema: Yup.ObjectSchema<Yup.Shape<
 >> = Yup.object().shape({
   title: Yup.string().required(),
   // TODO: improve
-  status: Yup.string().required() as Yup.StringSchema<IDbEpisode["status"]>,
+  status: Yup.string().required() as Yup.StringSchema<IEpisode["status"]>,
   playlist: Yup.string().required(),
   audio_url: Yup.string().required(),
   image_url: Yup.string().required()
@@ -31,7 +31,7 @@ export const reqDataSchema: Yup.ObjectSchema<Yup.Shape<
  * Response
  */
 
-export type ResponseData = IDbEpisode;
+export type ResponseData = IEpisode;
 
 /**
  * Meta

@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import { useForm, Controller } from "react-hook-form";
 import { useRoomContext } from "../hooks/useRoomContext";
-import { IDbPlaylist } from "../api/collection-storage/interfaces/IDbPlaylist";
+import { IPlaylist } from "../app-schema/IPlaylist";
 import {
   RequestData,
   ResponseData
@@ -43,7 +43,7 @@ const EpisodeCreateForm = ({
   playlist,
   updateRecording
 }: {
-  playlist: IDbPlaylist;
+  playlist: IPlaylist;
   updateRecording: (episode: Partial<RequestData>) => void;
 }) => {
   const error = false;

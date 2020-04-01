@@ -6,7 +6,6 @@ import {
   Box,
   Divider,
   Typography,
-  Fade,
   Collapse
 } from "@material-ui/core";
 import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab";
@@ -14,8 +13,8 @@ import SurroundSound from "@material-ui/icons/SurroundSound";
 import RecordIcon from "@material-ui/icons/Mic";
 import ListenIcon from "@material-ui/icons/Headset";
 import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
-import { IDbRoom } from "../../src/api/collection-storage/interfaces/IDbRoom";
-import { IDbEpisode } from "../../src/api/collection-storage/interfaces/IDbEpisode";
+import { IRoom } from "../../src/app-schema/IRoom";
+import { IEpisode } from "../../src/app-schema/IEpisode";
 import SnackbarPlayer from "../../src/components/snackbar-player";
 import SubscribePanel from "../../src/components/subscribe-panel";
 import PlaylistHeader from "../../src/components/playlist-header";
@@ -28,13 +27,13 @@ import {
 import EpisodeCreateDrawer from "../../src/components/episode-create-form";
 import { collectionsBackend } from "../../src/api/collection-storage";
 
-const getEpisodeById = (room: IDbRoom, episodeId?: number) => {
-  return ([] as IDbEpisode[])
+const getEpisodeById = (room: IRoom, episodeId?: number) => {
+  return ([] as IEpisode[])
     .concat(...[...room.playlists].map(playlist => playlist.episodes))
     .find(episode => episode.id === episodeId);
 };
 
-const RoomPageContainer = ({ room, slug }: { room: IDbRoom; slug: string }) => {
+const RoomPageContainer = ({ room, slug }: { room: IRoom; slug: string }) => {
   const defaultState: RoomState = {
     mode: "listen",
     newRecording: undefined,
@@ -56,7 +55,7 @@ const RoomPage = () => {
   const { room, mode, slug } = roomState;
 
   // derived state
-  const playingItem: IDbEpisode | undefined = getEpisodeById(room, playingId);
+  const playingItem: IEpisode | undefined = getEpisodeById(room, playingId);
   const maxWidth: Breakpoint = mode === "listen" ? "sm" : "lg";
 
   useEffect(() => {

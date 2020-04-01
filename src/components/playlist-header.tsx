@@ -7,10 +7,10 @@ import {
   Typography,
   Collapse
 } from "@material-ui/core";
-import { IDbPlaylist } from "../api/collection-storage/interfaces/IDbPlaylist";
+import { IPlaylist } from "../app-schema/IPlaylist";
 import { useRoomContext } from "../hooks/useRoomContext";
 
-const PlaylistHeader = ({ playlist }: { playlist: IDbPlaylist }) => {
+const PlaylistHeader = ({ playlist }: { playlist: IPlaylist }) => {
   const { roomState } = useRoomContext();
   const cover =
     playlist.cover_file &&

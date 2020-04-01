@@ -1,20 +1,20 @@
 import React from "react";
 import { useImmer } from "use-immer";
-import { IDbRoom } from "../api/collection-storage/interfaces/IDbRoom";
-import { IDbPlaylist } from "../api/collection-storage/interfaces/IDbPlaylist";
-import { IDbEpisode } from "../api/collection-storage/interfaces/IDbEpisode";
+import { IRoom } from "../app-schema/IRoom";
+import { IPlaylist } from "../app-schema/IPlaylist";
+import { IEpisode } from "../app-schema/IEpisode";
 import { RequestData } from "../api/rpc/commands/episode.create.meta";
 
 type RoomMode = "listen" | "record";
 
 export interface RoomState {
-  room: IDbRoom;
+  room: IRoom;
   slug: string;
   mode: RoomMode;
   newRecording:
     | {
         episodeCreation: Partial<RequestData>;
-        playlist: IDbPlaylist;
+        playlist: IPlaylist;
       }
     | undefined;
 }
@@ -44,7 +44,7 @@ const useRoomContext = () => {
   const [state, dispatch] = roomContext;
 
   const recordingActions = {
-    initiate: (playlist: IDbPlaylist) => {
+    initiate: (playlist: IPlaylist) => {
       dispatch(room => {
         room.newRecording = { episodeCreation: {}, playlist };
       });

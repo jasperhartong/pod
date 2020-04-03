@@ -97,7 +97,6 @@ const EpisodeCreateForm = ({
           placeholder="Nieuwe opname"
           name="title"
           disabled={disabled}
-          autoFocus={true}
         />
       </FormGroup>
       <ErrorMessage

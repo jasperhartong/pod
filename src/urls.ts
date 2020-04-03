@@ -7,8 +7,8 @@ export const mediaRedirectUrl = (
   playlistId: string,
   episodeId: string,
   originalUrl: string
-) =>
-  `${baseUrl}/api/file-redirect?url=${originalUrl}&playlistId=${playlistId}&episodeId=${episodeId}`;
+) => originalUrl;
+// `${baseUrl}/api/file-redirect?url=${originalUrl}&playlistId=${playlistId}&episodeId=${episodeId}`;
 
 export const rssUrl = (
   protocol: string,

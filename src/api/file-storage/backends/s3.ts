@@ -4,10 +4,10 @@ import { ISignedUrl } from "../interfaces/ISignedUrl";
 import { OK, ERR } from "../../IResponse";
 
 const AWSvars = [
-  process.env.AWS_ACCESS_BUCKET,
-  process.env.AWS_ACCESS_REGION,
-  process.env.AWS_ACCESS_KEY_ID,
-  process.env.AWS_SECRET_KEY
+  process.env.MY_AWS_ACCESS_BUCKET,
+  process.env.MY_AWS_ACCESS_REGION,
+  process.env.MY_AWS_ACCESS_KEY_ID,
+  process.env.MY_AWS_SECRET_KEY
 ];
 
 class S3FileStorage implements IFileStorage {
@@ -16,13 +16,15 @@ class S3FileStorage implements IFileStorage {
 
   constructor() {
     if (AWSvars.includes(undefined)) {
-      throw Error(`a process.env.AWS not set not set: ${AWSvars}`);
+      throw Error(
+        `a process.env.AWS was not set: ${AWSvars.map(v => Boolean(v))}`
+      );
     }
-    this.bucket = process.env.AWS_ACCESS_BUCKET!;
+    this.bucket = process.env.MY_AWS_ACCESS_BUCKET!;
     aws.config.update({
-      region: process.env.AWS_ACCESS_REGION,
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.AWS_SECRET_KEY
+      region: process.env.MY_AWS_ACCESS_REGION,
+      accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID,
+      secretAccessKey: process.env.MY_AWS_SECRET_KEY
     });
     this.s3 = new aws.S3();
   }

@@ -12,7 +12,7 @@ const useSignedMediaUploader = (): {
   uploadFile: (file: File) => void;
   loading: boolean;
   error?: string;
-  success?: ResponseData;
+  data?: ResponseData;
 } => {
   const [file, uploadFile] = useState<File>();
   const {
@@ -20,8 +20,8 @@ const useSignedMediaUploader = (): {
     setLoading,
     error,
     setError,
-    success,
-    setSuccess
+    data,
+    setData
   } = useLoadingState<ResponseData>();
 
   const performUpload = async () => {
@@ -54,7 +54,7 @@ const useSignedMediaUploader = (): {
       file.type
     );
     if (response.ok) {
-      setSuccess(signedUrlCreation.data);
+      setData(signedUrlCreation.data);
     } else {
       setError(`File ${file.name} could not be uploaded`);
     }
@@ -64,7 +64,7 @@ const useSignedMediaUploader = (): {
     performUpload();
   }, [file]);
 
-  return { uploadFile, loading, error, success };
+  return { uploadFile, loading, error, data };
 };
 
 export default useSignedMediaUploader;

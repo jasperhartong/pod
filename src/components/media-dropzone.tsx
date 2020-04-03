@@ -17,7 +17,7 @@ const MediaDropZone = ({
   instructions,
   onSuccess
 }: Props) => {
-  const { uploadFile, loading, error, success } = useSignedMediaUploader();
+  const { uploadFile, loading, error, data } = useSignedMediaUploader();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // Only supports multiple=false
@@ -31,10 +31,10 @@ const MediaDropZone = ({
   });
 
   useEffect(() => {
-    if (!!success) {
-      onSuccess(success.downloadUrl);
+    if (!!data) {
+      onSuccess(data.downloadUrl);
     }
-  }, [success]);
+  }, [data]);
 
   let icon = (
     <CircularProgress
@@ -46,7 +46,7 @@ const MediaDropZone = ({
   if (!loading) {
     icon = <UploadIcon color="disabled" />;
   }
-  if (success) {
+  if (data) {
     icon = <SuccessIcon />;
   }
 

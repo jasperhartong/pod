@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
-import { NextPageContext } from "next";
 
 import {
   Container,
+  CircularProgress,
   Box,
   Divider,
   Typography,
@@ -30,8 +30,8 @@ import {
   useRoomContext,
   RoomState
 } from "../../src/hooks/useRoomContext";
-import { collectionsBackend } from "../../src/api/collection-storage";
 import EpisodeCreateForm from "../../src/components/episode-create-form";
+import { useRouter } from "next/router";
 
 const getEpisodeById = (room: IRoom, episodeId?: number) => {
   return ([] as IEpisode[])
@@ -39,12 +39,12 @@ const getEpisodeById = (room: IRoom, episodeId?: number) => {
     .find(episode => episode.id === episodeId);
 };
 
-const RoomPageContainer = ({ room, slug }: { room: IRoom; slug: string }) => {
+const RoomPageContainer = () => {
   const defaultState: RoomState = {
     mode: "listen",
     newRecording: undefined,
-    room,
-    slug
+    room: undefined,
+    slug: undefined
   };
 
   return (
@@ -55,25 +55,38 @@ const RoomPageContainer = ({ room, slug }: { room: IRoom; slug: string }) => {
 };
 
 const RoomPage = () => {
+  const { query } = useRouter();
   const [playingId, setPlayingId] = useState<number>();
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const { roomState, roomDispatch, recordingActions } = useRoomContext();
-
   const popperAnchorRef = useRef<HTMLButtonElement>(null);
-
-  const { room, mode, slug } = roomState;
-
-  // derived state
-  const playingItem: IEpisode | undefined = getEpisodeById(room, playingId);
-  const maxWidth: Breakpoint = mode === "listen" ? "sm" : "lg";
 
   useEffect(() => {
     setIsPaused(false);
   }, [playingId]);
 
-  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
-  const open = Boolean(anchorEl);
-  const popperId = open ? "transitions-popper" : undefined;
+  useEffect(() => {
+    roomDispatch(room => {
+      room.slug = query.roomSlug as string;
+    });
+  }, [query.roomSlug]);
+
+  // derived state
+  const { room, mode, slug } = roomState;
+  const maxWidth: Breakpoint = mode === "listen" ? "sm" : "lg";
+
+  if (!slug || !room) {
+    return (
+      <Container
+        maxWidth={maxWidth}
+        style={{ transition: "all 500ms", width: "auto" }}
+      >
+        <CircularProgress />
+      </Container>
+    );
+  }
+
+  const playingItem: IEpisode | undefined = getEpisodeById(room, playingId);
 
   return (
     <Container
@@ -159,7 +172,6 @@ const RoomPage = () => {
       />
 
       <Popper
-        id={popperId}
         open={Boolean(roomState.newRecording) && Boolean(popperAnchorRef)}
         anchorEl={popperAnchorRef.current}
         transition
@@ -208,19 +220,5 @@ const RoomPage = () => {
     </Container>
   );
 };
-
-export async function getServerSideProps(context: NextPageContext) {
-  const roomSlug = context.query.roomSlug as string;
-  const response = await collectionsBackend.getRoomBySlug(roomSlug);
-  if (response.ok) {
-    return {
-      props: { room: response.data, slug: roomSlug || null } // null is serializable
-    };
-  } else {
-    return {
-      props: {}
-    };
-  }
-}
 
 export default RoomPageContainer;

@@ -3,12 +3,14 @@ import { useImmer } from "use-immer";
 import { IRoom } from "../app-schema/IRoom";
 import { IPlaylist } from "../app-schema/IPlaylist";
 import { RequestData } from "../api/rpc/commands/episode.create.meta";
+import rpcClient from "../api/rpc/client";
+import * as RoomFetch from "../api/rpc/commands/room.fetch.meta";
 
 export type RoomMode = "listen" | "record";
 
 export interface RoomState {
-  room: IRoom;
-  slug: string;
+  room?: IRoom;
+  slug?: string;
   mode: RoomMode;
   newRecording:
     | {
@@ -42,6 +44,25 @@ const useRoomContext = () => {
   }
   const [state, dispatch] = roomContext;
 
+  const roomActions = {
+    fetch: async () => {
+      if (state.slug) {
+        const reqData: RoomFetch.RequestData = {
+          slug: state.slug
+        };
+        const response = await rpcClient.call<
+          RoomFetch.RequestData,
+          RoomFetch.ResponseData
+        >("room", "fetch", reqData);
+        if (response.ok) {
+          dispatch(room => {
+            room.room = response.data;
+          });
+        }
+      }
+    }
+  };
+
   const recordingActions = {
     initiate: (playlist: IPlaylist) => {
       dispatch(room => {
@@ -64,12 +85,20 @@ const useRoomContext = () => {
       dispatch(room => {
         room.newRecording = undefined;
       });
+      roomActions.fetch();
     }
   };
+
+  React.useEffect(() => {
+    if (state.slug !== state.room?.slug) {
+      roomActions.fetch();
+    }
+  }, [state.slug]);
 
   return {
     roomState: state,
     roomDispatch: dispatch,
+    roomActions,
     recordingActions
   };
 };

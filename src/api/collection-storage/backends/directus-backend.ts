@@ -47,6 +47,8 @@ class DirectusTapesMeBackend implements IBackend {
       );
 
       if (roomResponse.data.length == 1) {
+        // Reverse episodes (last created = first.) Directus doesn't allow to do this
+        roomResponse.data[0].playlists.map(p => p.episodes.reverse());
         return OK<IRoom>(roomResponse.data[0]);
       }
     } catch (error) {

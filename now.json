@@ -1,7 +1,11 @@
 {
   "version": 2,
   "env": {
-    "DIRECTUS_CLOUD_TOKEN": "@production-directus-cloud-token"
+    "DIRECTUS_CLOUD_TOKEN": "@production-directus-cloud-token",
+    "AWS_ACCESS_BUCKET": "@tapesme-aws-bucket",
+    "AWS_ACCESS_REGION": "@tapesme-aws-region",
+    "AWS_ACCESS_KEY_ID": "@tapesme-aws-keyid",
+    "AWS_SECRET_KEY": "@tapesme-aws-secret"
   },
   "build": {
     "env": {

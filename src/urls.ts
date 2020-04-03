@@ -11,14 +11,11 @@ export const mediaRedirectUrl = (
   `${baseUrl}/api/file-redirect?url=${originalUrl}&playlistId=${playlistId}&episodeId=${episodeId}`;
 
 export const rssUrl = (
+  protocol: string,
+  host: string,
   profileId: string,
-  scheme: string = "https",
   playlistId: string = "voorloisenrobin"
-) =>
-  `${baseUrl}/api/rss/${profileId}/${playlistId}`.replace(
-    process.env.NODE_ENV === "production" ? "https" : "http",
-    scheme
-  );
+) => `${protocol}//${host}/api/rss/${profileId}/${playlistId}`;
 
 export const podPageUrl = (slug: string) => `${baseUrl}/pods/${slug}`;
 

@@ -12,11 +12,24 @@ import NewWindowIcon from "@material-ui/icons/OpenInNew";
 import { rssUrl } from "../urls";
 
 const SubscribePanel = ({ slug }: { slug: string }) => {
+  const host = typeof window !== "undefined" ? window.location.host : "";
+  const protocol =
+    typeof window !== "undefined" ? window.location.protocol : "";
+
   const subscribeLinks: { url: string; label: string }[] = [
-    { label: "Apple Podcast (iPad / iPhone)", url: rssUrl(slug, "podcast") },
-    { label: "Apple Podcast (Mac)", url: rssUrl(slug, "pcast") },
-    { label: "RSS Feed", url: rssUrl(slug, "feed") },
-    { label: "XML", url: rssUrl(slug) }
+    {
+      label: "Apple Podcast (iPad / iPhone)",
+      url: rssUrl("podcast:", host, slug)
+    },
+    {
+      label: "Apple Podcast (Mac)",
+      url: rssUrl("pcast:", host, slug)
+    },
+    { label: "RSS Feed", url: rssUrl("feed:", host, slug) },
+    {
+      label: "XML",
+      url: rssUrl(protocol, host, slug)
+    }
   ];
 
   return (

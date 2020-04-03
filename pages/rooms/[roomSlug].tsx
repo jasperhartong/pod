@@ -1,4 +1,4 @@
-import { useState, useEffect, MouseEvent } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NextPageContext } from "next";
 
 import {
@@ -9,10 +9,11 @@ import {
   Collapse,
   Popper,
   Fade,
+  IconButton,
   Paper,
-  Fab
+  Grid
 } from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
+import CloseIcon from "@material-ui/icons/Close";
 import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab";
 import SurroundSound from "@material-ui/icons/SurroundSound";
 import RecordIcon from "@material-ui/icons/Mic";
@@ -29,7 +30,6 @@ import {
   useRoomContext,
   RoomState
 } from "../../src/hooks/useRoomContext";
-import BottomDrawer from "../../src/components/bottom-drawer";
 import { collectionsBackend } from "../../src/api/collection-storage";
 import EpisodeCreateForm from "../../src/components/episode-create-form";
 
@@ -58,6 +58,9 @@ const RoomPage = () => {
   const [playingId, setPlayingId] = useState<number>();
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const { roomState, roomDispatch, recordingActions } = useRoomContext();
+
+  const popperAnchorRef = useRef<HTMLButtonElement>(null);
+
   const { room, mode, slug } = roomState;
 
   // derived state
@@ -72,11 +75,6 @@ const RoomPage = () => {
   const open = Boolean(anchorEl);
   const popperId = open ? "transitions-popper" : undefined;
 
-  const handleOpenRecordForm = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget as Element);
-    // recordingActions.initiate(room.playlists[0]);
-  };
-
   return (
     <Container
       maxWidth={maxWidth}
@@ -86,55 +84,17 @@ const RoomPage = () => {
         <Box pt={4} pb={2}>
           <Typography variant="h4">Tapes voor {room.slug}</Typography>
         </Box>
-        <Fab
-          size="small"
-          style={{ marginRight: 4, marginBottom: 4 }}
-          color={"primary"}
-          onClick={handleOpenRecordForm}
-          aria-label={`Nieuwe opname`}
-        >
-          <AddIcon />
-        </Fab>
-        <Popper
-          id={popperId}
-          open={open}
-          anchorEl={anchorEl}
-          transition
-          style={{ zIndex: 2 }}
-          modifiers={{
-            flip: {
-              enabled: true
-            },
-            preventOverflow: {
-              enabled: true,
-              boundariesElement: "viewport"
-            },
-            arrow: {
-              enabled: true
-              // element: arrowRef
-            }
-          }}
-        >
-          {({ TransitionProps }) => (
-            <Fade {...TransitionProps} timeout={350}>
-              <Paper style={{ zIndex: 9999999 }}>
-                <Container maxWidth="xs" style={{ width: "auto" }}>
-                  <EpisodeCreateForm
-                    playlist={roomState.newRecording?.playlist}
-                    onFormChange={recordingActions.updateRecording}
-                    onFormSuccess={recordingActions.finish}
-                  />
-                </Container>
-              </Paper>
-            </Fade>
-          )}
-        </Popper>
       </Collapse>
 
       {room.playlists.map(playlist => (
         <Box pb={4} key={playlist.id}>
           <PlaylistHeader playlist={playlist} />
           <PlaylistGrid
+            ref={
+              playlist.id === roomState.newRecording?.playlist.id
+                ? popperAnchorRef
+                : null
+            }
             playlist={playlist}
             playingId={playingId}
             setPlayingId={setPlayingId}
@@ -198,18 +158,53 @@ const RoomPage = () => {
         setIsPaused={setIsPaused}
       />
 
-      <BottomDrawer
-        open={!!roomState.newRecording}
-        onClose={() => recordingActions.cancel()}
+      <Popper
+        id={popperId}
+        open={Boolean(roomState.newRecording) && Boolean(popperAnchorRef)}
+        anchorEl={popperAnchorRef.current}
+        transition
+        style={{ zIndex: 2 }}
+        placement="bottom"
+        modifiers={{
+          flip: {
+            enabled: true
+          },
+          preventOverflow: {
+            enabled: true,
+            boundariesElement: "viewport"
+          }
+        }}
       >
-        <Box p={2}>
-          <EpisodeCreateForm
-            playlist={roomState.newRecording?.playlist}
-            onFormChange={recordingActions.updateRecording}
-            onFormSuccess={recordingActions.finish}
-          />
-        </Box>
-      </BottomDrawer>
+        {({ TransitionProps }) => (
+          <Fade {...TransitionProps} timeout={350}>
+            <Paper>
+              <Container maxWidth="xs" style={{ width: "auto" }}>
+                <Box pt={1}>
+                  <Grid container alignItems="center" justify="space-between">
+                    <Grid item>
+                      <Typography variant="h5">Voeg toe</Typography>
+                    </Grid>
+                    <Grid item>
+                      <IconButton
+                        onClick={() => recordingActions.cancel()}
+                        edge="end"
+                      >
+                        <CloseIcon />
+                      </IconButton>
+                    </Grid>
+                  </Grid>
+                </Box>
+
+                <EpisodeCreateForm
+                  playlist={roomState.newRecording?.playlist}
+                  onFormChange={recordingActions.updateRecording}
+                  onFormSuccess={recordingActions.finish}
+                />
+              </Container>
+            </Paper>
+          </Fade>
+        )}
+      </Popper>
     </Container>
   );
 };

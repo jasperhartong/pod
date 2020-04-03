@@ -1,3 +1,4 @@
+import { forwardRef, Ref } from "react";
 import {
   GridList,
   GridListTile,
@@ -45,146 +46,154 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const PlaylistGrid = ({
-  playlist,
-  playingId,
-  setPlayingId,
-  isPaused,
-  setIsPaused,
-  maxWidth
-}: {
+interface Props {
   playlist: IPlaylist;
   setPlayingId: (id: number | undefined) => void;
   playingId?: number;
   isPaused: boolean;
   setIsPaused: (paused: boolean) => void;
   maxWidth?: Breakpoint;
-}) => {
-  const classes = useStyles();
-  const { roomState, recordingActions } = useRoomContext();
-  const { mode, newRecording } = roomState;
-  const [width, _] = useWindowSize();
+}
 
-  const maxPixelWidth = maxWidth
-    ? Math.min(themeOptionsProvider.theme.breakpoints.width(maxWidth), width)
-    : width;
-  const cellHeight = 160;
-  const cols = Math.floor(maxPixelWidth / cellHeight);
+const PlaylistGrid = forwardRef(
+  (props: Props, recordButtonRef: Ref<HTMLButtonElement>) => {
+    const classes = useStyles();
+    const { roomState, recordingActions } = useRoomContext();
+    const [width, _] = useWindowSize();
 
-  return (
-    <>
-      <GridList cellHeight={cellHeight} cols={cols}>
-        {mode === "record" && (
-          <GridListTile key="new" cols={1}>
-            {newRecording && newRecording.episodeCreation.image_url ? (
-              <img src={newRecording.episodeCreation.image_url} />
-            ) : (
-              <Grid
-                container
-                style={{
-                  height: "100%",
-                  width: "100%",
-                  background:
-                    themeOptionsProvider.theme.palette.background.paper
-                }}
-                justify="space-around"
-                alignContent="center"
-                alignItems="center"
-              >
-                <Grid item>
-                  <MicIcon
-                    fontSize="large"
-                    color="secondary"
-                    style={{ opacity: 0.4 }}
-                  />
+    const { mode, newRecording } = roomState;
+    const {
+      playlist,
+      playingId,
+      setPlayingId,
+      isPaused,
+      setIsPaused,
+      maxWidth
+    } = props;
+
+    const maxPixelWidth = maxWidth
+      ? Math.min(themeOptionsProvider.theme.breakpoints.width(maxWidth), width)
+      : width;
+    const cellHeight = 160;
+    const cols = Math.floor(maxPixelWidth / cellHeight);
+
+    return (
+      <>
+        <GridList cellHeight={cellHeight} cols={cols}>
+          {mode === "record" && (
+            <GridListTile key="new" cols={1}>
+              {newRecording && newRecording.episodeCreation.image_url ? (
+                <img src={newRecording.episodeCreation.image_url} />
+              ) : (
+                <Grid
+                  container
+                  style={{
+                    height: "100%",
+                    width: "100%",
+                    background:
+                      themeOptionsProvider.theme.palette.background.paper
+                  }}
+                  justify="space-around"
+                  alignContent="center"
+                  alignItems="center"
+                >
+                  <Grid item>
+                    <MicIcon
+                      fontSize="large"
+                      color="secondary"
+                      style={{ opacity: 0.4 }}
+                    />
+                  </Grid>
                 </Grid>
-              </Grid>
-            )}
+              )}
 
-            <GridListTileBar
-              title={newRecording?.episodeCreation.title || `Nieuwe opname`}
-              classes={{
-                root: classes.titleBar,
-                title: classes.title
-              }}
-              actionIcon={
-                <Fab
-                  size="small"
-                  style={{ marginRight: 4, marginBottom: 4 }}
-                  color={"primary"}
-                  onClick={() => recordingActions.initiate(playlist)}
-                  aria-label={`Nieuwe opname`}
-                >
-                  <AddIcon />
-                </Fab>
-              }
-            />
-          </GridListTile>
-        )}
-        {playlist.episodes.map(episode => (
-          <GridListTile
-            style={{
-              border:
-                episode.id === playingId
-                  ? `1px solid ${themeOptionsProvider.theme.palette.primary.main}`
-                  : "1px solid transparent"
-            }}
-            key={episode.id}
-            cols={1}
-          >
-            <Fade in={mode === "record"}>
-              <Chip
-                size="small"
-                icon={<HeadPhoneIcon />}
-                label={episode.download_count}
-                color="secondary"
-                style={{ position: "absolute", zIndex: 2, top: 8, left: 8 }}
+              <GridListTileBar
+                title={newRecording?.episodeCreation.title || `Nieuwe opname`}
+                classes={{
+                  root: classes.titleBar,
+                  title: classes.title
+                }}
+                actionIcon={
+                  <Fab
+                    ref={recordButtonRef}
+                    size="small"
+                    style={{ marginRight: 4, marginBottom: 4 }}
+                    color={"primary"}
+                    onClick={() => recordingActions.initiate(playlist)}
+                    aria-label={`Nieuwe opname`}
+                  >
+                    <AddIcon />
+                  </Fab>
+                }
               />
-            </Fade>
+            </GridListTile>
+          )}
 
-            <img
-              src={
-                episode.image_file &&
-                episode.image_file.data &&
-                episode.image_file.data.thumbnails !== null
-                  ? episode.image_file.data.thumbnails.find(
-                      t => t.height > 100
-                    )!.url
-                  : ""
-              }
-              alt={episode.title || undefined}
-            />
-            <GridListTileBar
-              title={episode.title}
-              classes={{
-                root: classes.titleBar,
-                title: classes.title
+          {playlist.episodes.map(episode => (
+            <GridListTile
+              style={{
+                border:
+                  episode.id === playingId
+                    ? `1px solid ${themeOptionsProvider.theme.palette.primary.main}`
+                    : "1px solid transparent"
               }}
-              actionIcon={
-                <Fab
+              key={episode.id}
+              cols={1}
+            >
+              <Fade in={mode === "record"}>
+                <Chip
                   size="small"
-                  style={{ marginRight: 4, marginBottom: 4 }}
-                  color={episode.id === playingId ? "primary" : "secondary"}
-                  onClick={() =>
-                    episode.id === playingId
-                      ? setIsPaused(!isPaused)
-                      : setPlayingId(episode.id)
-                  }
-                  aria-label={`play ${episode.title}`}
-                >
-                  {episode.id === playingId && !isPaused ? (
-                    <PauseIcon />
-                  ) : (
-                    <PlayIcon />
-                  )}
-                </Fab>
-              }
-            />
-          </GridListTile>
-        ))}
-      </GridList>
-    </>
-  );
-};
+                  icon={<HeadPhoneIcon />}
+                  label={episode.download_count}
+                  color="secondary"
+                  style={{ position: "absolute", zIndex: 2, top: 8, left: 8 }}
+                />
+              </Fade>
+
+              <img
+                src={
+                  episode.image_file &&
+                  episode.image_file.data &&
+                  episode.image_file.data.thumbnails !== null
+                    ? episode.image_file.data.thumbnails.find(
+                        t => t.height > 100
+                      )!.url
+                    : ""
+                }
+                alt={episode.title || undefined}
+              />
+              <GridListTileBar
+                title={episode.title}
+                classes={{
+                  root: classes.titleBar,
+                  title: classes.title
+                }}
+                actionIcon={
+                  <Fab
+                    size="small"
+                    style={{ marginRight: 4, marginBottom: 4 }}
+                    color={episode.id === playingId ? "primary" : "secondary"}
+                    onClick={() =>
+                      episode.id === playingId
+                        ? setIsPaused(!isPaused)
+                        : setPlayingId(episode.id)
+                    }
+                    aria-label={`play ${episode.title}`}
+                  >
+                    {episode.id === playingId && !isPaused ? (
+                      <PauseIcon />
+                    ) : (
+                      <PlayIcon />
+                    )}
+                  </Fab>
+                }
+              />
+            </GridListTile>
+          ))}
+        </GridList>
+      </>
+    );
+  }
+);
 
 export default PlaylistGrid;

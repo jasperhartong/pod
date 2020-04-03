@@ -1,8 +1,7 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { IResponse } from "../IResponse";
-import { baseUrl } from "../../urls";
 
-export const rpcBasePath = `${baseUrl}/api/rpc/`;
+export const rpcBasePath = `/api/rpc/`;
 
 export const rpcUrl = (domain: string, action: string) =>
   `${rpcBasePath}${domain}.${action}`;

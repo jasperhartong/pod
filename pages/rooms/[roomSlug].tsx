@@ -167,7 +167,7 @@ const RoomPage = () => {
         placement="bottom"
         modifiers={{
           flip: {
-            enabled: true
+            enabled: false
           },
           preventOverflow: {
             enabled: true,

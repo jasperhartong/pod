@@ -23,6 +23,6 @@ export default async (
 
   const podcastXML = podcastXMLFromFeed(profile, roomFetch.data.playlists[0]);
   // TODO: Add CDN caching
-  // res.setHeader("Content-type", "text/xml;charset=UTF-8");
+  res.setHeader("Content-type", "text/xml;charset=UTF-8");
   return res.send(podcastXML);
 };

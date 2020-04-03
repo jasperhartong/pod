@@ -74,12 +74,12 @@ const PlaylistGrid = forwardRef(
     const maxPixelWidth = maxWidth
       ? Math.min(themeOptionsProvider.theme.breakpoints.width(maxWidth), width)
       : width;
-    const cellHeight = 160;
-    const cols = Math.floor(maxPixelWidth / cellHeight);
+    const cellWidth = 160;
+    const cols = Math.floor(maxPixelWidth / cellWidth);
 
     return (
       <>
-        <GridList cellHeight={cellHeight} cols={cols}>
+        <GridList cellHeight={(cellWidth * 4) / 3} cols={cols}>
           {mode === "record" && (
             <GridListTile key="new" cols={1}>
               {newRecording && newRecording.episodeCreation.image_url ? (

@@ -1,5 +1,4 @@
 import { NextApiRequest, NextApiResponse } from "next";
-// simport { getPlaylist } from "../../../../src/api/collections/backend/adaptors/directus";
 import { podcastXMLFromFeed } from "../../../../src/utils/podcast";
 import { collectionsBackend } from "../../../../src/api/collection-storage/index";
 

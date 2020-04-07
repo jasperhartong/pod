@@ -7,7 +7,6 @@ export interface IEpisode {
   status: "published" | "draft" | "deleted";
   created_on: IDateString;
   title: string;
-  download_count: number;
   image_file: {
     data: IImageData;
   };

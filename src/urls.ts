@@ -3,13 +3,6 @@ export const baseUrl =
     ? "http://localhost:3000"
     : "https://tapes.me";
 
-export const mediaRedirectUrl = (
-  playlistId: string,
-  episodeId: string,
-  originalUrl: string
-) => originalUrl;
-// `${baseUrl}/api/file-redirect?url=${originalUrl}&playlistId=${playlistId}&episodeId=${episodeId}`;
-
 export const rssUrl = (
   protocol: string,
   host: string,

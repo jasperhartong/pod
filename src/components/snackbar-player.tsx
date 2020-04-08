@@ -26,17 +26,15 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const SnackbarPlayer = ({
-  playlistId,
   playingItem,
   isPaused,
-  setPlayingId,
-  setIsPaused,
+  onPlayPause,
+  onClose,
 }: {
-  playlistId: string;
   playingItem?: IEpisode;
   isPaused: boolean;
-  setPlayingId: (id: number | undefined) => void;
-  setIsPaused: (paused: boolean) => void;
+  onPlayPause: (paused: boolean) => void;
+  onClose: () => void;
 }) => {
   const [progress, setProgress] = useState<number>(0);
   const [didLoad, setDidLoad] = useState<boolean>(false);
@@ -96,7 +94,7 @@ const SnackbarPlayer = ({
                     </Grid>
                     <Grid item>
                       <Fab
-                        onClick={() => setIsPaused(!isPaused)}
+                        onClick={() => onPlayPause(!isPaused)}
                         color="primary"
                         aria-label="play/pause"
                       >
@@ -107,7 +105,7 @@ const SnackbarPlayer = ({
                       <IconButton
                         color="primary"
                         aria-label="close"
-                        onClick={() => setPlayingId(undefined)}
+                        onClick={onClose}
                       >
                         <CloseIcon />
                       </IconButton>

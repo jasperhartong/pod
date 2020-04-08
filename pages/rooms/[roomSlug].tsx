@@ -37,9 +37,10 @@ const findEpisodeById = (room: IRoom, episodeId?: number) => {
 const RoomPageContainer = () => {
   const defaultState: RoomState = {
     mode: "listen",
-    newRecording: undefined,
-    room: undefined,
     slug: undefined,
+    room: undefined,
+    recordingEpisode: undefined,
+    playingEpisode: undefined,
   };
 
   return (
@@ -51,18 +52,10 @@ const RoomPageContainer = () => {
 
 const RoomPage = () => {
   const { query } = useRouter();
-  const [playingId, setPlayingId] = useState<number>();
-  const [isPaused, setIsPaused] = useState<boolean>(false);
-  const { roomState, roomDispatch, recordingActions } = useRoomContext();
+  const { roomState, actions } = useRoomContext();
 
   useEffect(() => {
-    setIsPaused(false);
-  }, [playingId]);
-
-  useEffect(() => {
-    roomDispatch((room) => {
-      room.slug = query.roomSlug as string;
-    });
+    actions.room.initiate(query.roomSlug as string);
   }, [query.roomSlug]);
 
   // derived state
@@ -79,7 +72,10 @@ const RoomPage = () => {
     );
   }
 
-  const playingItem: IEpisode | undefined = findEpisodeById(room, playingId);
+  const playingItem: IEpisode | undefined = findEpisodeById(
+    room,
+    roomState.playingEpisode?.episodeId
+  );
 
   return (
     <Container
@@ -97,10 +93,10 @@ const RoomPage = () => {
           <PlaylistHeader playlist={playlist} />
           <PlaylistGrid
             playlist={playlist}
-            playingId={playingId}
-            setPlayingId={setPlayingId}
-            isPaused={isPaused}
-            setIsPaused={setIsPaused}
+            playingId={roomState.playingEpisode?.episodeId}
+            setPlayingId={actions.playingEpisode.initiate}
+            isPaused={Boolean(roomState.playingEpisode?.isPaused)}
+            setIsPaused={actions.playingEpisode.pause}
             maxWidth={maxWidth}
           />
         </Box>
@@ -121,21 +117,20 @@ const RoomPage = () => {
       <TapesFooter />
 
       <SnackbarPlayer
-        playlistId={slug}
         playingItem={playingItem}
-        isPaused={isPaused}
-        setPlayingId={setPlayingId}
-        setIsPaused={setIsPaused}
+        isPaused={Boolean(roomState.playingEpisode?.isPaused)}
+        onPlayPause={actions.playingEpisode.pause}
+        onClose={actions.playingEpisode.stop}
       />
 
       <BottomDrawer
-        open={Boolean(roomState.newRecording)}
-        onClose={recordingActions.cancel}
+        open={Boolean(roomState.recordingEpisode)}
+        onClose={actions.recordingEpisode.cancel}
       >
         <EpisodeCreateForm
-          playlist={roomState.newRecording?.playlist}
-          onFormChange={recordingActions.updateRecording}
-          onFormSuccess={recordingActions.finish}
+          playlist={roomState.recordingEpisode?.playlist}
+          onFormChange={actions.recordingEpisode.updateRecording}
+          onFormSuccess={actions.recordingEpisode.finish}
         />
       </BottomDrawer>
     </Container>
@@ -154,7 +149,7 @@ const TapesFooter = () => (
 );
 
 const RoomModeSwitcher = () => {
-  const { roomState, roomDispatch } = useRoomContext();
+  const { roomState, actions } = useRoomContext();
   const { room, mode } = roomState;
   return (
     <Box p={4} textAlign="center">
@@ -165,13 +160,11 @@ const RoomModeSwitcher = () => {
         value={mode}
         size="small"
         exclusive
-        onChange={(_, value) =>
-          roomDispatch((room) => {
-            if (value) {
-              room.mode = value;
-            }
-          })
-        }
+        onChange={(_, value) => {
+          if (value) {
+            actions.mode.change(value);
+          }
+        }}
         aria-label="text alignment"
       >
         <ToggleButton value="listen" aria-label="listen">

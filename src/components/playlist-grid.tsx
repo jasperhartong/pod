@@ -17,6 +17,7 @@ import useWindowSize from "../hooks/useWindowSize";
 import themeOptionsProvider from "../theme";
 import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
 import { useRoomContext } from "../hooks/useRoomContext";
+import { IEpisode } from "../app-schema/IEpisode";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,7 +47,7 @@ const useStyles = makeStyles((theme) => ({
 
 interface Props {
   playlist: IPlaylist;
-  setPlayingId: (id: number | undefined) => void;
+  setPlayingId: (id: IEpisode["id"]) => void;
   playingId?: number;
   isPaused: boolean;
   setIsPaused: (paused: boolean) => void;
@@ -55,10 +56,10 @@ interface Props {
 
 const PlaylistGrid = (props: Props) => {
   const classes = useStyles();
-  const { roomState, recordingActions } = useRoomContext();
+  const { roomState, actions } = useRoomContext();
   const [width, _] = useWindowSize();
 
-  const { mode, newRecording } = roomState;
+  const { mode, recordingEpisode } = roomState;
   const {
     playlist,
     playingId,
@@ -79,8 +80,8 @@ const PlaylistGrid = (props: Props) => {
       <GridList cellHeight={(cellWidth * 4) / 3} cols={cols}>
         {mode === "record" && (
           <GridListTile key="new" cols={1}>
-            {newRecording && newRecording.episodeCreation.image_url ? (
-              <img src={newRecording.episodeCreation.image_url} />
+            {recordingEpisode && recordingEpisode.partialEpisode.image_url ? (
+              <img src={recordingEpisode.partialEpisode.image_url} />
             ) : (
               <Grid
                 container
@@ -105,7 +106,7 @@ const PlaylistGrid = (props: Props) => {
             )}
 
             <GridListTileBar
-              title={newRecording?.episodeCreation.title || `Nieuwe opname`}
+              title={recordingEpisode?.partialEpisode.title || `Nieuwe opname`}
               classes={{
                 root: classes.titleBar,
                 title: classes.title,
@@ -115,7 +116,7 @@ const PlaylistGrid = (props: Props) => {
                   size="small"
                   style={{ marginRight: 4, marginBottom: 4 }}
                   color={"primary"}
-                  onClick={() => recordingActions.initiate(playlist)}
+                  onClick={() => actions.recordingEpisode.initiate(playlist)}
                   aria-label={`Nieuwe opname`}
                 >
                   <AddIcon />

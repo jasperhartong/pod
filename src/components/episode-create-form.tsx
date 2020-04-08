@@ -5,13 +5,13 @@ import {
   Typography,
   FormGroup,
   TextField,
-  Grid
+  Grid,
 } from "@material-ui/core";
 import { useForm, Controller, ErrorMessage } from "react-hook-form";
 import { IPlaylist } from "../app-schema/IPlaylist";
 import {
   RequestData,
-  ResponseData
+  ResponseData,
 } from "../api/rpc/commands/episode.create.meta";
 import rpcClient from "../api/rpc/client";
 import MediaDropZone from "./media-dropzone";
@@ -22,7 +22,7 @@ const defaultValues: RequestData = {
   image_url: "",
   audio_url: "",
   status: "published",
-  playlist: ""
+  playlist: "",
 };
 
 interface Props {
@@ -40,7 +40,7 @@ const ErrorMessageTypography = ({ children }: { children?: JSX.Element }) => (
 const EpisodeCreateForm = ({
   playlist,
   onFormChange,
-  onFormSuccess
+  onFormSuccess,
 }: Props) => {
   const {
     handleSubmit,
@@ -49,10 +49,10 @@ const EpisodeCreateForm = ({
     register,
     setValue,
     watch,
-    errors
+    errors,
   } = useForm({
     mode: "onChange",
-    defaultValues
+    defaultValues,
   });
   const [serverError, setServerError] = useState<string>();
 
@@ -62,13 +62,13 @@ const EpisodeCreateForm = ({
   useEffect(() => {
     onFormChange({
       title: watchedFields.title as string,
-      image_url: watchedFields.image_url as string
+      image_url: watchedFields.image_url as string,
     });
   }, [watchedFields.title, watchedFields.image_url]);
 
   return (
     <form
-      onSubmit={handleSubmit(async data => {
+      onSubmit={handleSubmit(async (data) => {
         setServerError(undefined);
         const reqData = data as RequestData;
         const submission = await rpcClient.call<RequestData, ResponseData>(
@@ -77,7 +77,7 @@ const EpisodeCreateForm = ({
           {
             ...defaultValues,
             ...reqData,
-            playlist: playlist ? playlist.id.toString() : ""
+            playlist: playlist ? playlist.id.toString() : "",
           }
         );
         if (submission.ok) {
@@ -120,13 +120,13 @@ const EpisodeCreateForm = ({
                 name="image_url"
                 type="hidden"
                 ref={register({
-                  required: true
+                  required: true,
                 })}
               />
               <MediaDropZone
                 instructions={"Afbeelding"}
                 acceptedMimeTypes={["image/jpeg", "image/jpg", "image/png"]}
-                onSuccess={downloadUrl => setValue("image_url", downloadUrl)}
+                onSuccess={(downloadUrl) => setValue("image_url", downloadUrl)}
               />
               <ErrorMessage
                 errors={errors}
@@ -144,13 +144,13 @@ const EpisodeCreateForm = ({
                 name="audio_url"
                 type="hidden"
                 ref={register({
-                  required: true
+                  required: true,
                 })}
               />
               <MediaDropZone
                 instructions={"Opname"}
                 acceptedMimeTypes={["audio/m4a", "video/mp4"]}
-                onSuccess={downloadUrl => setValue("audio_url", downloadUrl)}
+                onSuccess={(downloadUrl) => setValue("audio_url", downloadUrl)}
               />
               <ErrorMessage
                 errors={errors}

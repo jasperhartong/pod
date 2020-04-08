@@ -9,9 +9,8 @@ export const baseUrl =
 export const rssUrl = (
   protocol: string,
   host: string,
-  roomSlug: IRoom["slug"],
-  playlistId: string = "voorloisenrobin"
-) => `${protocol}//${host}/api/rss/${roomSlug}/${playlistId}`;
+  roomSlug: IRoom["slug"]
+) => `${protocol}//${host}/api/rss/${roomSlug}`;
 
 export const roomPageUrl = (slug: IRoom["slug"]) => `${baseUrl}/rooms/${slug}`;
 

@@ -9,7 +9,7 @@ export default async (
   req: NextApiRequest,
   res: NextApiResponse<IERR | XMLString>
 ) => {
-  // For now use roomSlug, should of should be based on profile + playlist
+  // For now use roomSlug, [rssId] is unused
   const roomSlug = req.query.roomSlug as string;
   const roomFetch = await collectionsBackend.getRoomBySlug(roomSlug);
   if (!roomFetch.ok) {

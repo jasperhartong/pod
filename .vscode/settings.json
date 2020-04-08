@@ -1,7 +1,9 @@
 {
-    "files.exclude": {
-      "node_modules": true
-    },
-    "editor.formatOnSave": true
-  }
-  
+  "files.exclude": {
+    "node_modules": true,
+    ".now": true,
+    ".next": true,
+    ".vscode": true
+  },
+  "editor.formatOnSave": true
+}

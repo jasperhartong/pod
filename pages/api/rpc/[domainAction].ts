@@ -1,14 +1,29 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import * as feedCount from "../../../src/api/episode.count";
+import { IResponse, ERR } from "../../../src/api/IResponse";
+import HttpStatus from "http-status-codes";
+import signedUrlCreate from "../../../src/api/rpc/commands/signedurl.create";
+import episodeCreate from "../../../src/api/rpc/commands/episode.create";
+import roomFetch from "../../../src/api/rpc/commands/room.fetch";
 
-export default async (req: NextApiRequest, res: NextApiResponse) => {
-  const { domainAction } = req.query;
-  const reqData = req.body;
-  const [domain, action] = (domainAction as string).split(".");
+const handlers = {
+  [episodeCreate.commandId]: episodeCreate,
+  [signedUrlCreate.commandId]: signedUrlCreate,
+  [roomFetch.commandId]: roomFetch,
+};
 
-  if (feedCount.domain === domain && feedCount.action === action) {
-    feedCount.handle(reqData);
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse<IResponse<any>>
+) => {
+  const domainAction = req.query.domainAction as string;
+
+  let responseData = ERR("No RPC found to handle", HttpStatus.NOT_IMPLEMENTED);
+
+  if (handlers[domainAction]) {
+    responseData = await handlers[domainAction].handle(req, res);
   }
 
-  return res.json({ ok: true, domain: domain, action: action });
+  return res
+    .status(!responseData.ok ? responseData.status : HttpStatus.OK)
+    .json(responseData);
 };

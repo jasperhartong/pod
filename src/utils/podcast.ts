@@ -1,9 +1,10 @@
-import { DbPlaylist } from "../storage/interfaces";
+import { IPlaylist } from "../app-schema/IPlaylist";
 import { toXML } from "jstoxml";
-import { podItemPageUrl, podPageUrl, mediaRedirectUrl } from "../storage/urls";
-import { parseDbDate } from "../storage/methods";
+import { futureEpisodePage, roomPageUrl } from "../urls";
+import { parseDbDate } from "../api/collection-storage/backends/directus-utils";
+import { IRoom } from "../app-schema/IRoom";
 
-export const podcastXMLFromFeed = (slug: string, feed: DbPlaylist): string => {
+export const podcastXML = (slug: IRoom["slug"], feed: IPlaylist): string => {
   const xmlOptions = {
     header: true,
     indent: "  ",
@@ -12,61 +13,55 @@ export const podcastXMLFromFeed = (slug: string, feed: DbPlaylist): string => {
       ">": "&gt;",
       '"': "&quot;",
       "'": "&apos;",
-      "&": "&amp;"
+      "&": "&amp;",
     },
     attributesFilter: {
       "<": "&lt;",
       ">": "&gt;",
       '"': "&quot;",
       "'": "&apos;",
-      "&": "&amp;"
-    }
+      "&": "&amp;",
+    },
   };
 
-  const xmlItems = feed.items.map(item => ({
+  const xmlItems = feed.episodes.map((item) => ({
     item: [
       {
-        title: item.title || ""
+        title: item.title || "",
       },
       {
-        "itunes:author": feed.author_name || ""
+        "itunes:author": feed.description || "",
       },
       {
-        "itunes:subtitle": item.description || ""
+        "itunes:subtitle": feed.title || "",
       },
       {
-        "itunes:summary": item.description || ""
+        "itunes:summary": item.title || "",
       },
       {
-        "itunes:image": item.image_file.data.full_url || ""
+        "itunes:image": item.image_file.data.full_url || "",
       },
       {
         _name: "enclosure",
         _attrs: {
-          url: encodeURI(
-            mediaRedirectUrl(
-              slug,
-              item.id.toString(),
-              item.audio_file.data.full_url || ""
-            )
-          ),
+          url: encodeURI(item.audio_file || ""),
           // length: "8727310",
-          type: "audio/x-mp4"
-        }
+          type: "audio/x-mp4",
+        },
       },
       {
-        guid: podItemPageUrl(slug, item.id.toString())
+        guid: futureEpisodePage(slug, item.id),
       },
       {
-        pubDate: parseDbDate(item.date).toRFC2822()
+        pubDate: parseDbDate(item.created_on).toRFC2822(),
       },
       // {
       //   "itunes:duration": "7:04"
       // },
       {
-        "itunes:keywords": "oma"
-      }
-    ]
+        "itunes:keywords": "oma",
+      },
+    ],
   }));
 
   const podcastXML = toXML(
@@ -74,67 +69,67 @@ export const podcastXMLFromFeed = (slug: string, feed: DbPlaylist): string => {
       _name: "rss",
       _attrs: {
         "xmlns:itunes": "http://www.itunes.com/dtds/podcast-1.0.dtd",
-        version: "2.0"
+        version: "2.0",
       },
       _content: {
         channel: [
           {
-            title: feed.title
+            title: feed.title,
           },
           {
-            link: podPageUrl(slug)
+            link: roomPageUrl(slug),
           },
           {
-            language: "nl"
+            language: "nl",
           },
           {
-            copyright: "Copyright 2020"
+            copyright: "Copyright 2020",
           },
           {
-            "itunes:subtitle": feed.description
+            "itunes:subtitle": feed.title,
           },
           {
-            "itunes:author": feed.author_name
+            "itunes:author": feed.title,
           },
           {
-            "itunes:summary": feed.description
+            "itunes:summary": feed.description,
           },
           {
-            description: feed.description
+            description: feed.description,
           },
           {
             "itunes:owner": {
-              "itunes:name": feed.author_name,
-              "itunes:email": feed.author_email
-            }
+              "itunes:name": feed.title,
+              // "itunes:email": feed.author_email
+            },
           },
           {
             _name: "itunes:image",
             _attrs: {
-              href: feed.cover_file.data.full_url
-            }
+              href: feed.cover_file.data.full_url,
+            },
           },
           {
             _name: "itunes:category",
             _attrs: {
-              text: "Technology"
+              text: "Technology",
             },
             _content: {
               _name: "itunes:category",
               _attrs: {
-                text: "Gadgets"
-              }
-            }
+                text: "Gadgets",
+              },
+            },
           },
           {
             _name: "itunes:category",
             _attrs: {
-              text: "TV &amp; Film"
-            }
+              text: "TV &amp; Film",
+            },
           },
-          ...xmlItems
-        ]
-      }
+          ...xmlItems,
+        ],
+      },
     },
     xmlOptions
   );

@@ -9,35 +9,32 @@ import {
   LinearProgress,
   Grid,
   Typography,
-  Fab
+  Fab,
 } from "@material-ui/core";
 import ReactPlayer from "react-player";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import CloseIcon from "@material-ui/icons/Close";
-import { DbEpisode } from "../../src/storage/interfaces";
+import { IEpisode } from "../app-schema/IEpisode";
 import { makeStyles } from "@material-ui/styles";
-import { mediaRedirectUrl } from "../storage/urls";
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles((theme) => ({
   snackbarMessage: {
     width: "100%",
-    padding: 0
-  }
+    padding: 0,
+  },
 }));
 
 const SnackbarPlayer = ({
-  playlistId,
   playingItem,
   isPaused,
-  setPlayingId,
-  setIsPaused
+  onPlayPause,
+  onClose,
 }: {
-  playlistId: string;
-  playingItem?: DbEpisode;
+  playingItem?: IEpisode;
   isPaused: boolean;
-  setPlayingId: (id: number | undefined) => void;
-  setIsPaused: (paused: boolean) => void;
+  onPlayPause: (paused: boolean) => void;
+  onClose: () => void;
 }) => {
   const [progress, setProgress] = useState<number>(0);
   const [didLoad, setDidLoad] = useState<boolean>(false);
@@ -61,16 +58,12 @@ const SnackbarPlayer = ({
           !!playingItem && (
             <Box>
               <ReactPlayer
-                url={mediaRedirectUrl(
-                  playlistId,
-                  playingItem.id.toString(),
-                  playingItem.audio_file.data.full_url
-                )}
+                url={playingItem.audio_file}
                 playing={!isPaused}
                 width="0px"
                 height="0px"
                 config={{
-                  file: { forceAudio: true }
+                  file: { forceAudio: true },
                 }}
                 onProgress={({ played, loaded }) => {
                   setProgress(played * 100);
@@ -101,7 +94,7 @@ const SnackbarPlayer = ({
                     </Grid>
                     <Grid item>
                       <Fab
-                        onClick={() => setIsPaused(!isPaused)}
+                        onClick={() => onPlayPause(!isPaused)}
                         color="primary"
                         aria-label="play/pause"
                       >
@@ -112,7 +105,7 @@ const SnackbarPlayer = ({
                       <IconButton
                         color="primary"
                         aria-label="close"
-                        onClick={() => setPlayingId(undefined)}
+                        onClick={onClose}
                       >
                         <CloseIcon />
                       </IconButton>

@@ -8,15 +8,12 @@
     "start": "next start"
   },
   "dependencies": {
-    "-": "^0.0.1",
     "@directus/sdk-js": "^6.0.5",
     "@material-ui/core": "^4.9.7",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.46",
     "@material-ui/styles": "^4.9.6",
-    "@types/smooth-scroll": "^16.1.0",
     "@zeit/next-css": "^1.0.1",
-    "D": "^1.0.0",
     "aws-sdk": "^2.648.0",
     "axios": "^0.19.2",
     "http-status-codes": "^1.4.0",
@@ -39,6 +36,7 @@
     "@types/luxon": "^1.21.0",
     "@types/node": "^13.9.2",
     "@types/react": "^16.9.25",
+    "@types/smooth-scroll": "^16.1.0",
     "@types/yup": "^0.26.33",
     "typescript": "^3.8.3"
   }

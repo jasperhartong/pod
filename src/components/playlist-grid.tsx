@@ -56,10 +56,10 @@ interface Props {
 
 const PlaylistGrid = (props: Props) => {
   const classes = useStyles();
-  const { roomState, actions } = useRoomContext();
+  const { state, actions } = useRoomContext();
   const [width, _] = useWindowSize();
 
-  const { mode, recordingEpisode } = roomState;
+  const { mode, recordingEpisode } = state;
   const {
     playlist,
     playingId,

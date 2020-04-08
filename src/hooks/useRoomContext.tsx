@@ -143,7 +143,7 @@ const useRoomContext = () => {
   }, [state.slug]);
 
   return {
-    roomState: state,
+    state,
     actions,
   };
 };

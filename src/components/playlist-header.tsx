@@ -5,30 +5,30 @@ import {
   ListItemText,
   Box,
   Typography,
-  Collapse
+  Collapse,
 } from "@material-ui/core";
 import { IPlaylist } from "../app-schema/IPlaylist";
 import { useRoomContext } from "../hooks/useRoomContext";
 
 const PlaylistHeader = ({ playlist }: { playlist: IPlaylist }) => {
-  const { roomState } = useRoomContext();
+  const { state } = useRoomContext();
   const cover =
     playlist.cover_file &&
     playlist.cover_file.data &&
     playlist.cover_file.data.thumbnails !== null
-      ? playlist.cover_file.data.thumbnails.find(t => t.height > 100)!.url
+      ? playlist.cover_file.data.thumbnails.find((t) => t.height > 100)!.url
       : "";
 
   return (
     <>
-      <Collapse in={roomState.mode === "listen"}>
+      <Collapse in={state.mode === "listen"}>
         <Box textAlign="center" pt={1} pb={4}>
           <Avatar
             style={{
               width: 160,
               height: 160,
               display: "inline-block",
-              margin: 16
+              margin: 16,
             }}
             alt={playlist.title}
             src={cover}
@@ -39,7 +39,7 @@ const PlaylistHeader = ({ playlist }: { playlist: IPlaylist }) => {
           <Typography variant="h4">{playlist.title}</Typography>
         </Box>
       </Collapse>
-      <Collapse in={roomState.mode === "record"}>
+      <Collapse in={state.mode === "record"}>
         <ListItem style={{ paddingLeft: 0 }}>
           <ListItemAvatar>
             <Avatar alt={playlist.title} src={cover} />

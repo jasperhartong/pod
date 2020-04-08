@@ -52,14 +52,14 @@ const RoomPageContainer = () => {
 
 const RoomPage = () => {
   const { query } = useRouter();
-  const { roomState, actions } = useRoomContext();
+  const { state, actions } = useRoomContext();
 
   useEffect(() => {
     actions.room.initiate(query.roomSlug as string);
   }, [query.roomSlug]);
 
   // derived state
-  const { room, mode, slug } = roomState;
+  const { room, mode, slug } = state;
   const maxWidth: Breakpoint = mode === "listen" ? "sm" : "lg";
 
   if (!slug || !room) {
@@ -74,7 +74,7 @@ const RoomPage = () => {
 
   const playingItem: IEpisode | undefined = findEpisodeById(
     room,
-    roomState.playingEpisode?.episodeId
+    state.playingEpisode?.episodeId
   );
 
   return (
@@ -93,9 +93,9 @@ const RoomPage = () => {
           <PlaylistHeader playlist={playlist} />
           <PlaylistGrid
             playlist={playlist}
-            playingId={roomState.playingEpisode?.episodeId}
+            playingId={state.playingEpisode?.episodeId}
             setPlayingId={actions.playingEpisode.initiate}
-            isPaused={Boolean(roomState.playingEpisode?.isPaused)}
+            isPaused={Boolean(state.playingEpisode?.isPaused)}
             setIsPaused={actions.playingEpisode.pause}
             maxWidth={maxWidth}
           />
@@ -118,17 +118,17 @@ const RoomPage = () => {
 
       <SnackbarPlayer
         playingItem={playingItem}
-        isPaused={Boolean(roomState.playingEpisode?.isPaused)}
+        isPaused={Boolean(state.playingEpisode?.isPaused)}
         onPlayPause={actions.playingEpisode.pause}
         onClose={actions.playingEpisode.stop}
       />
 
       <BottomDrawer
-        open={Boolean(roomState.recordingEpisode)}
+        open={Boolean(state.recordingEpisode)}
         onClose={actions.recordingEpisode.cancel}
       >
         <EpisodeCreateForm
-          playlist={roomState.recordingEpisode?.playlist}
+          playlist={state.recordingEpisode?.playlist}
           onFormChange={actions.recordingEpisode.updateRecording}
           onFormSuccess={actions.recordingEpisode.finish}
         />
@@ -149,15 +149,15 @@ const TapesFooter = () => (
 );
 
 const RoomModeSwitcher = () => {
-  const { roomState, actions } = useRoomContext();
-  const { room, mode } = roomState;
+  const { state, actions } = useRoomContext();
+
   return (
     <Box p={4} textAlign="center">
       <Typography component="div" variant="overline">
-        {room?.slug || ""}
+        {state.room?.slug || ""}
       </Typography>
       <ToggleButtonGroup
-        value={mode}
+        value={state.mode}
         size="small"
         exclusive
         onChange={(_, value) => {

@@ -2,8 +2,9 @@ import { IPlaylist } from "../app-schema/IPlaylist";
 import { toXML } from "jstoxml";
 import { podItemPageUrl, podPageUrl } from "../urls";
 import { parseDbDate } from "../api/collection-storage/backends/directus-utils";
+import { IRoom } from "../app-schema/IRoom";
 
-export const podcastXMLFromFeed = (slug: string, feed: IPlaylist): string => {
+export const podcastXML = (slug: IRoom["slug"], feed: IPlaylist): string => {
   const xmlOptions = {
     header: true,
     indent: "  ",

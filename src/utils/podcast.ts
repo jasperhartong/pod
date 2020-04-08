@@ -1,6 +1,6 @@
 import { IPlaylist } from "../app-schema/IPlaylist";
 import { toXML } from "jstoxml";
-import { podItemPageUrl, podPageUrl } from "../urls";
+import { futureEpisodePage, roomPageUrl } from "../urls";
 import { parseDbDate } from "../api/collection-storage/backends/directus-utils";
 import { IRoom } from "../app-schema/IRoom";
 
@@ -33,10 +33,10 @@ export const podcastXML = (slug: IRoom["slug"], feed: IPlaylist): string => {
         "itunes:author": feed.description || "",
       },
       {
-        "itunes:subtitle": "",
+        "itunes:subtitle": feed.title || "",
       },
       {
-        "itunes:summary": "",
+        "itunes:summary": item.title || "",
       },
       {
         "itunes:image": item.image_file.data.full_url || "",
@@ -50,7 +50,7 @@ export const podcastXML = (slug: IRoom["slug"], feed: IPlaylist): string => {
         },
       },
       {
-        guid: podItemPageUrl(slug, item.id.toString()),
+        guid: futureEpisodePage(slug, item.id.toString()),
       },
       {
         pubDate: parseDbDate(item.created_on).toRFC2822(),
@@ -77,7 +77,7 @@ export const podcastXML = (slug: IRoom["slug"], feed: IPlaylist): string => {
             title: feed.title,
           },
           {
-            link: podPageUrl(slug),
+            link: roomPageUrl(slug),
           },
           {
             language: "nl",

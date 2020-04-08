@@ -5,6 +5,7 @@ import { IEpisode } from "../../../app-schema/IEpisode";
 import { IImageData } from "../../../app-schema/IFileData";
 import { IBackend } from "../../../app-schema/IBackend";
 import { OK, ERR } from "../../IResponse";
+import HttpStatus from "http-status-codes";
 
 const token = process.env.DIRECTUS_CLOUD_TOKEN;
 const project = "dcMJTq1b80lIY4CT";
@@ -19,7 +20,7 @@ class DirectusTapesMeBackend implements IBackend {
       url: "https://api.directus.cloud/",
       project,
       token,
-      mode: "jwt"
+      mode: "jwt",
     }),
     private roomCollection = "rooms",
     private playlistCollection = "playlists",
@@ -33,29 +34,30 @@ class DirectusTapesMeBackend implements IBackend {
         {
           filter: {
             slug: {
-              eq: roomSlug
-            }
+              eq: roomSlug,
+            },
           },
           fields: [
             "*",
             "playlists.*",
             "playlists.cover_file.data",
             "playlists.episodes.*",
-            "playlists.episodes.image_file.data"
-          ]
+            "playlists.episodes.image_file.data",
+          ],
         }
       );
 
       if (roomResponse.data.length == 1) {
         // Reverse episodes (last created = first.) Directus doesn't allow to do this
-        roomResponse.data[0].playlists.map(p => p.episodes.reverse());
+        roomResponse.data[0].playlists.map((p) => p.episodes.reverse());
         return OK<IRoom>(roomResponse.data[0]);
       }
     } catch (error) {
       console.error(error);
+      return ERR<IRoom>("Room fetch errored");
     }
 
-    return ERR<IRoom>("Room could not be fetched");
+    return ERR<IRoom>("Room not found", HttpStatus.NOT_FOUND);
   };
 
   public getEpisode = async (episodeId: string) => {
@@ -64,14 +66,14 @@ class DirectusTapesMeBackend implements IBackend {
         this.episodeCollection,
         episodeId,
         {
-          fields: ["*", "audio_file.data", "image_file.data"]
+          fields: ["*", "audio_file.data", "image_file.data"],
         }
       );
       return OK<IEpisode>(itemResponse.data);
     } catch (error) {
       console.error(error);
     }
-    return ERR<IEpisode>("Episode could not be fetched");
+    return ERR<IEpisode>("Episode not found", HttpStatus.NOT_FOUND);
   };
 
   public createEpisode = async (
@@ -88,13 +90,16 @@ class DirectusTapesMeBackend implements IBackend {
       >(this.episodeCollection, {
         ...episode,
         image_file: imageFileId,
-        playlist: playlistId
+        playlist: playlistId,
       });
       return OK<IEpisode>((itemResponse.data as unknown) as IEpisode);
     } catch (error) {
       console.error(error);
     }
-    return ERR<IEpisode>("Episode could not be created");
+    return ERR<IEpisode>(
+      "Episode could not be created",
+      HttpStatus.BAD_REQUEST
+    );
   };
 
   public updateEpisode = async (
@@ -112,7 +117,10 @@ class DirectusTapesMeBackend implements IBackend {
     } catch (error) {
       console.error(error);
     }
-    return ERR<IEpisode>("Episode could not be updated");
+    return ERR<IEpisode>(
+      "Episode could not be updated",
+      HttpStatus.BAD_REQUEST
+    );
   };
 
   public addExternalImage = async (url: string) => {
@@ -126,25 +134,26 @@ class DirectusTapesMeBackend implements IBackend {
       >(
         `${this.client.config.url}${this.client.config.project}/files`,
         {
-          data: url
+          data: url,
         },
         {
           headers: {
             authorization: `Bearer ${this.client.config.token}`,
-            "content-type": "application/json;charset=utf-8"
-          }
+            "content-type": "application/json;charset=utf-8",
+          },
         }
       );
 
       return OK<{ file: IImageData; id: string }>({
         file: fileUpload.data.data.data,
-        id: fileUpload.data.data.id.toString()
+        id: fileUpload.data.data.id.toString(),
       });
     } catch (error) {
       console.error(error);
     }
     return ERR<{ file: IImageData; id: string }>(
-      "External Image could not be added to backend"
+      "External Image could not be added to backend",
+      HttpStatus.INTERNAL_SERVER_ERROR
     );
   };
 }

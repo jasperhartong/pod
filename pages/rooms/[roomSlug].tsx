@@ -72,7 +72,15 @@ const RoomPage = () => {
       <Container maxWidth={maxWidth}>
         <Box textAlign="center" pt={8}>
           <Typography variant="overline" color="textSecondary">
-            Room not found
+            Error
+          </Typography>
+          <Divider />
+          <Typography
+            variant="overline"
+            color="textSecondary"
+            style={{ opacity: 0.2 }}
+          >
+            {room.error}
           </Typography>
         </Box>
       </Container>

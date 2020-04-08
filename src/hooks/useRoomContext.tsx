@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { IRoom } from "../app-schema/IRoom";
 import { IPlaylist } from "../app-schema/IPlaylist";
@@ -52,6 +52,17 @@ const useRoomContext = () => {
   }
   const [state, dispatch] = roomContext;
 
+  const actions = useMemo(() => getActions(dispatch), [dispatch]);
+
+  return {
+    state,
+    actions,
+  };
+};
+
+export { RoomProvider, useRoomContext };
+
+const getActions = (dispatch: ImmerRoomDispatch) => {
   const actions = {
     mode: {
       change: (mode: RoomMode) => {
@@ -65,21 +76,23 @@ const useRoomContext = () => {
         dispatch((room) => {
           room.slug = slug;
         });
+        actions.room.fetch(slug);
       },
-      fetch: async () => {
-        if (state.slug) {
-          const reqData: RoomFetch.RequestData = {
-            slug: state.slug,
-          };
-          const response = await rpcClient.call<
-            RoomFetch.RequestData,
-            RoomFetch.ResponseData
-          >("room", "fetch", reqData);
-          if (response.ok) {
-            dispatch((room) => {
-              room.room = response.data;
-            });
-          }
+      fetch: async (slug?: string) => {
+        if (!slug) {
+          return;
+        }
+        const reqData: RoomFetch.RequestData = {
+          slug,
+        };
+        const response = await rpcClient.call<
+          RoomFetch.RequestData,
+          RoomFetch.ResponseData
+        >("room", "fetch", reqData);
+        if (response.ok) {
+          dispatch((room) => {
+            room.room = response.data;
+          });
         }
       },
     },
@@ -102,10 +115,12 @@ const useRoomContext = () => {
         });
       },
       finish: () => {
+        let slugToRefetch: string | undefined;
         dispatch((room) => {
           room.recordingEpisode = undefined;
+          slugToRefetch = room.slug;
         });
-        actions.room.fetch();
+        actions.room.fetch(slugToRefetch);
       },
     },
     playingEpisode: {
@@ -132,20 +147,5 @@ const useRoomContext = () => {
       },
     },
   };
-
-  /* Side-effects */
-
-  // Changing the slug will refetch the room
-  React.useEffect(() => {
-    if (state.slug !== state.room?.slug) {
-      actions.room.fetch();
-    }
-  }, [state.slug]);
-
-  return {
-    state,
-    actions,
-  };
+  return actions;
 };
-
-export { RoomProvider, useRoomContext };

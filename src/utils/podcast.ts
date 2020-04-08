@@ -50,7 +50,7 @@ export const podcastXML = (slug: IRoom["slug"], feed: IPlaylist): string => {
         },
       },
       {
-        guid: futureEpisodePage(slug, item.id.toString()),
+        guid: futureEpisodePage(slug, item.id),
       },
       {
         pubDate: parseDbDate(item.created_on).toRFC2822(),

@@ -7,6 +7,8 @@ import {
   Fab,
   Fade,
   Grid,
+  Typography,
+  Box,
 } from "@material-ui/core";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
@@ -178,6 +180,13 @@ const PlaylistGrid = (props: Props) => {
           </GridListTile>
         ))}
       </GridList>
+      {mode === "listen" && playlist.episodes.length === 0 && (
+        <Box textAlign="center">
+          <Typography variant="overline">
+            Deze afspeellijst bevat nog geen opnames
+          </Typography>
+        </Box>
+      )}
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 import {
   Container,
@@ -27,6 +27,7 @@ import {
 import EpisodeCreateForm from "../../src/components/episode-create-form";
 import { useRouter } from "next/router";
 import BottomDrawer from "../../src/components/bottom-drawer";
+import useSmoothScroller from "../../src/hooks/useSmoothScroller";
 
 const findEpisodeById = (room: IRoom, episodeId?: number) => {
   return ([] as IEpisode[])
@@ -127,11 +128,13 @@ const RoomPage = () => {
         open={Boolean(state.recordingEpisode)}
         onClose={actions.recordingEpisode.cancel}
       >
-        <EpisodeCreateForm
-          playlist={state.recordingEpisode?.playlist}
-          onFormChange={actions.recordingEpisode.updateRecording}
-          onFormSuccess={actions.recordingEpisode.finish}
-        />
+        <Box p={2}>
+          <EpisodeCreateForm
+            playlist={state.recordingEpisode?.playlist}
+            onFormChange={actions.recordingEpisode.updateRecording}
+            onFormSuccess={actions.recordingEpisode.finish}
+          />
+        </Box>
       </BottomDrawer>
     </Container>
   );
@@ -149,6 +152,7 @@ const TapesFooter = () => (
 );
 
 const RoomModeSwitcher = () => {
+  const { scrollToTop } = useSmoothScroller();
   const { state, actions } = useRoomContext();
 
   return (
@@ -163,6 +167,7 @@ const RoomModeSwitcher = () => {
         onChange={(_, value) => {
           if (value) {
             actions.mode.change(value);
+            scrollToTop(500);
           }
         }}
         aria-label="text alignment"

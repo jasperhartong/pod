@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useDebounce } from "use-debounce";
 import {
   Box,
   Button,
@@ -57,7 +58,9 @@ const EpisodeCreateForm = ({
   const [serverError, setServerError] = useState<string>();
 
   const disabled = !playlist || formState.isSubmitting;
-  const watchedFields = watch(["title", "image_url"]);
+  const [watchedFields] = useDebounce(watch(["title", "image_url"]), 100, {
+    leading: true,
+  });
 
   useEffect(() => {
     onFormChange({

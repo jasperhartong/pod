@@ -6,25 +6,22 @@ import { RequestData } from "../api/rpc/commands/episode.create.meta";
 import rpcClient from "../api/rpc/client";
 import * as RoomFetch from "../api/rpc/commands/room.fetch.meta";
 import { IEpisode } from "../app-schema/IEpisode";
+import { IResponse } from "../api/IResponse";
 
 export type RoomMode = "listen" | "record";
 
 export interface RoomState {
-  room?: IRoom;
-  slug?: IRoom["slug"];
   mode: RoomMode;
-  playingEpisode:
-    | {
-        episodeId: IEpisode["id"];
-        isPaused: boolean;
-      }
-    | undefined;
-  recordingEpisode:
-    | {
-        partialEpisode: Partial<RequestData>;
-        playlist: IPlaylist;
-      }
-    | undefined;
+  slug?: IRoom["slug"];
+  room?: IResponse<IRoom>;
+  playingEpisode?: {
+    episodeId: IEpisode["id"];
+    isPaused: boolean;
+  };
+  recordingEpisode?: {
+    partialEpisode: Partial<RequestData>;
+    playlist: IPlaylist;
+  };
 }
 
 type ImmerRoomDispatch = (f: (draft: RoomState) => void | RoomState) => void;
@@ -89,11 +86,9 @@ const getActions = (dispatch: ImmerRoomDispatch) => {
           RoomFetch.RequestData,
           RoomFetch.ResponseData
         >("room", "fetch", reqData);
-        if (response.ok) {
-          dispatch((room) => {
-            room.room = response.data;
-          });
-        }
+        dispatch((room) => {
+          room.room = response;
+        });
       },
     },
     recordingEpisode: {

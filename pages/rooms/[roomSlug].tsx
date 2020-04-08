@@ -29,12 +29,6 @@ import { useRouter } from "next/router";
 import BottomDrawer from "../../src/components/bottom-drawer";
 import useSmoothScroller from "../../src/hooks/useSmoothScroller";
 
-const findEpisodeById = (room: IRoom, episodeId?: number) => {
-  return ([] as IEpisode[])
-    .concat(...[...room.playlists].map((playlist) => playlist.episodes))
-    .find((episode) => episode.id === episodeId);
-};
-
 const RoomPageContainer = () => {
   const defaultState: RoomState = {
     mode: "listen",
@@ -73,8 +67,20 @@ const RoomPage = () => {
     );
   }
 
+  if (!room.ok) {
+    return (
+      <Container maxWidth={maxWidth}>
+        <Box textAlign="center" pt={8}>
+          <Typography variant="overline" color="textSecondary">
+            Room not found
+          </Typography>
+        </Box>
+      </Container>
+    );
+  }
+
   const playingItem: IEpisode | undefined = findEpisodeById(
-    room,
+    room.data,
     state.playingEpisode?.episodeId
   );
 
@@ -85,11 +91,11 @@ const RoomPage = () => {
     >
       <Collapse in={mode === "record"}>
         <Box pt={4} pb={2}>
-          <Typography variant="h4">Tapes voor {room.slug}</Typography>
+          <Typography variant="h4">Tapes voor {room.data.slug}</Typography>
         </Box>
       </Collapse>
 
-      {room.playlists.map((playlist) => (
+      {room.data.playlists.map((playlist) => (
         <Box pb={4} key={playlist.id}>
           <PlaylistHeader playlist={playlist} />
           <PlaylistGrid
@@ -142,6 +148,12 @@ const RoomPage = () => {
 
 export default RoomPageContainer;
 
+const findEpisodeById = (room: IRoom, episodeId?: number) => {
+  return ([] as IEpisode[])
+    .concat(...[...room.playlists].map((playlist) => playlist.episodes))
+    .find((episode) => episode.id === episodeId);
+};
+
 const TapesFooter = () => (
   <Box p={4} textAlign="center">
     <SurroundSound fontSize="large" color="disabled" />
@@ -155,10 +167,14 @@ const RoomModeSwitcher = () => {
   const { scrollToTop } = useSmoothScroller();
   const { state, actions } = useRoomContext();
 
+  if (!state.room?.ok) {
+    return null;
+  }
+
   return (
     <Box p={4} textAlign="center">
       <Typography component="div" variant="overline">
-        {state.room?.slug || ""}
+        {state.room.data.slug || ""}
       </Typography>
       <ToggleButtonGroup
         value={state.mode}

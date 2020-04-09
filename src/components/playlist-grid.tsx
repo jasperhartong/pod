@@ -3,9 +3,7 @@ import {
   GridListTile,
   GridListTileBar,
   makeStyles,
-  Chip,
   Fab,
-  Fade,
   Grid,
   Typography,
   Box,
@@ -13,7 +11,6 @@ import {
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import MicIcon from "@material-ui/icons/Mic";
-import AddIcon from "@material-ui/icons/Add";
 import { IPlaylist } from "../app-schema/IPlaylist";
 import useWindowSize from "../hooks/useWindowSize";
 import themeOptionsProvider from "../theme";
@@ -80,7 +77,7 @@ const PlaylistGrid = (props: Props) => {
   return (
     <>
       <GridList cellHeight={cellWidth} cols={cols}>
-        {mode === "record" && (
+        {Boolean(recordingEpisode) && (
           <GridListTile key="new" cols={1}>
             {recordingEpisode && recordingEpisode.partialEpisode.image_url ? (
               <img src={recordingEpisode.partialEpisode.image_url} />
@@ -113,17 +110,6 @@ const PlaylistGrid = (props: Props) => {
                 root: classes.titleBar,
                 title: classes.title,
               }}
-              actionIcon={
-                <Fab
-                  size="small"
-                  style={{ marginRight: 4, marginBottom: 4 }}
-                  color={"primary"}
-                  onClick={() => actions.recordingEpisode.initiate(playlist)}
-                  aria-label={`Nieuwe opname`}
-                >
-                  <AddIcon />
-                </Fab>
-              }
             />
           </GridListTile>
         )}

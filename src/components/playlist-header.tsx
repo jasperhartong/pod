@@ -6,12 +6,15 @@ import {
   Box,
   Typography,
   Collapse,
+  ListItemSecondaryAction,
+  Fab,
 } from "@material-ui/core";
+import AddIcon from "@material-ui/icons/Add";
 import { IPlaylist } from "../app-schema/IPlaylist";
 import { useRoomContext } from "../hooks/useRoomContext";
 
 const PlaylistHeader = ({ playlist }: { playlist: IPlaylist }) => {
-  const { state } = useRoomContext();
+  const { state, actions } = useRoomContext();
   const cover =
     playlist.cover_file &&
     playlist.cover_file.data &&
@@ -48,6 +51,17 @@ const PlaylistHeader = ({ playlist }: { playlist: IPlaylist }) => {
             primary={playlist.title}
             secondary={playlist.description}
           />
+          <ListItemSecondaryAction>
+            <Fab
+              size="small"
+              style={{ marginRight: -8 }}
+              color={"primary"}
+              onClick={() => actions.recordingEpisode.initiate(playlist)}
+              aria-label={`Nieuwe opname`}
+            >
+              <AddIcon />
+            </Fab>
+          </ListItemSecondaryAction>
         </ListItem>
       </Collapse>
     </>

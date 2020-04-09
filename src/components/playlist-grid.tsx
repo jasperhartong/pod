@@ -79,7 +79,7 @@ const PlaylistGrid = (props: Props) => {
 
   return (
     <>
-      <GridList cellHeight={(cellWidth * 4) / 3} cols={cols}>
+      <GridList cellHeight={cellWidth} cols={cols}>
         {mode === "record" && (
           <GridListTile key="new" cols={1}>
             {recordingEpisode && recordingEpisode.partialEpisode.image_url ? (

@@ -5,7 +5,7 @@ import {
   ExpansionPanel,
   ExpansionPanelSummary,
   Typography,
-  ExpansionPanelDetails
+  ExpansionPanelDetails,
 } from "@material-ui/core";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import NewWindowIcon from "@material-ui/icons/OpenInNew";
@@ -19,17 +19,17 @@ const SubscribePanel = ({ slug }: { slug: string }) => {
   const subscribeLinks: { url: string; label: string }[] = [
     {
       label: "Apple Podcast (iPad / iPhone)",
-      url: rssUrl("podcast:", host, slug)
+      url: rssUrl("podcast:", host, slug),
     },
     {
       label: "Apple Podcast (Mac)",
-      url: rssUrl("pcast:", host, slug)
+      url: rssUrl("pcast:", host, slug),
     },
     { label: "RSS Feed", url: rssUrl("feed:", host, slug) },
     {
       label: "XML",
-      url: rssUrl(protocol, host, slug)
-    }
+      url: rssUrl(protocol, host, slug),
+    },
   ];
 
   return (
@@ -40,12 +40,12 @@ const SubscribePanel = ({ slug }: { slug: string }) => {
         id="subscribe-header"
       >
         <Typography>
-          Abboneer in je Podcast App en blijf altijd up-to-date.
+          Abonneer in je Podcast App en blijf altijd up-to-date.
         </Typography>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails id="subscribe-content">
         <List dense>
-          {subscribeLinks.map(link => (
+          {subscribeLinks.map((link) => (
             <ListItem
               component="a"
               key={`${link.url}${link.label}`}

@@ -1,4 +1,5 @@
 import { NextPageContext } from "next";
+import dynamic from "next/dynamic";
 
 import {
   Container,
@@ -15,7 +16,6 @@ import ListenIcon from "@material-ui/icons/Headset";
 import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
 import { IRoom } from "../../src/app-schema/IRoom";
 import { IEpisode } from "../../src/app-schema/IEpisode";
-import SnackbarPlayer from "../../src/components/snackbar-player";
 import SubscribePanel from "../../src/components/subscribe-panel";
 import PlaylistHeader from "../../src/components/playlist-header";
 import PlaylistGrid from "../../src/components/playlist-grid";
@@ -24,12 +24,19 @@ import {
   useRoomContext,
   RoomState,
 } from "../../src/hooks/useRoomContext";
-import EpisodeCreateForm from "../../src/components/episode-create-form";
 import BottomDrawer from "../../src/components/bottom-drawer";
 import useSmoothScroller from "../../src/hooks/useSmoothScroller";
-
 import { IResponse } from "../../src/api/IResponse";
 import roomFetch from "../../src/api/rpc/commands/room.fetch";
+
+// Dynamic imports (load on user interaction)
+const SnackbarPlayer = dynamic(() =>
+  import("../../src/components/snackbar-player")
+);
+const EpisodeCreateForm = dynamic(
+  () => import("../../src/components/episode-create-form"),
+  { loading: () => <div style={{ height: 230 }} /> }
+);
 
 const RoomPageContainer = ({ room }: { room: IResponse<IRoom> }) => {
   const defaultState: RoomState = {

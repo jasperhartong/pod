@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { NextPageContext } from "next";
 
 import {
   Container,
@@ -25,15 +25,17 @@ import {
   RoomState,
 } from "../../src/hooks/useRoomContext";
 import EpisodeCreateForm from "../../src/components/episode-create-form";
-import { useRouter } from "next/router";
 import BottomDrawer from "../../src/components/bottom-drawer";
 import useSmoothScroller from "../../src/hooks/useSmoothScroller";
 
-const RoomPageContainer = () => {
+import { IResponse } from "../../src/api/IResponse";
+import roomFetch from "../../src/api/rpc/commands/room.fetch";
+
+const RoomPageContainer = ({ room }: { room: IResponse<IRoom> }) => {
   const defaultState: RoomState = {
     mode: "listen",
-    slug: undefined,
-    room: undefined,
+    slug: room.ok ? room.data.slug : undefined,
+    room,
     recordingEpisode: undefined,
     playingEpisode: undefined,
   };
@@ -46,12 +48,7 @@ const RoomPageContainer = () => {
 };
 
 const RoomPage = () => {
-  const { query } = useRouter();
   const { state, actions } = useRoomContext();
-
-  useEffect(() => {
-    actions.room.initiate(query.roomSlug as string);
-  }, [query.roomSlug]);
 
   // derived state
   const { room, mode, slug } = state;
@@ -208,3 +205,12 @@ const RoomModeSwitcher = () => {
     </Box>
   );
 };
+
+export async function getServerSideProps(context: NextPageContext) {
+  const room = await roomFetch.handleReqData({
+    slug: context.query.roomSlug as string,
+  });
+  return {
+    props: { room },
+  };
+}

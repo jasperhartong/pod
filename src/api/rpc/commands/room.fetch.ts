@@ -4,9 +4,7 @@ import { collectionsBackend } from "../../collection-storage";
 
 const roomFetch = new BaseRpcCommand<RequestData, ResponseData>(
   meta,
-  async (req, _) => {
-    const reqData = req.body;
-
+  async (reqData) => {
     return await collectionsBackend.getRoomBySlug(reqData.slug);
   }
 );

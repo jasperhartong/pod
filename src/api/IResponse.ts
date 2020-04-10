@@ -4,7 +4,7 @@ type HttpStatusCode = number;
 export interface IOK<T> {
   ok: true;
   data: T;
-  warning?: string;
+  warning: string | null;
 }
 
 export interface IERR {
@@ -15,10 +15,13 @@ export interface IERR {
 
 export type IResponse<T> = IOK<T> | IERR;
 
-export const OK = <T>(data: T, warning?: string): IResponse<T> => ({
+export const OK = <T>(
+  data: T,
+  warning: string | null = null
+): IResponse<T> => ({
   ok: true,
   data,
-  warning
+  warning,
 });
 
 export const ERR = <T>(

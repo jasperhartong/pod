@@ -55,7 +55,7 @@ interface Props {
 
 const PlaylistGrid = (props: Props) => {
   const classes = useStyles();
-  const { state, actions } = useRoomContext();
+  const { state } = useRoomContext();
   const [width, _] = useWindowSize();
 
   const { mode, recordingEpisode } = state;
@@ -126,6 +126,7 @@ const PlaylistGrid = (props: Props) => {
             cols={1}
           >
             <img
+              loading="lazy"
               src={
                 episode.image_file &&
                 episode.image_file.data &&

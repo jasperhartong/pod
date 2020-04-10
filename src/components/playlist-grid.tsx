@@ -1,12 +1,9 @@
 import {
-  GridList,
-  GridListTile,
-  GridListTileBar,
   makeStyles,
-  Fab,
-  Grid,
   Typography,
   Box,
+  ButtonBase,
+  Link,
 } from "@material-ui/core";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
@@ -68,114 +65,177 @@ const PlaylistGrid = (props: Props) => {
     maxWidth,
   } = props;
 
-  const maxPixelWidth = maxWidth
-    ? Math.min(themeOptionsProvider.theme.breakpoints.width(maxWidth), width)
-    : width;
-  const cellWidth = 160;
-  const cols = Math.floor(maxPixelWidth / cellWidth);
+  // const maxPixelWidth = maxWidth
+  //   ? Math.min(themeOptionsProvider.theme.breakpoints.width(maxWidth), width)
+  //   : width;
+  // const cellWidth = 160;
+  // const cols = Math.floor(maxPixelWidth / cellWidth);
 
   return (
-    <>
-      <GridList cellHeight={cellWidth} cols={cols}>
-        {Boolean(recordingEpisode) && (
-          <GridListTile key="new" cols={1}>
-            {recordingEpisode && recordingEpisode.partialEpisode.image_url ? (
-              <img src={recordingEpisode.partialEpisode.image_url} />
-            ) : (
-              <Grid
-                container
-                style={{
-                  height: "100%",
-                  width: "100%",
-                  background:
-                    themeOptionsProvider.theme.palette.background.paper,
-                }}
-                justify="space-around"
-                alignContent="center"
-                alignItems="center"
-              >
-                <Grid item>
-                  <MicIcon
-                    fontSize="large"
-                    color="secondary"
-                    style={{ opacity: 0.4 }}
-                  />
-                </Grid>
-              </Grid>
-            )}
-
-            <GridListTileBar
-              title={recordingEpisode?.partialEpisode.title || `Nieuwe opname`}
-              classes={{
-                root: classes.titleBar,
-                title: classes.title,
-              }}
-            />
-          </GridListTile>
-        )}
-
-        {playlist.episodes.map((episode) => (
-          <GridListTile
-            style={{
-              border:
+    <div
+      style={{
+        //https://mastery.games/post/tile-layouts/
+        display: "grid",
+        gridColumnGap: 16,
+        gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+      }}
+    >
+      {playlist.episodes.map((episode) => (
+        <div>
+          <Box>
+            <ButtonBase
+              focusRipple={true}
+              onClick={() =>
                 episode.id === playingId
-                  ? `1px solid ${themeOptionsProvider.theme.palette.primary.main}`
-                  : "1px solid transparent",
-            }}
-            key={episode.id}
-            cols={1}
-          >
-            <img
-              loading="lazy"
-              src={
-                episode.image_file &&
-                episode.image_file.data &&
-                episode.image_file.data.thumbnails !== null
-                  ? episode.image_file.data.thumbnails.find(
-                      (t) => t.height > 100
-                    )!.url
-                  : ""
+                  ? setIsPaused(!isPaused)
+                  : setPlayingId(episode.id)
               }
-              alt={episode.title || undefined}
-            />
-            <GridListTileBar
-              title={episode.title}
-              classes={{
-                root: classes.titleBar,
-                title: classes.title,
+              style={{
+                height: "100%",
+                width: "100%",
+                paddingBottom: "100%",
+                boxShadow: "rgba(0,0,0,0.8) 1px 1px 2px",
+                borderBottom:
+                  episode.id === playingId
+                    ? `6px solid ${themeOptionsProvider.theme.palette.primary.main}`
+                    : "6px solid transparent",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundImage: `url(${
+                  episode.image_file &&
+                  episode.image_file.data &&
+                  episode.image_file.data.thumbnails !== null
+                    ? episode.image_file.data.thumbnails.find(
+                        (t) => t.height > 100
+                      )!.url
+                    : ""
+                })`,
               }}
-              actionIcon={
-                <Fab
-                  size="small"
-                  style={{ marginRight: 4, marginBottom: 4 }}
-                  color={episode.id === playingId ? "primary" : "secondary"}
+            />
+            <Box mt={1} mb={2} height={42} overflow="hidden" textAlign="left">
+              <Typography variant="subtitle2">
+                <Link
+                  tabIndex={-1}
+                  color={episode.id === playingId ? "primary" : "inherit"}
+                  href="#"
                   onClick={() =>
                     episode.id === playingId
                       ? setIsPaused(!isPaused)
                       : setPlayingId(episode.id)
                   }
-                  aria-label={`play ${episode.title}`}
                 >
-                  {episode.id === playingId && !isPaused ? (
-                    <PauseIcon />
-                  ) : (
-                    <PlayIcon />
-                  )}
-                </Fab>
-              }
-            />
-          </GridListTile>
-        ))}
-      </GridList>
-      {mode === "listen" && playlist.episodes.length === 0 && (
-        <Box textAlign="center">
-          <Typography variant="overline">
-            Deze afspeellijst bevat nog geen opnames
-          </Typography>
-        </Box>
-      )}
-    </>
+                  {episode.title}
+                </Link>
+              </Typography>
+            </Box>
+          </Box>
+        </div>
+      ))}
+    </div>
   );
+
+  // return (
+  //   <>
+  //     <GridList cellHeight={cellWidth} cols={cols}>
+  //       {Boolean(recordingEpisode) && (
+  //         <GridListTile key="new" cols={1}>
+  //           {recordingEpisode && recordingEpisode.partialEpisode.image_url ? (
+  //             <img src={recordingEpisode.partialEpisode.image_url} />
+  //           ) : (
+  //             <Grid
+  //               container
+  //               style={{
+  //                 height: "100%",
+  //                 width: "100%",
+  //                 background:
+  //                   themeOptionsProvider.theme.palette.background.paper,
+  //               }}
+  //               justify="space-around"
+  //               alignContent="center"
+  //               alignItems="center"
+  //             >
+  //               <Grid item>
+  //                 <MicIcon
+  //                   fontSize="large"
+  //                   color="secondary"
+  //                   style={{ opacity: 0.4 }}
+  //                 />
+  //               </Grid>
+  //             </Grid>
+  //           )}
+
+  //           <GridListTileBar
+  //             title={recordingEpisode?.partialEpisode.title || `Nieuwe opname`}
+  //             classes={{
+  //               root: classes.titleBar,
+  //               title: classes.title,
+  //             }}
+  //           />
+  //         </GridListTile>
+  //       )}
+
+  //       {playlist.episodes.map((episode) => (
+  //         <GridListTile
+  //           style={{
+  //             border:
+  //               episode.id === playingId
+  //                 ? `1px solid ${themeOptionsProvider.theme.palette.primary.main}`
+  //                 : "1px solid transparent",
+  //           }}
+  //           key={episode.id}
+  //           cols={1}
+  //         >
+  //           <img
+  //             loading="lazy"
+  //             src={
+  //               episode.image_file &&
+  //               episode.image_file.data &&
+  //               episode.image_file.data.thumbnails !== null
+  //                 ? episode.image_file.data.thumbnails.find(
+  //                     (t) => t.height > 100
+  //                   )!.url
+  //                 : ""
+  //             }
+  //             alt={episode.title || undefined}
+  //           />
+  //           <GridListTileBar
+  //             title={episode.title}
+  //             classes={{
+  //               root: classes.titleBar,
+  //               title: classes.title,
+  //             }}
+  //             actionIcon={
+  //               <Fab
+  //                 size="small"
+  //                 style={{ marginRight: 4, marginBottom: 4 }}
+  //                 color={episode.id === playingId ? "primary" : "secondary"}
+  //                 onClick={() =>
+  //                   episode.id === playingId
+  //                     ? setIsPaused(!isPaused)
+  //                     : setPlayingId(episode.id)
+  //                 }
+  //                 aria-label={`play ${episode.title}`}
+  //               >
+  //                 {episode.id === playingId && !isPaused ? (
+  //                   <PauseIcon />
+  //                 ) : (
+  //                   <PlayIcon />
+  //                 )}
+  //               </Fab>
+  //             }
+  //           />
+  //         </GridListTile>
+  //       ))}
+  //     </GridList>
+  //     {mode === "listen" && playlist.episodes.length === 0 && (
+  //       <Box textAlign="center">
+  //         <Typography variant="overline">
+  //           Deze afspeellijst bevat nog geen opnames
+  //         </Typography>
+  //       </Box>
+  //     )}
+  //   </>
+  // );
 };
 
 export default PlaylistGrid;

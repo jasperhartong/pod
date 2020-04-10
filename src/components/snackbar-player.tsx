@@ -11,7 +11,7 @@ import {
   Typography,
   Fab,
 } from "@material-ui/core";
-import ReactPlayer from "react-player";
+import FilePlayer from "react-player/lib/players/FilePlayer";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import CloseIcon from "@material-ui/icons/Close";
@@ -57,7 +57,7 @@ const SnackbarPlayer = ({
         message={
           !!playingItem && (
             <Box>
-              <ReactPlayer
+              <FilePlayer
                 url={playingItem.audio_file}
                 playing={!isPaused}
                 width="0px"

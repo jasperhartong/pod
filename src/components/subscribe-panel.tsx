@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   List,
   ListItem,
@@ -10,27 +11,16 @@ import {
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import NewWindowIcon from "@material-ui/icons/OpenInNew";
 import { rssUrl } from "../urls";
+import { IRoom } from "../app-schema/IRoom";
+
+type SubscribeLink = { url: string; label: string };
 
 const SubscribePanel = ({ slug }: { slug: string }) => {
-  const host = typeof window !== "undefined" ? window.location.host : "";
-  const protocol =
-    typeof window !== "undefined" ? window.location.protocol : "";
+  const [subscribeLinks, setSubscribeLinks] = useState<SubscribeLink[]>([]);
 
-  const subscribeLinks: { url: string; label: string }[] = [
-    {
-      label: "Apple Podcast (iPad / iPhone)",
-      url: rssUrl("podcast:", host, slug),
-    },
-    {
-      label: "Apple Podcast (Mac)",
-      url: rssUrl("pcast:", host, slug),
-    },
-    { label: "RSS Feed", url: rssUrl("feed:", host, slug) },
-    {
-      label: "XML",
-      url: rssUrl(protocol, host, slug),
-    },
-  ];
+  useEffect(() => {
+    setSubscribeLinks(subscribeLinksForCurrentHost(slug));
+  }, []);
 
   return (
     <ExpansionPanel>
@@ -67,3 +57,27 @@ const SubscribePanel = ({ slug }: { slug: string }) => {
 };
 
 export default SubscribePanel;
+
+const subscribeLinksForCurrentHost = (slug: IRoom["slug"]) => {
+  // Only works correctly on client side
+  const host = typeof window !== "undefined" ? window.location.host : "";
+  const protocol =
+    typeof window !== "undefined" ? window.location.protocol : "";
+
+  const subscribeLinks: SubscribeLink[] = [
+    {
+      label: "Apple Podcast (iPad / iPhone)",
+      url: rssUrl("podcast:", host, slug),
+    },
+    {
+      label: "Apple Podcast (Mac)",
+      url: rssUrl("pcast:", host, slug),
+    },
+    { label: "RSS Feed", url: rssUrl("feed:", host, slug) },
+    {
+      label: "XML",
+      url: rssUrl(protocol, host, slug),
+    },
+  ];
+  return subscribeLinks;
+};

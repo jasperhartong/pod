@@ -32,15 +32,13 @@
     "smooth-scroll": "^16.1.3",
     "use-debounce": "^3.4.1",
     "use-immer": "^0.3.5",
-    "uuid4": "^1.1.4",
-    "yup": "^0.28.3"
+    "uuid4": "^1.1.4"
   },
   "devDependencies": {
     "@types/luxon": "^1.21.0",
     "@types/node": "^13.9.2",
     "@types/react": "^16.9.25",
     "@types/smooth-scroll": "^16.1.0",
-    "@types/yup": "^0.26.33",
     "typescript": "^3.8.3"
   }
 }

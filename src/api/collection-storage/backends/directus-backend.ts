@@ -112,7 +112,6 @@ class DirectusTapesMeBackend implements IBackend {
         episodeId,
         episode
       );
-      // TODO: Add Yup validation per item!
       return OK<IEpisode>((itemResponse.data as unknown) as IEpisode);
     } catch (error) {
       console.error(error);

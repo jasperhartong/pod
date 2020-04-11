@@ -39,10 +39,10 @@ const EpisodeCreateForm = dynamic(
   { loading: () => <div style={{ height: 230 }} /> }
 );
 
-const RoomPageContainer = ({ room }: { room: IResponse<IRoom> }) => {
+const RoomPageContainer = ({ room }: { room?: IRoom }) => {
   const defaultState: RoomState = {
     mode: "listen",
-    slug: room.ok ? room.data.slug : undefined,
+    slug: room ? room.slug : undefined,
     room,
     recordingEpisode: undefined,
     playingEpisode: undefined,
@@ -72,7 +72,7 @@ const RoomPage = () => {
     );
   }
 
-  if (!room.ok || !slug) {
+  if (!slug) {
     return (
       <Container maxWidth={maxWidth}>
         <Box textAlign="center" pt={8}>
@@ -85,7 +85,7 @@ const RoomPage = () => {
             color="textSecondary"
             style={{ opacity: 0.2 }}
           >
-            {!room.ok ? room.error : "unknown error"}
+            {"unknown error"}
           </Typography>
         </Box>
       </Container>
@@ -93,7 +93,7 @@ const RoomPage = () => {
   }
 
   const playingItem: IEpisode | undefined = findEpisodeById(
-    room.data,
+    room,
     state.playingEpisode?.episodeId
   );
 
@@ -104,11 +104,11 @@ const RoomPage = () => {
     >
       <Collapse in={mode === "record"}>
         <Box pt={4} pb={2}>
-          <Typography variant="h4">Tapes voor {room.data.slug}</Typography>
+          <Typography variant="h4">Tapes voor {room.slug}</Typography>
         </Box>
       </Collapse>
 
-      {room.data.playlists.map((playlist) => (
+      {room.playlists.map((playlist) => (
         <Box pb={4} key={playlist.id}>
           <PlaylistHeader playlist={playlist} />
           <PlaylistGrid
@@ -179,14 +179,14 @@ const RoomModeSwitcher = () => {
   const { scrollToTop } = useSmoothScroller();
   const { state, actions } = useRoomContext();
 
-  if (!state.room?.ok) {
+  if (!state.room) {
     return null;
   }
 
   return (
     <Box p={4} textAlign="center">
       <Typography component="div" variant="overline">
-        {state.room.data.slug || ""}
+        {state.room.slug || ""}
       </Typography>
       <ToggleButtonGroup
         value={state.mode}
@@ -220,8 +220,11 @@ export async function getServerSideProps(context: NextPageContext) {
   if (isRight(eitherRoom)) {
     const room = eitherRoom.right;
     return {
-      props: { room: OK<IRoom>(room) },
+      props: { room },
     };
+  } else {
+    // TODO: handle error
+    console.error(eitherRoom.left);
   }
   return null;
 }

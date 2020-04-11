@@ -1,4 +1,4 @@
-import { Errors } from "io-ts";
+import { Errors, failure } from "io-ts";
 import { isRight, left, Either } from "fp-ts/lib/Either";
 import { IRPCMeta } from "./rpc-meta";
 import { IResponse } from "../../../IResponse";
@@ -26,15 +26,14 @@ export const RPCHandlerFactory = <Tq, Oq, Iq, Ts, Os, Is>(
         if (resData.ok) {
           // Validate result
           return this.meta.resValidator.decode(resData.data);
+        } else {
+          return failure(undefined, [], resData.error);
         }
       } else {
         console.error("invalid request");
         console.error(reqResult.left);
         return left(reqResult.left);
       }
-      return left([
-        /* Add custom error here? */
-      ]);
     };
   }
   return new RPCHandler(meta, handler);

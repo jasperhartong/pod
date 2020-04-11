@@ -1,13 +1,13 @@
+import { isRight } from "fp-ts/lib/Either";
 import { TypeOf } from "io-ts";
 import React, { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { IRoom } from "../app-schema/IRoom";
 import { IPlaylist } from "../app-schema/IPlaylist";
-import rpcClient from "../api/rpc/client";
 import { IEpisode } from "../app-schema/IEpisode";
-import { IResponse } from "../api/IResponse";
 import episodeCreateMeta from "../api/rpc/commands/episode.create.meta";
 import roomFetchMeta from "../api/rpc/commands/room.fetch.meta";
+import { RPCClientFactory } from "../api/rpc/client";
 
 type EpisodeCreateRequestData = TypeOf<
   typeof episodeCreateMeta["reqValidator"]
@@ -20,7 +20,7 @@ export type RoomMode = "listen" | "record";
 export interface RoomState {
   mode: RoomMode;
   slug?: IRoom["slug"];
-  room?: IResponse<IRoom>;
+  room?: IRoom;
   playingEpisode?: {
     episodeId: IEpisode["id"];
     isPaused: boolean;
@@ -86,16 +86,17 @@ const getActions = (dispatch: ImmerRoomDispatch) => {
         if (!slug) {
           return;
         }
-        const reqData: RoomFetchRequestData = {
+        const eitherRoom = await RPCClientFactory(roomFetchMeta).call({
           slug,
-        };
-        const response = await rpcClient.call<
-          RoomFetchRequestData,
-          RoomFetchResponseData
-        >("room", "fetch", reqData);
-        dispatch((room) => {
-          room.room = response;
         });
+        if (isRight(eitherRoom)) {
+          dispatch((room) => {
+            room.room = eitherRoom.right;
+          });
+        } else {
+          // TODO: handle error
+          console.error(eitherRoom.left);
+        }
       },
     },
     recordingEpisode: {

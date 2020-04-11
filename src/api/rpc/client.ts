@@ -1,36 +1,40 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
-import { IResponse } from "../IResponse";
+import { IRPCMeta } from "./commands/base/rpc-meta";
+import { Errors, failure } from "io-ts";
+import { Either } from "fp-ts/lib/Either";
 
 export const rpcBasePath = `/api/rpc/`;
 
-export const rpcUrl = (domain: string, action: string) =>
-  `${rpcBasePath}${domain}.${action}`;
+export const RPCClientFactory = <Tq, Oq, Iq, Ts, Os, Is>(
+  meta: IRPCMeta<Tq, Oq, Iq, Ts, Os, Is>
+) => {
+  class RPCClient<Tq, Oq, Iq, Ts, Os, Is> {
+    private RPCUrl = (domain: string, action: string) =>
+      `${this.rpcBasePath}${domain}.${action}`;
 
-class RpcClient {
-  constructor(
-    private client = axios.create({
-      timeout: 10000
-    })
-  ) {}
-  public async call<ReqData, ResData>(
-    domain: string,
-    action: string,
-    data: ReqData
-  ): Promise<IResponse<ResData>> {
-    try {
-      const response = await this.client.post<
-        ReqData,
-        AxiosResponse<IResponse<ResData>>
-      >(rpcUrl(domain, action), data);
+    constructor(
+      private meta: IRPCMeta<Tq, Oq, Iq, Ts, Os, Is> = meta,
+      private rpcBasePath: string = `/api/rpc/`,
+      private client = axios.create({
+        timeout: 10000,
+      })
+    ) {}
 
-      return response.data;
-    } catch (error) {
-      const axiosError = error as AxiosError;
-      console.error("RpcClient.call", axiosError.message);
-      return { ok: false, status: 500, error: axiosError.message };
+    public async call(data: Tq): Promise<Either<Errors, Ts>> {
+      try {
+        const response = await this.client.post<
+          Tq,
+          AxiosResponse<Either<Errors, Ts>>
+        >(this.RPCUrl(this.meta.domain, this.meta.action), data);
+        // Internal API, no need to validate again.
+        return response.data;
+      } catch (error) {
+        const axiosError = error as AxiosError;
+        console.error("RpcClient.call", axiosError.message);
+        return failure(undefined, [], axiosError.message);
+      }
     }
   }
-}
 
-const rpcClient = new RpcClient();
-export default rpcClient;
+  return new RPCClient(meta);
+};

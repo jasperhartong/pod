@@ -3,9 +3,10 @@ import { useState, useEffect } from "react";
 import axios, { AxiosRequestConfig } from "axios";
 import { IResponse, OK, ERR } from "../api/IResponse";
 import useLoadingState from "./useLoadingState";
-import rpcClient from "../api/rpc/client";
 
 import signUrlCreateMeta from "../api/rpc/commands/signedurl.create.meta";
+import { RPCClientFactory } from "../api/rpc/client";
+import { isRight } from "fp-ts/lib/Either";
 type RequestData = TypeOf<typeof signUrlCreateMeta["reqValidator"]>;
 type ResponseData = TypeOf<typeof signUrlCreateMeta["resValidator"]>;
 
@@ -32,16 +33,12 @@ const useSignedMediaUploader = (): {
     setLoading(true);
 
     // Get SignedUpload Url
-    const reqData: RequestData = {
+    const eitherSignedUrl = await RPCClientFactory(signUrlCreateMeta).call({
       fileName: file.name,
       fileType: file.type,
-    };
-    const signedUrlCreation = await rpcClient.call<RequestData, ResponseData>(
-      "signedurl",
-      "create",
-      reqData
-    );
-    if (!signedUrlCreation.ok) {
+    });
+
+    if (!isRight(eitherSignedUrl)) {
       setError(
         `File ${file.name} could not be uploaded: signed url creation failed`
       );
@@ -50,12 +47,12 @@ const useSignedMediaUploader = (): {
 
     // Upload file
     const response = await uploadMedia(
-      signedUrlCreation.data.uploadUrl,
+      eitherSignedUrl.right.uploadUrl,
       file,
       file.type
     );
     if (response.ok) {
-      setData(signedUrlCreation.data);
+      setData(eitherSignedUrl.right);
     } else {
       setError(`File ${file.name} could not be uploaded`);
     }

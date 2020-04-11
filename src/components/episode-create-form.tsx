@@ -1,4 +1,5 @@
 import { TypeOf } from "io-ts";
+import { isRight } from "fp-ts/lib/Either";
 import { useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
 import {
@@ -11,13 +12,12 @@ import {
 } from "@material-ui/core";
 import { useForm, Controller, ErrorMessage } from "react-hook-form";
 import { IPlaylist } from "../app-schema/IPlaylist";
-import rpcClient from "../api/rpc/client";
 import MediaDropZone from "./media-dropzone";
 import { IEpisode } from "../app-schema/IEpisode";
-
 import episodeCreateMeta from "../api/rpc/commands/episode.create.meta";
+import { RPCClientFactory } from "../api/rpc/client";
+
 type RequestData = TypeOf<typeof episodeCreateMeta["reqValidator"]>;
-type ResponseData = TypeOf<typeof episodeCreateMeta["resValidator"]>;
 
 const defaultValues: RequestData = {
   title: "",
@@ -75,19 +75,16 @@ const EpisodeCreateForm = ({
       onSubmit={handleSubmit(async (data) => {
         setServerError(undefined);
         const reqData = data as RequestData;
-        const submission = await rpcClient.call<RequestData, ResponseData>(
-          "episode",
-          "create",
-          {
-            ...defaultValues,
-            ...reqData,
-            playlist: playlist ? playlist.id.toString() : "",
-          }
-        );
-        if (submission.ok) {
-          onFormSuccess(submission.data);
+        const eitherEpisode = await RPCClientFactory(episodeCreateMeta).call({
+          ...defaultValues,
+          ...reqData,
+          playlist: playlist ? playlist.id.toString() : "",
+        });
+
+        if (isRight(eitherEpisode)) {
+          onFormSuccess(eitherEpisode.right);
         } else {
-          setServerError(submission.error);
+          setServerError(eitherEpisode.left.toLocaleString());
         }
       })}
     >

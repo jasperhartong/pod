@@ -116,7 +116,6 @@ const RoomPage = () => {
             setPlayingId={actions.playingEpisode.initiate}
             isPaused={Boolean(state.playingEpisode?.isPaused)}
             setIsPaused={actions.playingEpisode.pause}
-            maxWidth={maxWidth}
           />
         </Box>
       ))}

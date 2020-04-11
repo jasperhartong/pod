@@ -95,7 +95,7 @@ const SnackbarPlayer = ({
                     <Grid item>
                       <Fab
                         onClick={() => onPlayPause(!isPaused)}
-                        color="primary"
+                        color="secondary"
                         aria-label="play/pause"
                       >
                         {!isPaused ? <PauseIcon /> : <PlayIcon />}
@@ -103,7 +103,7 @@ const SnackbarPlayer = ({
                     </Grid>
                     <Grid item>
                       <IconButton
-                        color="primary"
+                        color="inherit"
                         aria-label="close"
                         onClick={onClose}
                       >

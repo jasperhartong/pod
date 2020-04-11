@@ -121,6 +121,12 @@ class ThemeOptionsProvider implements IThemeOptionsProvider {
   }
 
   public setupListeners = (callback: () => void) => {
+    if (this.lightTheme === this.darkTheme) {
+      console.info(
+        "ThemeOptionsProvider:: Using same themes, not listening for updates"
+      );
+      return false;
+    }
     this.callback = callback;
     if (typeof window !== "undefined" && window.matchMedia) {
       window
@@ -141,7 +147,10 @@ class ThemeOptionsProvider implements IThemeOptionsProvider {
     if (this.callback) {
       this.callback();
     }
-    console.warn("updating theme to:", this.themePaletteType);
+    console.info(
+      "ThemeOptionsProvider:: updating theme to:",
+      this.themePaletteType
+    );
   };
 
   private createMuiTheme = () => {

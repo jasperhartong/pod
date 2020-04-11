@@ -1,4 +1,3 @@
-import { useState, useEffect } from "react";
 import { NextPageContext } from "next";
 import dynamic from "next/dynamic";
 

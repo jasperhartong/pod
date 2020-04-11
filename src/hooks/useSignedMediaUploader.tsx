@@ -7,7 +7,6 @@ import useLoadingState from "./useLoadingState";
 import signUrlCreateMeta from "../api/rpc/commands/signedurl.create.meta";
 import { RPCClientFactory } from "../api/rpc/client";
 import { isRight } from "fp-ts/lib/Either";
-type RequestData = TypeOf<typeof signUrlCreateMeta["reqValidator"]>;
 type ResponseData = TypeOf<typeof signUrlCreateMeta["resValidator"]>;
 
 const useSignedMediaUploader = (): {

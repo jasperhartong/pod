@@ -26,7 +26,6 @@ import {
 } from "../../src/hooks/useRoomContext";
 import BottomDrawer from "../../src/components/bottom-drawer";
 import useSmoothScroller from "../../src/hooks/useSmoothScroller";
-import { IResponse, OK } from "../../src/api/IResponse";
 import roomFetch from "../../src/api/rpc/commands/room.fetch";
 import { isRight } from "fp-ts/lib/Either";
 

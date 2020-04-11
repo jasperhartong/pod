@@ -12,8 +12,6 @@ import { RPCClientFactory } from "../api/rpc/client";
 type EpisodeCreateRequestData = TypeOf<
   typeof episodeCreateMeta["reqValidator"]
 >;
-type RoomFetchRequestData = TypeOf<typeof roomFetchMeta["reqValidator"]>;
-type RoomFetchResponseData = TypeOf<typeof roomFetchMeta["resValidator"]>;
 
 export type RoomMode = "listen" | "record";
 

@@ -22,9 +22,6 @@ const useStyles = makeStyles((theme) => ({
   tileRoot: {
     position: "relative",
     cursor: "pointer",
-    ["&:hover"]: {
-      textDecoration: "underline",
-    },
   },
   imageButton: {
     height: "100%",

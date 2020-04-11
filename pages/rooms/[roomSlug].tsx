@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { NextPageContext } from "next";
 import dynamic from "next/dynamic";
 
@@ -61,7 +62,7 @@ const RoomPage = () => {
   const { room, mode, slug } = state;
   const maxWidth: Breakpoint = mode === "listen" ? "sm" : "lg";
 
-  if (!slug || !room) {
+  if (!room) {
     return (
       <Container maxWidth={maxWidth}>
         <Box textAlign="center" pt={8}>
@@ -71,7 +72,7 @@ const RoomPage = () => {
     );
   }
 
-  if (!room.ok) {
+  if (!room.ok || !slug) {
     return (
       <Container maxWidth={maxWidth}>
         <Box textAlign="center" pt={8}>
@@ -84,7 +85,7 @@ const RoomPage = () => {
             color="textSecondary"
             style={{ opacity: 0.2 }}
           >
-            {room.error}
+            {!room.ok ? room.error : "unknown error"}
           </Typography>
         </Box>
       </Container>

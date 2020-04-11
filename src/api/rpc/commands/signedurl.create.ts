@@ -3,7 +3,7 @@ import { BaseRpcCommand } from "./base/base-command";
 import { fileStorageBackend } from "../../file-storage/index";
 import signedurlCreateMeta, {
   RequestData,
-  ResponseData
+  ResponseData,
 } from "./signedurl.create.meta";
 
 const getFileExtension = (fileName: string): string | undefined => {
@@ -16,8 +16,7 @@ const getFileExtension = (fileName: string): string | undefined => {
 
 const signedUrlCreate = new BaseRpcCommand<RequestData, ResponseData>(
   signedurlCreateMeta,
-  async (req, _) => {
-    const reqData = req.body;
+  async (reqData) => {
     const originalExtension = getFileExtension(reqData.fileName);
     const obscuredUniqueFileName = originalExtension
       ? `${uuid4()}.${originalExtension}`

@@ -1,17 +1,14 @@
 import { BaseRpcCommand } from "./base/base-command";
 import episodeCreateMeta, {
   RequestData,
-  ResponseData
+  ResponseData,
 } from "./episode.create.meta";
 import { collectionsBackend } from "../../collection-storage";
 import { OK } from "../../IResponse";
 
 const episodeCreate = new BaseRpcCommand<RequestData, ResponseData>(
   episodeCreateMeta,
-  async (req, _) => {
-    const reqData: RequestData = req.body;
-    console.warn(reqData);
-
+  async (reqData) => {
     const imageUpload = await collectionsBackend.addExternalImage(
       reqData.image_url
     );
@@ -22,7 +19,7 @@ const episodeCreate = new BaseRpcCommand<RequestData, ResponseData>(
       {
         title: reqData.title,
         status: reqData.status,
-        audio_file: reqData.audio_url
+        audio_file: reqData.audio_url,
       },
       reqData.playlist,
       imageUpload.data.id.toString()

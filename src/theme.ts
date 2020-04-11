@@ -6,7 +6,7 @@ const font = "'Questrial', sans-serif";
 
 export enum ThemePaletteType {
   DARK = "dark",
-  LIGHT = "light"
+  LIGHT = "light",
 }
 
 export enum AppColors {
@@ -16,83 +16,83 @@ export enum AppColors {
   MAGENTA = "rgb(221,70,98)",
   YELLOW = "rgb(241,197,47)",
   IOS_LIGHT_BACKGROUND = "rgb(250,250,250)",
-  IOS_DARK_BACKGROUND = "rgb(55,55,55)"
+  IOS_DARK_BACKGROUND = "rgb(55,55,55)",
 }
 
 const baseTheme: ThemeOptions = {
   typography: {
     h1: {
-      fontFamily: font
+      fontFamily: font,
     },
     h2: {
-      fontFamily: font
+      fontFamily: font,
     },
     h3: {
-      fontFamily: font
+      fontFamily: font,
     },
     h4: {
-      fontFamily: font
+      fontFamily: font,
     },
     h5: {
-      fontFamily: font
+      fontFamily: font,
     },
     h6: {
-      fontFamily: font
+      fontFamily: font,
     },
     overline: {
-      fontFamily: font
+      fontFamily: font,
     },
     button: {
-      fontFamily: font
-    }
+      fontFamily: font,
+    },
   },
   palette: {
     primary: {
-      main: AppColors.BLUE
+      main: AppColors.BLUE,
     },
     secondary: {
-      main: AppColors.IOS_DARK_BACKGROUND
+      main: AppColors.IOS_DARK_BACKGROUND,
     },
     error: {
-      main: AppColors.MAGENTA
-    }
-  }
+      main: AppColors.MAGENTA,
+    },
+  },
 };
 
 const iOSlightTheme: ThemeOptions = {
   palette: {
     type: "light",
     background: {
-      default: AppColors.IOS_LIGHT_BACKGROUND
+      default: AppColors.IOS_LIGHT_BACKGROUND,
     },
     primary: {
-      main: AppColors.BLUE
+      main: AppColors.BLUE,
     },
     secondary: {
-      main: AppColors.IOS_DARK_BACKGROUND
+      main: AppColors.IOS_DARK_BACKGROUND,
     },
     error: {
-      main: AppColors.MAGENTA
-    }
-  }
+      main: AppColors.MAGENTA,
+    },
+  },
 };
 
 const iOSDarkTheme: ThemeOptions = {
   palette: {
     type: "dark",
     background: {
-      default: AppColors.IOS_DARK_BACKGROUND
+      default: AppColors.IOS_DARK_BACKGROUND,
     },
     primary: {
-      main: AppColors.BLUE
+      main: AppColors.BLUE,
     },
     secondary: {
-      main: AppColors.IOS_LIGHT_BACKGROUND
+      main: AppColors.IOS_LIGHT_BACKGROUND,
     },
     error: {
-      main: AppColors.MAGENTA
-    }
-  }
+      main: AppColors.MAGENTA,
+    },
+  },
 };
 
 interface IThemeOptionsProvider {
@@ -121,14 +121,20 @@ class ThemeOptionsProvider implements IThemeOptionsProvider {
   }
 
   public setupListeners = (callback: () => void) => {
+    if (this.lightTheme === this.darkTheme) {
+      console.info(
+        "ThemeOptionsProvider:: Using same themes, not listening for updates"
+      );
+      return false;
+    }
     this.callback = callback;
     if (typeof window !== "undefined" && window.matchMedia) {
       window
         .matchMedia("(prefers-color-scheme: dark)")
-        .addListener(e => e.matches && this.updateTheme());
+        .addListener((e) => e.matches && this.updateTheme());
       window
         .matchMedia("(prefers-color-scheme: light)")
-        .addListener(e => e.matches && this.updateTheme());
+        .addListener((e) => e.matches && this.updateTheme());
       this.updateTheme();
       return true;
     }
@@ -141,7 +147,10 @@ class ThemeOptionsProvider implements IThemeOptionsProvider {
     if (this.callback) {
       this.callback();
     }
-    console.warn("updating theme to:", this.themePaletteType);
+    console.info(
+      "ThemeOptionsProvider:: updating theme to:",
+      this.themePaletteType
+    );
   };
 
   private createMuiTheme = () => {
@@ -187,11 +196,11 @@ const themeOptionsProvider = new ThemeOptionsProvider(
   iOSDarkTheme
 );
 
-const AlwayDarkThemeOptionsProvider = new ThemeOptionsProvider(
+const alwayDarkThemeOptionsProvider = new ThemeOptionsProvider(
   baseTheme,
   iOSDarkTheme,
   iOSDarkTheme,
   ThemePaletteType.DARK
 );
 
-export default themeOptionsProvider;
+export default alwayDarkThemeOptionsProvider;

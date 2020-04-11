@@ -8,10 +8,7 @@ export class BaseRpcCommand<ReqData, ResData> {
 
   constructor(
     private meta: IMeta,
-    private handler: (
-      req: Omit<NextApiRequest, "body"> & { body: ReqData },
-      res: NextApiResponse
-    ) => Promise<IResponse<ResData>>
+    private handler: (reqData: ReqData) => Promise<IResponse<ResData>>
   ) {
     this.commandId = `${this.meta.domain}.${this.meta.action}`;
   }
@@ -24,16 +21,21 @@ export class BaseRpcCommand<ReqData, ResData> {
     if (req.method !== "POST") {
       return ERR("Only handles POST", HttpStatus.BAD_REQUEST);
     }
+    const reqData = req.body as ReqData;
+    return await this.handleReqData(reqData);
+  }
+
+  public async handleReqData(reqData: ReqData): Promise<IResponse<ResData>> {
     // Validate body
-    const requestData = req.body as ReqData;
     try {
-      this.meta.reqDataSchema.validateSync(requestData);
+      this.meta.reqDataSchema.validateSync(reqData);
     } catch (error) {
       console.error(error);
       return ERR("Validation error", HttpStatus.BAD_REQUEST);
     }
+    // TODO: validate auth
 
     // TODO: validate response
-    return await this.handler(req, res);
+    return await this.handler(reqData);
   }
 }

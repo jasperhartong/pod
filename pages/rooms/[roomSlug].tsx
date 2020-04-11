@@ -1,4 +1,5 @@
-import { useEffect } from "react";
+import { NextPageContext } from "next";
+import dynamic from "next/dynamic";
 
 import {
   Container,
@@ -15,7 +16,6 @@ import ListenIcon from "@material-ui/icons/Headset";
 import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
 import { IRoom } from "../../src/app-schema/IRoom";
 import { IEpisode } from "../../src/app-schema/IEpisode";
-import SnackbarPlayer from "../../src/components/snackbar-player";
 import SubscribePanel from "../../src/components/subscribe-panel";
 import PlaylistHeader from "../../src/components/playlist-header";
 import PlaylistGrid from "../../src/components/playlist-grid";
@@ -24,16 +24,25 @@ import {
   useRoomContext,
   RoomState,
 } from "../../src/hooks/useRoomContext";
-import EpisodeCreateForm from "../../src/components/episode-create-form";
-import { useRouter } from "next/router";
 import BottomDrawer from "../../src/components/bottom-drawer";
 import useSmoothScroller from "../../src/hooks/useSmoothScroller";
+import { IResponse } from "../../src/api/IResponse";
+import roomFetch from "../../src/api/rpc/commands/room.fetch";
 
-const RoomPageContainer = () => {
+// Dynamic imports (load on user interaction)
+const SnackbarPlayer = dynamic(() =>
+  import("../../src/components/snackbar-player")
+);
+const EpisodeCreateForm = dynamic(
+  () => import("../../src/components/episode-create-form"),
+  { loading: () => <div style={{ height: 230 }} /> }
+);
+
+const RoomPageContainer = ({ room }: { room: IResponse<IRoom> }) => {
   const defaultState: RoomState = {
     mode: "listen",
-    slug: undefined,
-    room: undefined,
+    slug: room.ok ? room.data.slug : undefined,
+    room,
     recordingEpisode: undefined,
     playingEpisode: undefined,
   };
@@ -46,18 +55,13 @@ const RoomPageContainer = () => {
 };
 
 const RoomPage = () => {
-  const { query } = useRouter();
   const { state, actions } = useRoomContext();
-
-  useEffect(() => {
-    actions.room.initiate(query.roomSlug as string);
-  }, [query.roomSlug]);
 
   // derived state
   const { room, mode, slug } = state;
   const maxWidth: Breakpoint = mode === "listen" ? "sm" : "lg";
 
-  if (!slug || !room) {
+  if (!room) {
     return (
       <Container maxWidth={maxWidth}>
         <Box textAlign="center" pt={8}>
@@ -67,7 +71,7 @@ const RoomPage = () => {
     );
   }
 
-  if (!room.ok) {
+  if (!room.ok || !slug) {
     return (
       <Container maxWidth={maxWidth}>
         <Box textAlign="center" pt={8}>
@@ -80,7 +84,7 @@ const RoomPage = () => {
             color="textSecondary"
             style={{ opacity: 0.2 }}
           >
-            {room.error}
+            {!room.ok ? room.error : "unknown error"}
           </Typography>
         </Box>
       </Container>
@@ -112,7 +116,6 @@ const RoomPage = () => {
             setPlayingId={actions.playingEpisode.initiate}
             isPaused={Boolean(state.playingEpisode?.isPaused)}
             setIsPaused={actions.playingEpisode.pause}
-            maxWidth={maxWidth}
           />
         </Box>
       ))}
@@ -208,3 +211,12 @@ const RoomModeSwitcher = () => {
     </Box>
   );
 };
+
+export async function getServerSideProps(context: NextPageContext) {
+  const room = await roomFetch.handleReqData({
+    slug: context.query.roomSlug as string,
+  });
+  return {
+    props: { room },
+  };
+}

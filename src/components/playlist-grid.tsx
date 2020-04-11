@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme) => ({
   imageButton: {
     height: "100%",
     width: "100%",
+    // Make it square:
     paddingBottom: "100%",
     backgroundSize: "cover",
     backgroundPosition: "center",
@@ -62,11 +63,11 @@ const PlaylistGrid = (props: Props) => {
               }}
             ></div>
           </Paper>
-          <Box mt={1} mb={2} height={42} overflow="hidden" textAlign="left">
-            <Typography variant="subtitle2" color="textSecondary">
-              {state.recordingEpisode.partialEpisode.title || `Nieuwe opname`}
-            </Typography>
-          </Box>
+          <EpisodeTitle
+            title={
+              state.recordingEpisode.partialEpisode.title || `Nieuwe opname`
+            }
+          />
         </div>
       )}
 
@@ -99,11 +100,7 @@ const PlaylistGrid = (props: Props) => {
               }}
             />
           </Paper>
-          <Box mt={1} mb={2} height={42} overflow="hidden" textAlign="left">
-            <Typography variant="subtitle2" color="textSecondary">
-              {episode.title}
-            </Typography>
-          </Box>
+          <EpisodeTitle title={episode.title} />
           {episode.id === playingId && (
             <Fab
               size="large"
@@ -125,3 +122,11 @@ const PlaylistGrid = (props: Props) => {
 };
 
 export default PlaylistGrid;
+
+const EpisodeTitle = ({ title }: { title: string }) => (
+  <Box mt={1} mb={2} height={42} overflow="hidden" textAlign="left">
+    <Typography variant="subtitle2" color="textSecondary">
+      {title}
+    </Typography>
+  </Box>
+);

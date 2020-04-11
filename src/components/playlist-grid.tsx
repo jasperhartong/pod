@@ -54,7 +54,7 @@ const PlaylistGrid = (props: Props) => {
     <div className={classes.gridRoot}>
       {/* Recording episode preview */}
       {state.recordingEpisode && (
-        <div className={classes.tileRoot}>
+        <div key="new" className={classes.tileRoot}>
           <Paper elevation={8}>
             <div
               className={classes.imageButton}
@@ -74,6 +74,7 @@ const PlaylistGrid = (props: Props) => {
       {/* Current episodes */}
       {playlist.episodes.map((episode) => (
         <div
+          key={episode.id}
           className={classes.tileRoot}
           aria-label={`play ${episode.title}`}
           onClick={() =>

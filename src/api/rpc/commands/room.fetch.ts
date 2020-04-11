@@ -1,12 +1,8 @@
-import { BaseRpcCommand } from "./base/base-command";
-import meta, { RequestData, ResponseData } from "./room.fetch.meta";
+import meta from "./room.fetch.meta";
+
+import { RPCHandlerFactory } from "./base/rpc-handler";
 import { collectionsBackend } from "../../collection-storage";
 
-const roomFetch = new BaseRpcCommand<RequestData, ResponseData>(
-  meta,
-  async (reqData) => {
-    return await collectionsBackend.getRoomBySlug(reqData.slug);
-  }
-);
-
-export default roomFetch;
+export default RPCHandlerFactory(meta, async (reqData) => {
+  return await collectionsBackend.getRoomBySlug(reqData.slug);
+});

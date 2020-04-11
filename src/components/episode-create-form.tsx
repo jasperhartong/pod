@@ -1,3 +1,4 @@
+import { TypeOf } from "io-ts";
 import { useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
 import {
@@ -10,13 +11,13 @@ import {
 } from "@material-ui/core";
 import { useForm, Controller, ErrorMessage } from "react-hook-form";
 import { IPlaylist } from "../app-schema/IPlaylist";
-import {
-  RequestData,
-  ResponseData,
-} from "../api/rpc/commands/episode.create.meta";
 import rpcClient from "../api/rpc/client";
 import MediaDropZone from "./media-dropzone";
 import { IEpisode } from "../app-schema/IEpisode";
+
+import episodeCreateMeta from "../api/rpc/commands/episode.create.meta";
+type RequestData = TypeOf<typeof episodeCreateMeta["reqValidator"]>;
+type ResponseData = TypeOf<typeof episodeCreateMeta["resValidator"]>;
 
 const defaultValues: RequestData = {
   title: "",

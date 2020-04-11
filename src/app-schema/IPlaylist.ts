@@ -1,15 +1,17 @@
-import { IEpisode } from "./IEpisode";
-import { IDateString } from "./IDateString";
-import { IImageData } from "./IFileData";
+import * as t from "io-ts";
 
-export interface IPlaylist {
-  id: number;
-  created_on: IDateString;
-  title: string;
-  description: string;
-  cover_file: {
-    data: IImageData;
-  };
+import { TEpisode } from "./IEpisode";
+import { TDateString } from "./IDateString";
+import { TImageData } from "./IFileData";
+
+export const TPlaylist = t.type({
+  id: t.number,
+  created_on: TDateString,
+  title: t.string,
+  description: t.string,
+  cover_file: t.type({ data: TImageData }),
   // alias
-  episodes: IEpisode[];
-}
+  episodes: t.array(TEpisode),
+});
+
+export type IPlaylist = t.TypeOf<typeof TPlaylist>;

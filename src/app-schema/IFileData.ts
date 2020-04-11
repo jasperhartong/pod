@@ -1,12 +1,16 @@
-interface IDbThumbnail {
-  url: string;
-  relative_url: string;
-  dimension: string;
-  width: number;
-  height: number;
-}
+import * as t from "io-ts";
 
-export interface IImageData {
-  full_url: string;
-  thumbnails: IDbThumbnail[] | null;
-}
+const TThumbnail = t.type({
+  url: t.string,
+  relative_url: t.string,
+  dimension: t.string,
+  width: t.number,
+  height: t.number,
+});
+
+export const TImageData = t.type({
+  full_url: t.string,
+  thumbnails: t.array(TThumbnail),
+});
+
+export type IImageData = t.TypeOf<typeof TImageData>;

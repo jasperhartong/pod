@@ -1,12 +1,13 @@
+import { TypeOf } from "io-ts";
 import { useState, useEffect } from "react";
 import axios, { AxiosRequestConfig } from "axios";
 import { IResponse, OK, ERR } from "../api/IResponse";
 import useLoadingState from "./useLoadingState";
 import rpcClient from "../api/rpc/client";
-import {
-  RequestData,
-  ResponseData
-} from "../api/rpc/commands/signedurl.create.meta";
+
+import signUrlCreateMeta from "../api/rpc/commands/signedurl.create.meta";
+type RequestData = TypeOf<typeof signUrlCreateMeta["reqValidator"]>;
+type ResponseData = TypeOf<typeof signUrlCreateMeta["resValidator"]>;
 
 const useSignedMediaUploader = (): {
   uploadFile: (file: File) => void;
@@ -21,7 +22,7 @@ const useSignedMediaUploader = (): {
     error,
     setError,
     data,
-    setData
+    setData,
   } = useLoadingState<ResponseData>();
 
   const performUpload = async () => {
@@ -33,7 +34,7 @@ const useSignedMediaUploader = (): {
     // Get SignedUpload Url
     const reqData: RequestData = {
       fileName: file.name,
-      fileType: file.type
+      fileType: file.type,
     };
     const signedUrlCreation = await rpcClient.call<RequestData, ResponseData>(
       "signedurl",
@@ -78,9 +79,9 @@ export const uploadMedia = async (
   try {
     var options: AxiosRequestConfig = {
       headers: {
-        "Content-Type": fileType
+        "Content-Type": fileType,
       },
-      timeout: 60000
+      timeout: 60000,
     };
     await axios.put(uploadUrl, file, options);
     return OK<{}>({});

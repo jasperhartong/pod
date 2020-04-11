@@ -26,8 +26,9 @@ import {
 } from "../../src/hooks/useRoomContext";
 import BottomDrawer from "../../src/components/bottom-drawer";
 import useSmoothScroller from "../../src/hooks/useSmoothScroller";
-import { IResponse } from "../../src/api/IResponse";
+import { IResponse, OK } from "../../src/api/IResponse";
 import roomFetch from "../../src/api/rpc/commands/room.fetch";
+import { isRight } from "fp-ts/lib/Either";
 
 // Dynamic imports (load on user interaction)
 const SnackbarPlayer = dynamic(() =>
@@ -213,10 +214,14 @@ const RoomModeSwitcher = () => {
 };
 
 export async function getServerSideProps(context: NextPageContext) {
-  const room = await roomFetch.handleReqData({
+  const eitherRoom = await roomFetch.handle({
     slug: context.query.roomSlug as string,
   });
-  return {
-    props: { room },
-  };
+  if (isRight(eitherRoom)) {
+    const room = eitherRoom.right;
+    return {
+      props: { room: OK<IRoom>(room) },
+    };
+  }
+  return null;
 }

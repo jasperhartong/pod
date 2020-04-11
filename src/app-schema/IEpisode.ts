@@ -1,14 +1,22 @@
-import { IDateString } from "./IDateString";
+import * as t from "io-ts";
 
-import { IImageData } from "./IFileData";
+import { TDateString } from "./IDateString";
+import { TImageData } from "./IFileData";
 
-export interface IEpisode {
-  id: number;
-  status: "published" | "draft" | "deleted";
-  created_on: IDateString;
-  title: string;
-  image_file: {
-    data: IImageData;
-  };
-  audio_file: string;
-}
+export const TEpisodeStatus = t.keyof({
+  // https://github.com/gcanti/io-ts#union-of-string-literals
+  published: null,
+  draft: null,
+  deleted: null,
+});
+
+export const TEpisode = t.type({
+  id: t.number,
+  status: TEpisodeStatus,
+  created_on: TDateString,
+  title: t.string,
+  audio_file: t.string,
+  image_file: t.type({ data: TImageData }),
+});
+
+export type IEpisode = t.TypeOf<typeof TEpisode>;

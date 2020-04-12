@@ -1,6 +1,6 @@
 import meta from "./room.fetch.meta";
 
-import { RPCHandlerFactory } from "./base/rpc-handler";
+import { RPCHandlerFactory } from "../rpc-server-handler";
 import { collectionsBackend } from "../../collection-storage";
 
 export default RPCHandlerFactory(meta, async (reqData) => {

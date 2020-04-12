@@ -1,5 +1,5 @@
 import * as t from "io-ts";
-import { RPCMeta } from "./base/rpc-meta";
+import { RPCMeta } from "../rpc-meta";
 import { TSignedUrl } from "../../file-storage/interfaces/ISignedUrl";
 
 export default RPCMeta(

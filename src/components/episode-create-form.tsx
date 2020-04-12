@@ -13,7 +13,7 @@ import { useForm, Controller, ErrorMessage } from "react-hook-form";
 import { IPlaylist } from "../app-schema/IPlaylist";
 import MediaDropZone from "./media-dropzone";
 import episodeCreateMeta from "../api/rpc/commands/episode.create.meta";
-import { RPCClientFactory } from "../api/rpc/client";
+import { RPCClientFactory } from "../api/rpc/rpc-client";
 
 type RequestData = TypeOf<typeof episodeCreateMeta["reqValidator"]>;
 

@@ -1,4 +1,4 @@
-import { RPCHandlerFactory } from "./base/rpc-handler";
+import { RPCHandlerFactory } from "../rpc-server-handler";
 import meta from "./signedurl.create.meta";
 import uuid4 from "uuid4";
 import { fileStorageBackend } from "../../file-storage/index";

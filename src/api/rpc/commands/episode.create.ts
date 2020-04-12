@@ -1,4 +1,4 @@
-import { RPCHandlerFactory } from "./base/rpc-handler";
+import { RPCHandlerFactory } from "../rpc-server-handler";
 import meta from "./episode.create.meta";
 import { collectionsBackend } from "../../collection-storage";
 import { OK } from "../../IResponse";

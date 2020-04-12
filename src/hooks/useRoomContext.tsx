@@ -7,7 +7,7 @@ import { IPlaylist } from "../app-schema/IPlaylist";
 import { IEpisode } from "../app-schema/IEpisode";
 import episodeCreateMeta from "../api/rpc/commands/episode.create.meta";
 import roomFetchMeta from "../api/rpc/commands/room.fetch.meta";
-import { RPCClientFactory } from "../api/rpc/client";
+import { RPCClientFactory } from "../api/rpc/rpc-client";
 import { IResponse } from "../api/IResponse";
 
 type EpisodeCreateRequestData = TypeOf<

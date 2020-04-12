@@ -1,9 +1,11 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
-import { IRPCMeta } from "./commands/base/rpc-meta";
+import { IRPCMeta } from "./rpc-meta";
 import { IResponse, ERR } from "../IResponse";
 import HttpStatus from "http-status-codes";
 
 export const rpcBasePath = `/api/rpc/`;
+
+type RPCResponse<Data> = IResponse<Data>;
 
 export const RPCClientFactory = <Tq, Oq, Iq, Ts, Os, Is>(
   meta: IRPCMeta<Tq, Oq, Iq, Ts, Os, Is>
@@ -23,13 +25,14 @@ export const RPCClientFactory = <Tq, Oq, Iq, Ts, Os, Is>(
       })
     ) {}
 
-    public async call(data: Tq): Promise<IResponse<Ts>> {
+    public async call(data: Tq): Promise<RPCResponse<Ts>> {
       try {
         const response = await this.client.post<
           Tq,
-          AxiosResponse<IResponse<Ts>>
+          AxiosResponse<RPCResponse<Ts>>
         >(this.RPCUrl(this.meta.domain, this.meta.action), data);
-        // Internal API, no need to validate again.
+        // Internal API, request AND response have been validated server-side
+        // no need to validate again, just return it
         return response.data;
       } catch (error) {
         const axiosError = error as AxiosError;

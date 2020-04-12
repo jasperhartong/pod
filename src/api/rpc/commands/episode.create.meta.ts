@@ -1,7 +1,7 @@
 import * as t from "io-ts";
 import { RPCMeta } from "./base/rpc-meta";
 
-import { TEpisode, TEpisodeStatus } from "../../../app-schema/IEpisode";
+import { TEpisodeStatus } from "../../../app-schema/IEpisode";
 
 export default RPCMeta(
   "episode",
@@ -13,6 +13,7 @@ export default RPCMeta(
     audio_url: t.string,
     image_url: t.string,
   }),
-  // TODO: Currently fails on validation here, Directus is not returning the episode with embedded stuff..
-  TEpisode
+  t.type({
+    id: t.number,
+  })
 );

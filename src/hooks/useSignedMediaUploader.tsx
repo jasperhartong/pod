@@ -32,12 +32,12 @@ const useSignedMediaUploader = (): {
     setLoading(true);
 
     // Get SignedUpload Url
-    const eitherSignedUrl = await RPCClientFactory(signUrlCreateMeta).call({
+    const signedUrlCreation = await RPCClientFactory(signUrlCreateMeta).call({
       fileName: file.name,
       fileType: file.type,
     });
 
-    if (!isRight(eitherSignedUrl)) {
+    if (!signedUrlCreation.ok) {
       setError(
         `File ${file.name} could not be uploaded: signed url creation failed`
       );
@@ -46,12 +46,12 @@ const useSignedMediaUploader = (): {
 
     // Upload file
     const response = await uploadMedia(
-      eitherSignedUrl.right.uploadUrl,
+      signedUrlCreation.data.uploadUrl,
       file,
       file.type
     );
     if (response.ok) {
-      setData(eitherSignedUrl.right);
+      setData(signedUrlCreation.data);
     } else {
       setError(`File ${file.name} could not be uploaded`);
     }

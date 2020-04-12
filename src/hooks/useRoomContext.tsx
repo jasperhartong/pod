@@ -8,6 +8,7 @@ import { IEpisode } from "../app-schema/IEpisode";
 import episodeCreateMeta from "../api/rpc/commands/episode.create.meta";
 import roomFetchMeta from "../api/rpc/commands/room.fetch.meta";
 import { RPCClientFactory } from "../api/rpc/client";
+import { IResponse } from "../api/IResponse";
 
 type EpisodeCreateRequestData = TypeOf<
   typeof episodeCreateMeta["reqValidator"]
@@ -18,7 +19,7 @@ export type RoomMode = "listen" | "record";
 export interface RoomState {
   mode: RoomMode;
   slug?: IRoom["slug"];
-  room?: IRoom;
+  room?: IResponse<IRoom>;
   playingEpisode?: {
     episodeId: IEpisode["id"];
     isPaused: boolean;
@@ -84,17 +85,12 @@ const getActions = (dispatch: ImmerRoomDispatch) => {
         if (!slug) {
           return;
         }
-        const eitherRoom = await RPCClientFactory(roomFetchMeta).call({
+        const roomResponse = await RPCClientFactory(roomFetchMeta).call({
           slug,
         });
-        if (isRight(eitherRoom)) {
-          dispatch((room) => {
-            room.room = eitherRoom.right;
-          });
-        } else {
-          // TODO: handle error
-          console.error(eitherRoom.left);
-        }
+        dispatch((room) => {
+          room.room = roomResponse;
+        });
       },
     },
     recordingEpisode: {

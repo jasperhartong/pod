@@ -1,12 +1,15 @@
-import { Errors, failure } from "io-ts";
-import { isRight, left, Either } from "fp-ts/lib/Either";
+import { isLeft } from "fp-ts/lib/Either";
 import { IRPCMeta } from "./rpc-meta";
-import { IResponse } from "../../../IResponse";
+import { IResponse, ERR, OK } from "../../../IResponse";
+import HttpStatus from "http-status-codes";
 
 export const RPCHandlerFactory = <Tq, Oq, Iq, Ts, Os, Is>(
   meta: IRPCMeta<Tq, Oq, Iq, Ts, Os, Is>,
   handler: (reqData: Tq) => Promise<IResponse<any>>
 ) => {
+  /**
+   * Class Factory to infer correct typings
+   */
   class RPCHandler<Tq, Oq, Iq, Ts, Os, Is> {
     public commandId: string;
 
@@ -17,23 +20,31 @@ export const RPCHandlerFactory = <Tq, Oq, Iq, Ts, Os, Is>(
       this.commandId = `${this.meta.domain}.${this.meta.action}`;
     }
 
-    public handle = async (reqData: any): Promise<Either<Errors, Ts>> => {
+    public handle = async (reqData: any): Promise<IResponse<Ts>> => {
       // Validate request data
-      const reqResult = this.meta.reqValidator.decode(reqData);
-      if (isRight(reqResult)) {
-        // Retrieve result
-        const resData = await this.handler(reqResult.right);
-        if (resData.ok) {
-          // Validate result
-          return this.meta.resValidator.decode(resData.data);
-        } else {
-          return failure(undefined, [], resData.error);
-        }
-      } else {
-        console.error("invalid request");
-        console.error(reqResult.left);
-        return left(reqResult.left);
+      const reqValidation = this.meta.reqValidator.decode(reqData);
+      if (isLeft(reqValidation)) {
+        console.error(reqValidation.left);
+        // TODO: wrap io-ts Errors errors into ERR
+        return ERR("invalid request", HttpStatus.BAD_REQUEST);
       }
+
+      // Retrieve result
+      const response = await this.handler(reqValidation.right);
+      if (!response.ok) {
+        return ERR(response.error);
+      }
+
+      // Validate response
+      const resValidation = this.meta.resValidator.decode(response.data);
+      if (isLeft(resValidation)) {
+        console.error(resValidation.left);
+        // TODO: wrap io-ts Errors errors into ERR
+        return ERR("invalid response payload", HttpStatus.METHOD_FAILURE);
+      }
+
+      // Send back succesful response
+      return OK(response.data);
     };
   }
   return new RPCHandler(meta, handler);

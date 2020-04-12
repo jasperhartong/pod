@@ -92,11 +92,13 @@ class DirectusTapesMeBackend implements IBackend {
         image_file: imageFileId,
         playlist: playlistId,
       });
-      return OK<IEpisode>((itemResponse.data as unknown) as IEpisode);
+      return OK<{ id: IEpisode["id"] }>({
+        id: (itemResponse.data as IEpisode).id,
+      });
     } catch (error) {
       console.error(error);
     }
-    return ERR<IEpisode>(
+    return ERR<{ id: IEpisode["id"] }>(
       "Episode could not be created",
       HttpStatus.BAD_REQUEST
     );
@@ -112,11 +114,13 @@ class DirectusTapesMeBackend implements IBackend {
         episodeId,
         episode
       );
-      return OK<IEpisode>((itemResponse.data as unknown) as IEpisode);
+      return OK<{ id: IEpisode["id"] }>({
+        id: (itemResponse.data as IEpisode).id,
+      });
     } catch (error) {
       console.error(error);
     }
-    return ERR<IEpisode>(
+    return ERR<{ id: IEpisode["id"] }>(
       "Episode could not be updated",
       HttpStatus.BAD_REQUEST
     );

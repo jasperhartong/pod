@@ -1,13 +1,16 @@
 import axios, { AxiosResponse, AxiosError } from "axios";
 import { IRPCMeta } from "./commands/base/rpc-meta";
-import { Errors, failure } from "io-ts";
-import { Either } from "fp-ts/lib/Either";
+import { IResponse, ERR } from "../IResponse";
+import HttpStatus from "http-status-codes";
 
 export const rpcBasePath = `/api/rpc/`;
 
 export const RPCClientFactory = <Tq, Oq, Iq, Ts, Os, Is>(
   meta: IRPCMeta<Tq, Oq, Iq, Ts, Os, Is>
 ) => {
+  /**
+   * Class Factory to infer correct typings
+   */
   class RPCClient<Tq, Oq, Iq, Ts, Os, Is> {
     private RPCUrl = (domain: string, action: string) =>
       `${this.rpcBasePath}${domain}.${action}`;
@@ -20,18 +23,18 @@ export const RPCClientFactory = <Tq, Oq, Iq, Ts, Os, Is>(
       })
     ) {}
 
-    public async call(data: Tq): Promise<Either<Errors, Ts>> {
+    public async call(data: Tq): Promise<IResponse<Ts>> {
       try {
         const response = await this.client.post<
           Tq,
-          AxiosResponse<Either<Errors, Ts>>
+          AxiosResponse<IResponse<Ts>>
         >(this.RPCUrl(this.meta.domain, this.meta.action), data);
         // Internal API, no need to validate again.
         return response.data;
       } catch (error) {
         const axiosError = error as AxiosError;
         console.error("RpcClient.call", axiosError.message);
-        return failure(undefined, [], axiosError.message);
+        return ERR(axiosError.message, HttpStatus.NOT_ACCEPTABLE);
       }
     }
   }

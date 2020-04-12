@@ -1,5 +1,4 @@
 import { TypeOf } from "io-ts";
-import { isRight } from "fp-ts/lib/Either";
 import { useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
 import {
@@ -13,7 +12,6 @@ import {
 import { useForm, Controller, ErrorMessage } from "react-hook-form";
 import { IPlaylist } from "../app-schema/IPlaylist";
 import MediaDropZone from "./media-dropzone";
-import { IEpisode } from "../app-schema/IEpisode";
 import episodeCreateMeta from "../api/rpc/commands/episode.create.meta";
 import { RPCClientFactory } from "../api/rpc/client";
 
@@ -30,7 +28,7 @@ const defaultValues: RequestData = {
 interface Props {
   playlist?: IPlaylist;
   onFormChange: (recording: Partial<RequestData>) => void;
-  onFormSuccess: (episode: IEpisode) => void;
+  onFormSuccess: () => void;
 }
 
 const ErrorMessageTypography = ({ children }: { children?: JSX.Element }) => (
@@ -75,16 +73,16 @@ const EpisodeCreateForm = ({
       onSubmit={handleSubmit(async (data) => {
         setServerError(undefined);
         const reqData = data as RequestData;
-        const eitherEpisode = await RPCClientFactory(episodeCreateMeta).call({
+        const submission = await RPCClientFactory(episodeCreateMeta).call({
           ...defaultValues,
           ...reqData,
           playlist: playlist ? playlist.id.toString() : "",
         });
 
-        if (isRight(eitherEpisode)) {
-          onFormSuccess(eitherEpisode.right);
+        if (submission.ok) {
+          onFormSuccess();
         } else {
-          setServerError(eitherEpisode.left.toLocaleString());
+          setServerError(submission.error);
         }
       })}
     >

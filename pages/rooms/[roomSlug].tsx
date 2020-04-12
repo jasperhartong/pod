@@ -26,8 +26,8 @@ import {
 } from "../../src/hooks/useRoomContext";
 import BottomDrawer from "../../src/components/bottom-drawer";
 import useSmoothScroller from "../../src/hooks/useSmoothScroller";
+import { IResponse } from "../../src/api/IResponse";
 import roomFetch from "../../src/api/rpc/commands/room.fetch";
-import { isRight } from "fp-ts/lib/Either";
 
 // Dynamic imports (load on user interaction)
 const SnackbarPlayer = dynamic(() =>
@@ -38,10 +38,10 @@ const EpisodeCreateForm = dynamic(
   { loading: () => <div style={{ height: 230 }} /> }
 );
 
-const RoomPageContainer = ({ room }: { room?: IRoom }) => {
+const RoomPageContainer = ({ room }: { room: IResponse<IRoom> }) => {
   const defaultState: RoomState = {
     mode: "listen",
-    slug: room ? room.slug : undefined,
+    slug: room.ok ? room.data.slug : undefined,
     room,
     recordingEpisode: undefined,
     playingEpisode: undefined,
@@ -71,7 +71,7 @@ const RoomPage = () => {
     );
   }
 
-  if (!slug) {
+  if (!room.ok || !slug) {
     return (
       <Container maxWidth={maxWidth}>
         <Box textAlign="center" pt={8}>
@@ -84,7 +84,7 @@ const RoomPage = () => {
             color="textSecondary"
             style={{ opacity: 0.2 }}
           >
-            {"unknown error"}
+            {!room.ok ? room.error : "unknown error"}
           </Typography>
         </Box>
       </Container>
@@ -92,7 +92,7 @@ const RoomPage = () => {
   }
 
   const playingItem: IEpisode | undefined = findEpisodeById(
-    room,
+    room.data,
     state.playingEpisode?.episodeId
   );
 
@@ -103,11 +103,11 @@ const RoomPage = () => {
     >
       <Collapse in={mode === "record"}>
         <Box pt={4} pb={2}>
-          <Typography variant="h4">Tapes voor {room.slug}</Typography>
+          <Typography variant="h4">Tapes voor {room.data.slug}</Typography>
         </Box>
       </Collapse>
 
-      {room.playlists.map((playlist) => (
+      {room.data.playlists.map((playlist) => (
         <Box pb={4} key={playlist.id}>
           <PlaylistHeader playlist={playlist} />
           <PlaylistGrid
@@ -178,14 +178,14 @@ const RoomModeSwitcher = () => {
   const { scrollToTop } = useSmoothScroller();
   const { state, actions } = useRoomContext();
 
-  if (!state.room) {
+  if (!state.room?.ok) {
     return null;
   }
 
   return (
     <Box p={4} textAlign="center">
       <Typography component="div" variant="overline">
-        {state.room.slug || ""}
+        {state.room.data.slug || ""}
       </Typography>
       <ToggleButtonGroup
         value={state.mode}
@@ -213,17 +213,10 @@ const RoomModeSwitcher = () => {
 };
 
 export async function getServerSideProps(context: NextPageContext) {
-  const eitherRoom = await roomFetch.handle({
+  const room = await roomFetch.handle({
     slug: context.query.roomSlug as string,
   });
-  if (isRight(eitherRoom)) {
-    const room = eitherRoom.right;
-    return {
-      props: { room },
-    };
-  } else {
-    // TODO: handle error
-    console.error(eitherRoom.left);
-  }
-  return null;
+  return {
+    props: { room },
+  };
 }

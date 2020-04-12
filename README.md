@@ -16,9 +16,56 @@ You can start editing the page by modifying `pages/index.js`. The page auto-upda
 
 ## Analyze Build size
 
+To ananlyze build size and open up browser window visualizing bundle build up.
+
 `ANALYZE=true yarn build`
 
-# Learn More
+## RPC creation and usage
+
+### 1. Define a Meta describing domain, action and shape of request & response
+
+```javascript
+export const roomFetchMeta = RPCMeta(
+  "room",
+  "fetch",
+  t.type({
+    slug: t.string,
+  }),
+  TRoom
+);
+```
+
+_Note: put meta in separate file of below handler as it will be used both on the client and server_
+
+### 2. Create handler
+
+```javascript
+export const roomFetch = RPCHandlerFactory(meta, async (reqData) => {
+  return await collectionsBackend.getRoomBySlug(reqData.slug);
+});
+```
+
+### 3. Call from server side or client side
+
+Server side:
+
+```javascript
+// export type IResponse<T> = IOK<T> | IERR;
+// type IRoom = t.TypeOf<typeof TRoom>;
+const room: IResponse<IRoom> = await roomFetch.handle({
+  slug,
+});
+```
+
+Client side:
+
+```javascript
+const room: IResponse<IRoom> = await RPCClientFactory(roomFetchMeta).call({
+  slug,
+});
+```
+
+## Learn More
 
 ## Learn More
 

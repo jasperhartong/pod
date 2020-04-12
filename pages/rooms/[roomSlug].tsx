@@ -213,7 +213,7 @@ const RoomModeSwitcher = () => {
 };
 
 export async function getServerSideProps(context: NextPageContext) {
-  const room = await roomFetch.handleReqData({
+  const room = await roomFetch.handle({
     slug: context.query.roomSlug as string,
   });
   return {

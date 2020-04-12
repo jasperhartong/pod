@@ -1,12 +1,13 @@
+import { TypeOf } from "io-ts";
 import { useState, useEffect } from "react";
 import axios, { AxiosRequestConfig } from "axios";
 import { IResponse, OK, ERR } from "../api/IResponse";
 import useLoadingState from "./useLoadingState";
-import rpcClient from "../api/rpc/client";
-import {
-  RequestData,
-  ResponseData
-} from "../api/rpc/commands/signedurl.create.meta";
+
+import signUrlCreateMeta from "../api/rpc/commands/signedurl.create.meta";
+import { RPCClientFactory } from "../api/rpc/rpc-client";
+
+type ResponseData = TypeOf<typeof signUrlCreateMeta["resValidator"]>;
 
 const useSignedMediaUploader = (): {
   uploadFile: (file: File) => void;
@@ -21,7 +22,7 @@ const useSignedMediaUploader = (): {
     error,
     setError,
     data,
-    setData
+    setData,
   } = useLoadingState<ResponseData>();
 
   const performUpload = async () => {
@@ -31,15 +32,11 @@ const useSignedMediaUploader = (): {
     setLoading(true);
 
     // Get SignedUpload Url
-    const reqData: RequestData = {
+    const signedUrlCreation = await RPCClientFactory(signUrlCreateMeta).call({
       fileName: file.name,
-      fileType: file.type
-    };
-    const signedUrlCreation = await rpcClient.call<RequestData, ResponseData>(
-      "signedurl",
-      "create",
-      reqData
-    );
+      fileType: file.type,
+    });
+
     if (!signedUrlCreation.ok) {
       setError(
         `File ${file.name} could not be uploaded: signed url creation failed`
@@ -78,9 +75,9 @@ export const uploadMedia = async (
   try {
     var options: AxiosRequestConfig = {
       headers: {
-        "Content-Type": fileType
+        "Content-Type": fileType,
       },
-      timeout: 60000
+      timeout: 60000,
     };
     await axios.put(uploadUrl, file, options);
     return OK<{}>({});

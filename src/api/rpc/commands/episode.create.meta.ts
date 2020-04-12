@@ -1,47 +1,19 @@
-import * as Yup from "yup";
-import IMeta from "./base/IMeta";
+import * as t from "io-ts";
+import { RPCMeta } from "../rpc-meta";
 
-import { IEpisode } from "../../../app-schema/IEpisode";
+import { TEpisodeStatus } from "../../../app-schema/IEpisode";
 
-/**
- * Request
- */
-
-export interface RequestData {
-  title: string;
-  status: IEpisode["status"];
-  playlist: string;
-  audio_url: string;
-  image_url: string;
-}
-
-export const reqDataSchema: Yup.ObjectSchema<Yup.Shape<
-  object,
-  RequestData
->> = Yup.object().shape({
-  title: Yup.string().required(),
-  // TODO: improve
-  status: Yup.string().required() as Yup.StringSchema<IEpisode["status"]>,
-  playlist: Yup.string().required(),
-  audio_url: Yup.string().required(),
-  image_url: Yup.string().required()
-});
-
-/**
- * Response
- */
-
-export type ResponseData = IEpisode;
-
-/**
- * Meta
- */
-
-class Meta implements IMeta {
-  domain = "episode";
-  action = "create";
-  reqDataSchema = reqDataSchema;
-  // TODO: add resDataSchema
-}
-
-export default new Meta();
+export default RPCMeta(
+  "episode",
+  "create",
+  t.type({
+    title: t.string,
+    status: TEpisodeStatus,
+    playlist: t.string,
+    audio_url: t.string,
+    image_url: t.string,
+  }),
+  t.type({
+    id: t.number,
+  })
+);

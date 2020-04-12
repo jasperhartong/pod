@@ -11,11 +11,11 @@ export interface IBackend {
     playlistId: string,
     imageFileUrl: string,
     audioFileUrl: string
-  ) => Promise<IResponse<IEpisode>>;
+  ) => Promise<IResponse<{ id: IEpisode["id"] }>>;
   updateEpisode: (
     episodeId: string,
     episode: Partial<IEpisode>
-  ) => Promise<IResponse<IEpisode>>;
+  ) => Promise<IResponse<{ id: IEpisode["id"] }>>;
   addExternalImage: (
     url: string
   ) => Promise<IResponse<{ file: IImageData; id: string }>>;

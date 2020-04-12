@@ -1,3 +1,4 @@
+import { TypeOf } from "io-ts";
 import { useState, useEffect } from "react";
 import { useDebounce } from "use-debounce";
 import {
@@ -10,13 +11,11 @@ import {
 } from "@material-ui/core";
 import { useForm, Controller, ErrorMessage } from "react-hook-form";
 import { IPlaylist } from "../app-schema/IPlaylist";
-import {
-  RequestData,
-  ResponseData,
-} from "../api/rpc/commands/episode.create.meta";
-import rpcClient from "../api/rpc/client";
 import MediaDropZone from "./media-dropzone";
-import { IEpisode } from "../app-schema/IEpisode";
+import episodeCreateMeta from "../api/rpc/commands/episode.create.meta";
+import { RPCClientFactory } from "../api/rpc/rpc-client";
+
+type RequestData = TypeOf<typeof episodeCreateMeta["reqValidator"]>;
 
 const defaultValues: RequestData = {
   title: "",
@@ -29,7 +28,7 @@ const defaultValues: RequestData = {
 interface Props {
   playlist?: IPlaylist;
   onFormChange: (recording: Partial<RequestData>) => void;
-  onFormSuccess: (episode: IEpisode) => void;
+  onFormSuccess: () => void;
 }
 
 const ErrorMessageTypography = ({ children }: { children?: JSX.Element }) => (
@@ -74,17 +73,14 @@ const EpisodeCreateForm = ({
       onSubmit={handleSubmit(async (data) => {
         setServerError(undefined);
         const reqData = data as RequestData;
-        const submission = await rpcClient.call<RequestData, ResponseData>(
-          "episode",
-          "create",
-          {
-            ...defaultValues,
-            ...reqData,
-            playlist: playlist ? playlist.id.toString() : "",
-          }
-        );
+        const submission = await RPCClientFactory(episodeCreateMeta).call({
+          ...defaultValues,
+          ...reqData,
+          playlist: playlist ? playlist.id.toString() : "",
+        });
+
         if (submission.ok) {
-          onFormSuccess(submission.data);
+          onFormSuccess();
         } else {
           setServerError(submission.error);
         }

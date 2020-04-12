@@ -1,12 +1,17 @@
+import { TypeOf } from "io-ts";
 import React, { useMemo } from "react";
 import { useImmer } from "use-immer";
 import { IRoom } from "../app-schema/IRoom";
 import { IPlaylist } from "../app-schema/IPlaylist";
-import { RequestData } from "../api/rpc/commands/episode.create.meta";
-import rpcClient from "../api/rpc/client";
-import * as RoomFetch from "../api/rpc/commands/room.fetch.meta";
 import { IEpisode } from "../app-schema/IEpisode";
+import episodeCreateMeta from "../api/rpc/commands/episode.create.meta";
+import roomFetchMeta from "../api/rpc/commands/room.fetch.meta";
+import { RPCClientFactory } from "../api/rpc/rpc-client";
 import { IResponse } from "../api/IResponse";
+
+type EpisodeCreateRequestData = TypeOf<
+  typeof episodeCreateMeta["reqValidator"]
+>;
 
 export type RoomMode = "listen" | "record";
 
@@ -19,7 +24,7 @@ export interface RoomState {
     isPaused: boolean;
   };
   recordingEpisode?: {
-    partialEpisode: Partial<RequestData>;
+    partialEpisode: Partial<EpisodeCreateRequestData>;
     playlist: IPlaylist;
   };
 }
@@ -79,15 +84,11 @@ const getActions = (dispatch: ImmerRoomDispatch) => {
         if (!slug) {
           return;
         }
-        const reqData: RoomFetch.RequestData = {
+        const roomResponse = await RPCClientFactory(roomFetchMeta).call({
           slug,
-        };
-        const response = await rpcClient.call<
-          RoomFetch.RequestData,
-          RoomFetch.ResponseData
-        >("room", "fetch", reqData);
+        });
         dispatch((room) => {
-          room.room = response;
+          room.room = roomResponse;
         });
       },
     },
@@ -97,7 +98,7 @@ const getActions = (dispatch: ImmerRoomDispatch) => {
           room.recordingEpisode = { partialEpisode: {}, playlist };
         });
       },
-      updateRecording: (episode: Partial<RequestData>) => {
+      updateRecording: (episode: Partial<EpisodeCreateRequestData>) => {
         dispatch((room) => {
           if (room.recordingEpisode) {
             room.recordingEpisode.partialEpisode = episode;

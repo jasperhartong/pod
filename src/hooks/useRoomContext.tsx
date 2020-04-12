@@ -1,4 +1,3 @@
-import { isRight } from "fp-ts/lib/Either";
 import { TypeOf } from "io-ts";
 import React, { useMemo } from "react";
 import { useImmer } from "use-immer";

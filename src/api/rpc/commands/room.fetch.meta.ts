@@ -4,7 +4,7 @@ import { TRoom } from "../../../app-schema/IRoom";
 
 export default RPCMeta(
   "room",
-  "create",
+  "fetch",
   t.type({
     slug: t.string,
   }),

@@ -5,6 +5,7 @@ import { TPlaylist } from "./IPlaylist";
 export const TRoom = t.type({
   id: t.number,
   slug: t.string,
+  title: t.string,
   // alias
   playlists: t.array(TPlaylist),
 });

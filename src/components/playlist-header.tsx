@@ -3,11 +3,10 @@ import {
   ListItemAvatar,
   Avatar,
   ListItemText,
-  Box,
-  Typography,
-  Collapse,
+  Zoom,
   ListItemSecondaryAction,
   Fab,
+  List,
 } from "@material-ui/core";
 import AddIcon from "@material-ui/icons/Add";
 import { IPlaylist } from "../app-schema/IPlaylist";
@@ -23,48 +22,35 @@ const PlaylistHeader = ({ playlist }: { playlist: IPlaylist }) => {
       : "";
 
   return (
-    <>
-      <Collapse in={state.mode === "listen"}>
-        <Box textAlign="center" pt={1} pb={4}>
+    <List>
+      <ListItem style={{ paddingLeft: 0 }}>
+        <ListItemAvatar>
           <Avatar
-            style={{
-              width: 160,
-              height: 160,
-              display: "inline-block",
-              margin: 16,
-            }}
+            style={{ height: 80, width: 80, marginRight: 16 }}
             alt={playlist.title}
             src={cover}
           />
-          <Typography component="div" variant="overline" color="textSecondary">
-            {playlist.description}
-          </Typography>
-          <Typography variant="h4">{playlist.title}</Typography>
-        </Box>
-      </Collapse>
-      <Collapse in={state.mode === "record"}>
-        <ListItem style={{ paddingLeft: 0 }}>
-          <ListItemAvatar>
-            <Avatar alt={playlist.title} src={cover} />
-          </ListItemAvatar>
-          <ListItemText
-            primary={playlist.title}
-            secondary={playlist.description}
-          />
-          <ListItemSecondaryAction>
+        </ListItemAvatar>
+        <ListItemText
+          primary={playlist.title}
+          secondary={playlist.description}
+          primaryTypographyProps={{ variant: "h5" }}
+          secondaryTypographyProps={{ variant: "h6" }}
+        />
+        <ListItemSecondaryAction>
+          <Zoom in={state.mode === "record"}>
             <Fab
-              size="small"
-              style={{ marginRight: -8 }}
+              style={{ marginRight: -12 }}
               color={"primary"}
               onClick={() => actions.recordingEpisode.initiate(playlist)}
               aria-label={`Nieuwe opname`}
             >
               <AddIcon />
             </Fab>
-          </ListItemSecondaryAction>
-        </ListItem>
-      </Collapse>
-    </>
+          </Zoom>
+        </ListItemSecondaryAction>
+      </ListItem>
+    </List>
   );
 };
 

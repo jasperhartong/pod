@@ -1023,6 +1023,11 @@
   dependencies:
     webpack-bundle-analyzer "3.6.1"
 
+"@types/dom-mediacapture-record@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@types/dom-mediacapture-record/-/dom-mediacapture-record-1.0.4.tgz#d3f89a4ba641b5333ca8c9f2244799cf973570a4"
+  integrity sha512-3u6HCFY83HQ0Aqs5wq+bTSGRfSb4QAYERz+7nvm4sJf2h48NkJlGlLi082j3+xwC6ce3en9mRl3QUCH8mlLWmg==
+
 "@types/luxon@^1.21.0":
   version "1.21.0"
   resolved "https://registry.yarnpkg.com/@types/luxon/-/luxon-1.21.0.tgz#db792d29f535d49522cb6d94dd9da053efc950a1"
@@ -1394,6 +1399,11 @@ async-limiter@~1.0.0:
   resolved "https://registry.yarnpkg.com/async-limiter/-/async-limiter-1.0.1.tgz#dd379e94f0db8310b08291f9d64c3209766617fd"
   integrity sha512-csOlWGAcRFJaI6m+F2WKdnMKr4HhdhFVBk0H/QbJFMCr+uO2kwohwXQPxw/9OCxp05r5ghVBFSyioixx3gfkNQ==
 
+atob-lite@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/atob-lite/-/atob-lite-2.0.0.tgz#0fef5ad46f1bd7a8502c65727f0367d5ee43d696"
+  integrity sha1-D+9a1G8b16hQLGVyfwNn1e5D1pY=
+
 atob@^2.1.2:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/atob/-/atob-2.1.2.tgz#6d9517eb9e030d2436666651e86bd9f6f13533c9"
@@ -1403,6 +1413,61 @@ attr-accept@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/attr-accept/-/attr-accept-2.1.0.tgz#a231a854385d36ff7a99647bb77b33c8a5175aee"
   integrity sha512-sLzVM3zCCmmDtDNhI0i96k6PUztkotSOXqE4kDGQt/6iDi5M+H0srjeF+QC6jN581l4X/Zq3Zu/tgcErEssavg==
+
+audio-buffer-from@^1.0.0:
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/audio-buffer-from/-/audio-buffer-from-1.1.1.tgz#6ba1dd0d463ce19e7ba19f91f5e1f725178d38d8"
+  integrity sha512-8Wcira24z+26GXDFe7ZFRF1bJm1iWrz8O+XL8iNZxZjxqAPXIoK1IrJiOqStv35ASPbRjG57ZK/T0WO92MDUSg==
+  dependencies:
+    audio-buffer "^4.0.4"
+    audio-context "^1.0.1"
+    audio-format "^2.0.0"
+    is-audio-buffer "^1.0.11"
+    is-plain-obj "^1.1.0"
+    pcm-convert "^1.6.0"
+    pick-by-alias "^1.2.0"
+    string-to-arraybuffer "^1.0.0"
+
+audio-buffer-utils@^5.1.2:
+  version "5.1.2"
+  resolved "https://registry.yarnpkg.com/audio-buffer-utils/-/audio-buffer-utils-5.1.2.tgz#8cd40d86ec7dc0b4574ffd88d3349545fbb535b4"
+  integrity sha512-MZEnf8PLnnSwIySffyxG3Q33PwlKHH4r66FZMPUJMDLAtGt8OblzoLcxHInlGZmDqRt1MxYG0Eovn0CpHKsqzg==
+  dependencies:
+    audio-buffer "^4.0.0"
+    audio-buffer-from "^1.0.0"
+    audio-context "^1.0.0"
+    clamp "^1.0.1"
+    is-audio-buffer "^1.0.8"
+    is-browser "^2.0.1"
+    is-buffer "^2.0.0"
+
+audio-buffer@^4.0.0, audio-buffer@^4.0.4:
+  version "4.0.4"
+  resolved "https://registry.yarnpkg.com/audio-buffer/-/audio-buffer-4.0.4.tgz#cdb03855a951a1c2931ac1e7b00a9d9d3a4d4858"
+  integrity sha512-phH+MR3G+N/PO5ZKKxx7HlU6vJwAJFa0+FCaTjr/4lUZU/RCjUTqlk3nMJTRy5+b+6cbx8m//EtwZOVI5Ht9+w==
+  dependencies:
+    audio-context "^1.0.0"
+
+audio-context@^1.0.0, audio-context@^1.0.1:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/audio-context/-/audio-context-1.0.3.tgz#aae5636691a8cdc15fc91059704cbc7c2fb7abf9"
+  integrity sha512-RH3/rM74f2ITlohhjgC7oYZVS97wtv/SEjXLCzEinnrIPIDxc39m2aFc6wmdkM0NYRKo1DMleYPMAIbnTRW0eA==
+
+audio-format@^2.0.0, audio-format@^2.3.2:
+  version "2.3.2"
+  resolved "https://registry.yarnpkg.com/audio-format/-/audio-format-2.3.2.tgz#f23fc73b308c6dfba1904da6d4cd9c7621731abd"
+  integrity sha512-5IA2grZhaVhpGxX6lbJm8VVh/SKQULMXXrFxuiodi0zhzDPRB8BJfieo89AclEQv4bDxZRH4lv06qNnxqkFhKQ==
+  dependencies:
+    is-audio-buffer "^1.0.11"
+    is-buffer "^1.1.5"
+    is-plain-obj "^1.1.0"
+    pick-by-alias "^1.2.0"
+    sample-rate "^2.0.0"
+
+audio-recorder-polyfill@^0.3.5:
+  version "0.3.5"
+  resolved "https://registry.yarnpkg.com/audio-recorder-polyfill/-/audio-recorder-polyfill-0.3.5.tgz#09cbb97540260b9fc232b4ea529c002d0b21c893"
+  integrity sha512-5XRy5p1pQ7isxuzYIhxpFldN2p7EYkF/rI7OALA/Js7yC7ISSWi5ts5EMw4Uiiq/DM3RBStl+J/KOSmVO13/uw==
 
 aws-sdk@^2.648.0:
   version "2.648.0"
@@ -1854,6 +1919,11 @@ cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
   dependencies:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
+
+clamp@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/clamp/-/clamp-1.0.1.tgz#66a0e64011816e37196828fdc8c8c147312c8634"
+  integrity sha1-ZqDmQBGBbjcZaCj9yMjBRzEshjQ=
 
 class-utils@^0.3.5:
   version "0.3.6"
@@ -3086,6 +3156,16 @@ is-arrayish@^0.2.1:
   resolved "https://registry.yarnpkg.com/is-arrayish/-/is-arrayish-0.2.1.tgz#77c99840527aa8ecb1a8ba697b80645a7a926a9d"
   integrity sha1-d8mYQFJ6qOyxqLppe4BkWnqSap0=
 
+is-audio-buffer@^1.0.11, is-audio-buffer@^1.0.8:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/is-audio-buffer/-/is-audio-buffer-1.1.0.tgz#f4c7f274d20180f993f9b1650768cb77bedd4470"
+  integrity sha512-fmPC/dizJmP4ITCsW5oTQGMJ9wZVE+A/zAe6FQo3XwgERxmXHmm3ON5XkWDAxmyxvsrDmWx3NArpSgamp/59AA==
+
+is-base64@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/is-base64/-/is-base64-0.1.0.tgz#a6f20610c6ef4863a51cba32bc0222544b932622"
+  integrity sha512-WRRyllsGXJM7ZN7gPTCCQ/6wNPTRDwiWdPK66l5sJzcU/oOzcIcRRf0Rux8bkpox/1yjt0F6VJRsQOIG2qz5sg==
+
 is-binary-path@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/is-binary-path/-/is-binary-path-1.0.1.tgz#75f16642b480f187a711c814161fd3a4a7655898"
@@ -3100,12 +3180,17 @@ is-binary-path@~2.1.0:
   dependencies:
     binary-extensions "^2.0.0"
 
+is-browser@^2.0.1:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/is-browser/-/is-browser-2.1.0.tgz#fc084d59a5fced307d6708c59356bad7007371a9"
+  integrity sha512-F5rTJxDQ2sW81fcfOR1GnCXT6sVJC104fCyfj+mjpwNEwaPYSn5fte5jiHmBg3DHsIoL/l8Kvw5VN5SsTRcRFQ==
+
 is-buffer@^1.1.5:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-1.1.6.tgz#efaa2ea9daa0d7ab2ea13a97b2b8ad51fefbe8be"
   integrity sha512-NcdALwpXkTm5Zvvbk7owOUSvVvBKDgKP5/ewfXEznmQFfs4ZRmanOeKBTjRVjka3QFoN6XJ+9F3USqfHqTaU5w==
 
-is-buffer@^2.0.2:
+is-buffer@^2.0.0, is-buffer@^2.0.2:
   version "2.0.4"
   resolved "https://registry.yarnpkg.com/is-buffer/-/is-buffer-2.0.4.tgz#3e572f23c8411a5cfd9557c849e3665e0b290623"
   integrity sha512-Kq1rokWXOPXWuaMAqZiJW4XxsmD9zGx9q4aePabbn3qCRGedtH7Cm+zV8WETitMfu1wdh+Rvd6w5egwSngUX2A==
@@ -3195,7 +3280,7 @@ is-number@^7.0.0:
   resolved "https://registry.yarnpkg.com/is-number/-/is-number-7.0.0.tgz#7535345b896734d5f80c4d06c50955527a14f12b"
   integrity sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng==
 
-is-plain-obj@^1.0.0:
+is-plain-obj@^1.0.0, is-plain-obj@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/is-plain-obj/-/is-plain-obj-1.1.0.tgz#71a50c8429dfca773c92a390a4a03b39fcd51d3e"
   integrity sha1-caUMhCnfync8kqOQpKA7OfzVHT4=
@@ -4053,6 +4138,21 @@ pbkdf2@^3.0.3:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
+pcm-convert@^1.6.0:
+  version "1.6.5"
+  resolved "https://registry.yarnpkg.com/pcm-convert/-/pcm-convert-1.6.5.tgz#81b5f2d0c2fb386edb8b9f69ce2374e093aeb7cc"
+  integrity sha512-5CEspU4j8aEQ80AhNbcLfpT0apc93E6endFxahWd4sV70I6PN7LPdz8GoYm/1qr400K9bUVsVA+KxNgbFROZPw==
+  dependencies:
+    audio-format "^2.3.2"
+    is-audio-buffer "^1.0.11"
+    is-buffer "^1.1.5"
+    object-assign "^4.1.1"
+
+pick-by-alias@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/pick-by-alias/-/pick-by-alias-1.2.0.tgz#5f7cb2b1f21a6e1e884a0c87855aa4a37361107b"
+  integrity sha1-X3yysfIabh6ISgyHhVqko3NhEHs=
+
 picomatch@^2.0.4, picomatch@^2.0.7:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/picomatch/-/picomatch-2.2.2.tgz#21f333e9b6b8eaff02468f5146ea406d345f4dad"
@@ -4651,6 +4751,11 @@ safe-regex@^1.1.0:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
+sample-rate@^2.0.0:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/sample-rate/-/sample-rate-2.0.1.tgz#3f508969262b2c729a95d4d42b795a5b33610bd0"
+  integrity sha512-AIK0vVBiAEObmpJOxQu/WCyklnWGqzTSDII4O7nBo+SJHmfgBUiYhgV/Y3Ohz76gfSlU6R5CIAKggj+nAOLSvg==
+
 sass-loader@8.0.2:
   version "8.0.2"
   resolved "https://registry.yarnpkg.com/sass-loader/-/sass-loader-8.0.2.tgz#debecd8c3ce243c76454f2e8290482150380090d"
@@ -4940,6 +5045,14 @@ string-hash@1.1.3:
   version "1.1.3"
   resolved "https://registry.yarnpkg.com/string-hash/-/string-hash-1.1.3.tgz#e8aafc0ac1855b4666929ed7dd1275df5d6c811b"
   integrity sha1-6Kr8CsGFW0Zmkp7X3RJ1311sgRs=
+
+string-to-arraybuffer@^1.0.0:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/string-to-arraybuffer/-/string-to-arraybuffer-1.0.2.tgz#161147fbadea02e28b0935002cec4c40f1ca7f0a"
+  integrity sha512-DaGZidzi93dwjQen5I2osxR9ERS/R7B1PFyufNMnzhj+fmlDQAc1DSDIJVJhgI8Oq221efIMbABUBdPHDRt43Q==
+  dependencies:
+    atob-lite "^2.0.0"
+    is-base64 "^0.1.0"
 
 string_decoder@^1.0.0:
   version "1.3.0"

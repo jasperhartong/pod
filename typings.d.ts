@@ -1,5 +1,6 @@
 declare module "jstoxml";
 declare module "uuid4";
+declare module "audio-buffer-utils";
 
 declare module "smooth-scroll/dist/smooth-scroll" {
   import SM from "smooth-scroll";

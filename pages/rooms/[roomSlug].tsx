@@ -3,16 +3,14 @@ import dynamic from "next/dynamic";
 
 import {
   Container,
+  Grid,
   CircularProgress,
   Box,
   Divider,
   Typography,
   Collapse,
 } from "@material-ui/core";
-import { ToggleButtonGroup, ToggleButton } from "@material-ui/lab";
 import SurroundSound from "@material-ui/icons/SurroundSound";
-import RecordIcon from "@material-ui/icons/Mic";
-import ListenIcon from "@material-ui/icons/Headset";
 import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
 import { IRoom } from "../../src/app-schema/IRoom";
 import { IEpisode } from "../../src/app-schema/IEpisode";
@@ -25,9 +23,9 @@ import {
   RoomState,
 } from "../../src/hooks/useRoomContext";
 import BottomDrawer from "../../src/components/bottom-drawer";
-import useSmoothScroller from "../../src/hooks/useSmoothScroller";
 import { IResponse } from "../../src/api/IResponse";
 import roomFetch from "../../src/api/rpc/commands/room.fetch";
+import RoomMenu from "../../src/components/room-menu";
 
 // Dynamic imports (load on user interaction)
 const SnackbarPlayer = dynamic(() =>
@@ -59,7 +57,7 @@ const RoomPage = () => {
 
   // derived state
   const { room, mode, slug } = state;
-  const maxWidth: Breakpoint = mode === "listen" ? "sm" : "lg";
+  const maxWidth: Breakpoint = "lg";
 
   if (!room) {
     return (
@@ -101,11 +99,22 @@ const RoomPage = () => {
       maxWidth={maxWidth}
       style={{ transition: "all 500ms", width: "auto" }}
     >
-      <Collapse in={mode === "record"}>
-        <Box pt={4} pb={2}>
-          <Typography variant="h4">Tapes voor {room.data.slug}</Typography>
-        </Box>
-      </Collapse>
+      <Box pt={4} pb={2}>
+        <Grid
+          container
+          spacing={1}
+          alignContent="center"
+          alignItems="center"
+          justify="space-between"
+        >
+          <Grid item>
+            <Typography variant="h4">{room.data.title}</Typography>
+          </Grid>
+          <Grid item>
+            <RoomMenu />
+          </Grid>
+        </Grid>
+      </Box>
 
       {room.data.playlists.map((playlist) => (
         <Box pb={4} key={playlist.id}>
@@ -126,13 +135,19 @@ const RoomPage = () => {
         </div>
       </Collapse>
 
-      <Box p={3} pt={6}>
-        <Divider />
+      <Box p={4} textAlign="center">
+        <SurroundSound fontSize="large" color="disabled" />
+        <Typography
+          component="div"
+          variant="overline"
+          style={{ lineHeight: "110%" }}
+        >
+          Tapes.me ©2020
+        </Typography>
+        <Typography component="div" variant="overline" color="textSecondary">
+          {room.data.slug || ""}
+        </Typography>
       </Box>
-
-      <RoomModeSwitcher />
-
-      <TapesFooter />
 
       <SnackbarPlayer
         playingItem={playingItem}
@@ -163,53 +178,6 @@ const findEpisodeById = (room: IRoom, episodeId?: number) => {
   return ([] as IEpisode[])
     .concat(...[...room.playlists].map((playlist) => playlist.episodes))
     .find((episode) => episode.id === episodeId);
-};
-
-const TapesFooter = () => (
-  <Box p={4} textAlign="center">
-    <SurroundSound fontSize="large" color="disabled" />
-    <Typography component="div" variant="overline">
-      Tapes.me ©2020
-    </Typography>
-  </Box>
-);
-
-const RoomModeSwitcher = () => {
-  const { scrollToTop } = useSmoothScroller();
-  const { state, actions } = useRoomContext();
-
-  if (!state.room?.ok) {
-    return null;
-  }
-
-  return (
-    <Box p={4} textAlign="center">
-      <Typography component="div" variant="overline">
-        {state.room.data.slug || ""}
-      </Typography>
-      <ToggleButtonGroup
-        value={state.mode}
-        size="small"
-        exclusive
-        onChange={(_, value) => {
-          if (value) {
-            actions.mode.change(value);
-            scrollToTop(500);
-          }
-        }}
-        aria-label="text alignment"
-      >
-        <ToggleButton value="listen" aria-label="listen">
-          <ListenIcon fontSize="inherit" style={{ marginRight: 4 }} />
-          Luisteren
-        </ToggleButton>
-        <ToggleButton value="record" aria-label="record">
-          <RecordIcon fontSize="inherit" style={{ marginRight: 4 }} />
-          Opnemen
-        </ToggleButton>
-      </ToggleButtonGroup>
-    </Box>
-  );
 };
 
 export async function getServerSideProps(context: NextPageContext) {

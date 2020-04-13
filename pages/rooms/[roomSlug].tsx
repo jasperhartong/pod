@@ -26,6 +26,7 @@ import BottomDrawer from "../../src/components/bottom-drawer";
 import { IResponse } from "../../src/api/IResponse";
 import roomFetch from "../../src/api/rpc/commands/room.fetch";
 import RoomMenu from "../../src/components/room-menu";
+import { makeStyles } from "@material-ui/styles";
 
 // Dynamic imports (load on user interaction)
 const SnackbarPlayer = dynamic(() =>
@@ -35,6 +36,15 @@ const EpisodeCreateForm = dynamic(
   () => import("../../src/components/episode-create-form"),
   { loading: () => <div style={{ height: 230 }} /> }
 );
+
+const useStyles = makeStyles((theme) => ({
+  rootContainer: {
+    backgroundImage: "url(/background.png)",
+    backgroundRepeat: "no-repeat",
+    backgroundPositionX: "right",
+    backgroundPositionY: -400,
+  },
+}));
 
 const RoomPageContainer = ({ room }: { room: IResponse<IRoom> }) => {
   const defaultState: RoomState = {
@@ -53,6 +63,7 @@ const RoomPageContainer = ({ room }: { room: IResponse<IRoom> }) => {
 };
 
 const RoomPage = () => {
+  const classes = useStyles();
   const { state, actions } = useRoomContext();
 
   // derived state
@@ -61,7 +72,7 @@ const RoomPage = () => {
 
   if (!room) {
     return (
-      <Container maxWidth={maxWidth}>
+      <Container className={classes.rootContainer} maxWidth={maxWidth}>
         <Box textAlign="center" pt={8}>
           <CircularProgress />
         </Box>
@@ -71,7 +82,7 @@ const RoomPage = () => {
 
   if (!room.ok || !slug) {
     return (
-      <Container maxWidth={maxWidth}>
+      <Container className={classes.rootContainer} maxWidth={maxWidth}>
         <Box textAlign="center" pt={8}>
           <Typography variant="overline" color="textSecondary">
             Error
@@ -96,6 +107,7 @@ const RoomPage = () => {
 
   return (
     <Container
+      className={classes.rootContainer}
       maxWidth={maxWidth}
       style={{ transition: "all 500ms", width: "auto" }}
     >
@@ -106,6 +118,7 @@ const RoomPage = () => {
           alignContent="center"
           alignItems="center"
           justify="space-between"
+          wrap="nowrap"
         >
           <Grid item>
             <Typography variant="h4">{room.data.title}</Typography>

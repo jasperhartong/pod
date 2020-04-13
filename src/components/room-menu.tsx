@@ -1,7 +1,7 @@
 import { useState, MouseEvent } from "react";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import { IconButton } from "@material-ui/core";
+import { Button } from "@material-ui/core";
 import RecordIcon from "@material-ui/icons/Mic";
 import ListenIcon from "@material-ui/icons/Headset";
 import { makeStyles } from "@material-ui/styles";
@@ -10,9 +10,11 @@ import { useRoomContext, RoomMode } from "../hooks/useRoomContext";
 
 const useStyles = makeStyles((theme: Theme) => ({
   iconButton: {
-    opacity: 0.8,
-    border: `2px solid ${theme.palette.text.secondary}`,
-    marginRight: 1,
+    marginRight: 12,
+    opacity: 0.6,
+    minWidth: 36,
+    paddingLeft: 4,
+    paddingRight: 4,
   },
 }));
 
@@ -35,7 +37,9 @@ const RoomMenu = () => {
 
   return (
     <div>
-      <IconButton
+      <Button
+        variant="contained"
+        color="secondary"
         className={classes.iconButton}
         aria-controls="room-menu"
         aria-haspopup="true"
@@ -43,7 +47,7 @@ const RoomMenu = () => {
       >
         {state.mode === "listen" && <ListenIcon />}
         {state.mode === "record" && <RecordIcon />}
-      </IconButton>
+      </Button>
 
       <Menu
         id="room-menu"

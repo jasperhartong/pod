@@ -40,8 +40,7 @@ const PlaylistHeader = ({ playlist }: { playlist: IPlaylist }) => {
         <ListItemSecondaryAction>
           <Zoom in={state.mode === "record"}>
             <Fab
-              size="small"
-              style={{ marginRight: -8 }}
+              style={{ marginRight: -12 }}
               color={"primary"}
               onClick={() => actions.recordingEpisode.initiate(playlist)}
               aria-label={`Nieuwe opname`}

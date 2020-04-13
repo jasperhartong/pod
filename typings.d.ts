@@ -11,3 +11,8 @@ declare module "react-player/lib/players/FilePlayer" {
   import ReactPlayer from "react-player";
   export default class FilePlayer extends ReactPlayer {}
 }
+
+declare module "audiobuffer-to-wav";
+// {
+//   // export default toWav = (audiobuffer: AudioBuffer) => ArrayBuffer;
+// }

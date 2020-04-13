@@ -38,7 +38,7 @@ const RoomMenu = () => {
   return (
     <div>
       <Button
-        variant="contained"
+        variant="outlined"
         color="secondary"
         className={classes.iconButton}
         aria-controls="room-menu"

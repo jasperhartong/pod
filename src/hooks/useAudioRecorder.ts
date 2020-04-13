@@ -3,7 +3,7 @@ import utils from "audio-buffer-utils";
 import { AudioContext, IAudioContext } from "standardized-audio-context";
 import toWav from "audiobuffer-to-wav";
 
-let recorder: MediaRecorder;
+let recorder: MediaRecorder | null;
 let blobs: Blob[] = [];
 
 const concatAudioBlobs = async (
@@ -34,6 +34,7 @@ const useAudioRecorder = (interval: number = 4000) => {
 
   const start = () => {
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      // TODO: Add filter? https://stackoverflow.com/questions/16949768/how-can-i-reduce-the-noise-of-a-microphone-input-with-the-web-audio-api
       recorder = new MediaRecorder(stream);
 
       recorder.addEventListener("dataavailable", (event: Event) => {
@@ -41,9 +42,9 @@ const useAudioRecorder = (interval: number = 4000) => {
         blobs.push(data);
         setAudioBlobs([...blobs]);
 
-        if (recorder.state === "recording") {
+        if (recorder && recorder.state === "recording") {
           setTimeout(() => {
-            if (recorder.state === "recording") {
+            if (recorder && recorder.state === "recording") {
               recorder.requestData();
             }
           }, interval);
@@ -53,7 +54,7 @@ const useAudioRecorder = (interval: number = 4000) => {
       // Start recording
       recorder.start();
       setTimeout(() => {
-        if (recorder.state === "recording") {
+        if (recorder && recorder.state === "recording") {
           recorder.requestData();
         }
       }, interval);
@@ -61,11 +62,14 @@ const useAudioRecorder = (interval: number = 4000) => {
   };
 
   const stop = async () => {
-    recorder.stop();
-    // Converting
-    if (audioBlobs && audioContext) {
-      const concatted = await concatAudioBlobs(audioBlobs, audioContext);
-      setAudioBlobs([concatted]);
+    if (recorder) {
+      recorder.stop();
+      recorder = null;
+      // Converting
+      if (audioBlobs && audioContext) {
+        const concatted = await concatAudioBlobs(audioBlobs, audioContext);
+        setAudioBlobs([concatted]);
+      }
     }
   };
 

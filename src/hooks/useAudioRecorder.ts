@@ -3,7 +3,7 @@ import utils from "audio-buffer-utils";
 import { AudioContext, IAudioContext } from "standardized-audio-context";
 import toWav from "audiobuffer-to-wav";
 
-let recorder: MediaRecorder | null;
+let recorder: MediaRecorder;
 let blobs: Blob[] = [];
 
 const concatAudioBlobs = async (
@@ -42,9 +42,9 @@ const useAudioRecorder = (interval: number = 4000) => {
         blobs.push(data);
         setAudioBlobs([...blobs]);
 
-        if (recorder && recorder.state === "recording") {
+        if (recorder.state === "recording") {
           setTimeout(() => {
-            if (recorder && recorder.state === "recording") {
+            if (recorder.state === "recording") {
               recorder.requestData();
             }
           }, interval);
@@ -54,7 +54,7 @@ const useAudioRecorder = (interval: number = 4000) => {
       // Start recording
       recorder.start();
       setTimeout(() => {
-        if (recorder && recorder.state === "recording") {
+        if (recorder.state === "recording") {
           recorder.requestData();
         }
       }, interval);
@@ -62,14 +62,11 @@ const useAudioRecorder = (interval: number = 4000) => {
   };
 
   const stop = async () => {
-    if (recorder) {
-      recorder.stop();
-      recorder = null;
-      // Converting
-      if (audioBlobs && audioContext) {
-        const concatted = await concatAudioBlobs(audioBlobs, audioContext);
-        setAudioBlobs([concatted]);
-      }
+    recorder.stop();
+    // Converting
+    if (audioBlobs && audioContext) {
+      const concatted = await concatAudioBlobs(audioBlobs, audioContext);
+      setAudioBlobs([concatted]);
     }
   };
 

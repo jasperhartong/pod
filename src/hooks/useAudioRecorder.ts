@@ -7,50 +7,87 @@ import {
 } from "standardized-audio-context";
 import toWav from "audiobuffer-to-wav";
 
-let audioContext: IAudioContext | null = null;
 let mediaStreamSource: IMediaStreamAudioSourceNode<IAudioContext>;
-let recorder: MediaRecorder;
+let mediaRecorder: MediaRecorder;
 let blobs: Blob[] = [];
+
+/*
+  INITIAL -> [init] -> INITIATED | INIT_ERROR
+  INITIATED -> [start_listening] -> LISTENING | LISTEN_ERROR
+  LISTEN_ERROR -> [start_listening] -> LISTENING | LISTEN_ERROR
+  LISTENING -> [start_recording] -> RECORDING
+  RECORDING -> [stop_recording] -> LISTENING
+  LISTENING -> [stop_listening] -> INITIATED
+
+  INITIAL:
+    - X audioContext
+    - X mediaStreamSource
+    - X mediaRecorder
+  INITIATED:
+    - √ audioContext
+    - X mediaStreamSource
+    - X mediaRecorder
+  LISTENING:
+    - √ audioContext
+    - √ mediaStreamSource
+    - X mediaRecorder
+  RECORDING:
+    - √ audioContext
+    - √ mediaStreamSource
+    - √ mediaRecorder
+  INIT_ERROR:
+    - X audioContext
+    - X mediaStreamSource
+    - X mediaRecorder
+  LISTEN_ERROR:
+    - √ audioContext
+    - X mediaStreamSource
+    - X mediaRecorder
+ */
 
 const useAudioRecorder = (interval: number = 4000) => {
   const [recordStatus, setRecordStatus] = useState<
     "idle" | "recording" | "error"
   >("idle");
   const [audioBlobs, setAudioBlobs] = useState<Blob[]>();
+  const [audioContext, setAudioContext] = useState<IAudioContext>();
+
+  useEffect(() => {
+    setAudioContext(new AudioContext());
+  }, []);
 
   const start = () => {
-    if (recordStatus === "recording") {
+    if (!audioContext || recordStatus === "recording") {
       return;
     }
     clear();
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream) => {
-        audioContext = new AudioContext();
         // TODO: Add filter? https://stackoverflow.com/questions/16949768/how-can-i-reduce-the-noise-of-a-microphone-input-with-the-web-audio-api
         mediaStreamSource = audioContext.createMediaStreamSource(stream);
-        recorder = new MediaRecorder(stream);
+        mediaRecorder = new MediaRecorder(stream);
 
-        recorder.addEventListener("dataavailable", (event: Event) => {
+        mediaRecorder.addEventListener("dataavailable", (event: Event) => {
           const { data } = (event as unknown) as BlobEvent;
           blobs.push(data);
           setAudioBlobs([...blobs]);
 
-          if (recorder.state === "recording") {
+          if (mediaRecorder.state === "recording") {
             setTimeout(() => {
-              if (recorder.state === "recording") {
-                recorder.requestData();
+              if (mediaRecorder.state === "recording") {
+                mediaRecorder.requestData();
               }
             }, interval);
           }
         });
 
         // Start recording
-        recorder.start();
+        mediaRecorder.start();
         setRecordStatus("recording");
         setTimeout(() => {
-          if (recorder.state === "recording") {
-            recorder.requestData();
+          if (mediaRecorder.state === "recording") {
+            mediaRecorder.requestData();
           }
         }, interval);
       })
@@ -64,7 +101,7 @@ const useAudioRecorder = (interval: number = 4000) => {
     if (recordStatus !== "recording") {
       return;
     }
-    recorder.stop();
+    mediaRecorder.stop();
     mediaStreamSource.mediaStream.getTracks().forEach((track) => track.stop()); // removes red icon
     setRecordStatus("idle");
   };
@@ -86,10 +123,6 @@ const useAudioRecorder = (interval: number = 4000) => {
     }
     blobs = [];
     setAudioBlobs([...blobs]);
-    if (audioContext) {
-      await audioContext.close();
-      audioContext = null;
-    }
   };
 
   return { start, stop, combine, clear, audioBlobs, recordStatus };

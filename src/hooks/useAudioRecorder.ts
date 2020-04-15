@@ -1,8 +1,14 @@
 import { useState, useEffect } from "react";
 import utils from "audio-buffer-utils";
-import { AudioContext, IAudioContext } from "standardized-audio-context";
+import {
+  AudioContext,
+  IAudioContext,
+  IMediaStreamAudioSourceNode,
+} from "standardized-audio-context";
 import toWav from "audiobuffer-to-wav";
 
+let audioContext: IAudioContext | null = null;
+let mediaStreamSource: IMediaStreamAudioSourceNode<IAudioContext>;
 let recorder: MediaRecorder;
 let blobs: Blob[] = [];
 
@@ -11,20 +17,18 @@ const useAudioRecorder = (interval: number = 4000) => {
     "idle" | "recording" | "error"
   >("idle");
   const [audioBlobs, setAudioBlobs] = useState<Blob[]>();
-  const [audioContext, setAudioContext] = useState<IAudioContext>();
-
-  useEffect(() => {
-    setAudioContext(new AudioContext());
-  }, []);
 
   const start = () => {
     if (recordStatus === "recording") {
       return;
     }
+    clear();
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream) => {
+        audioContext = new AudioContext();
         // TODO: Add filter? https://stackoverflow.com/questions/16949768/how-can-i-reduce-the-noise-of-a-microphone-input-with-the-web-audio-api
+        mediaStreamSource = audioContext.createMediaStreamSource(stream);
         recorder = new MediaRecorder(stream);
 
         recorder.addEventListener("dataavailable", (event: Event) => {
@@ -56,11 +60,12 @@ const useAudioRecorder = (interval: number = 4000) => {
       });
   };
 
-  const stop = () => {
+  const stop = async () => {
     if (recordStatus !== "recording") {
       return;
     }
     recorder.stop();
+    // recorder.removeEventListener("dataavailable")
     setRecordStatus("idle");
   };
 
@@ -75,12 +80,16 @@ const useAudioRecorder = (interval: number = 4000) => {
     }
   };
 
-  const clear = () => {
+  const clear = async () => {
     if (recordStatus === "recording") {
       return;
     }
     blobs = [];
     setAudioBlobs([...blobs]);
+    if (audioContext) {
+      await audioContext.close();
+      audioContext = null;
+    }
   };
 
   return { start, stop, combine, clear, audioBlobs, recordStatus };

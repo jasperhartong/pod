@@ -30,6 +30,9 @@ const Recorder = () => {
             </Box>
           ))}
       </Box>
+      <Box textAlign="center" pt={8}>
+        <Typography>v0.0.1</Typography>
+      </Box>
     </Container>
   );
 };

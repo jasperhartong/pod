@@ -65,7 +65,7 @@ const useAudioRecorder = (interval: number = 4000) => {
       return;
     }
     recorder.stop();
-    // recorder.removeEventListener("dataavailable")
+    mediaStreamSource.mediaStream.getTracks().forEach((track) => track.stop()); // removes red icon
     setRecordStatus("idle");
   };
 

@@ -8,7 +8,8 @@ import {
 } from "standardized-audio-context";
 import toWav from "audiobuffer-to-wav";
 
-let blobsRef: Blob[] = [];
+let BLOBS_REF: Blob[] = [];
+let CLEAN_UP_METHODS: (() => void)[] = [];
 
 /*
   IDLE -> [start_listening] -> LISTENING | LISTEN_ERROR
@@ -67,24 +68,20 @@ const useAudioRecorder = () => {
   const [audioBlobs, setAudioBlobs] = useState<Blob[]>();
 
   useEffect(() => {
-    // FIME: Clean up not really working as it contains stale state
-    // So for now it needs to be called upon unmount from outside..
-    return () => cleanup();
+    return () => {
+      _unmountCleanup();
+    };
   }, []);
 
-  const cleanup = () => {
-    console.info("useAudioRecorder:: cleanup");
-    console.info(recorderState);
-    try {
-      // @ts-ignore
-      recorderState.mediaRecorder.stop();
-      console.info("useAudioRecorder:: cleanup recording");
-    } catch (error) {}
-    try {
-      // @ts-ignore
-      killMediaAudioStream(recorderState.mediaStreamSource);
-      console.info("useAudioRecorder:: cleanup stream");
-    } catch (error) {}
+  const _unmountCleanup = () => {
+    for (const cleanup of CLEAN_UP_METHODS) {
+      console.debug(`useAudioRecorder:: cleanup ${cleanup.toString()}`);
+
+      try {
+        cleanup();
+      } catch (error) {}
+    }
+    CLEAN_UP_METHODS = [];
   };
 
   const startListening = () => {
@@ -101,6 +98,19 @@ const useAudioRecorder = () => {
         ? recorderState.audioContext
         : new AudioContext();
 
+    const _resumeRecorderState = () => {
+      // For Safari: When coming out of the background the audioContext needs to be resumed with a delay
+      setTimeout(() => {
+        audioContext.resume();
+        console.debug(`useAudioRecorder:: resumed`);
+      }, 1000);
+    };
+
+    window.addEventListener("focus", _resumeRecorderState);
+    CLEAN_UP_METHODS.push(() =>
+      window.removeEventListener("focus", _resumeRecorderState)
+    );
+
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream) => {
@@ -109,6 +119,8 @@ const useAudioRecorder = () => {
         const audioAnalyzer = audioContext.createAnalyser();
         // audioAnalyzer.fftSize = 64
         mediaStreamSource.connect(audioAnalyzer);
+
+        CLEAN_UP_METHODS.push(() => killMediaAudioStream(mediaStreamSource));
 
         setRecorderState({
           state: "listening",
@@ -139,8 +151,8 @@ const useAudioRecorder = () => {
     localMediaRecorder.addEventListener("dataavailable", (event: Event) => {
       const { data } = (event as unknown) as BlobEvent;
       // complex way of setting state.. these exotic objects seem to require this..
-      blobsRef.push(data);
-      setAudioBlobs([...blobsRef]);
+      BLOBS_REF.push(data);
+      setAudioBlobs([...BLOBS_REF]);
 
       // Continue requesting data every segmentDuration while recording
       if (localMediaRecorder.state === "recording") {
@@ -154,6 +166,8 @@ const useAudioRecorder = () => {
 
     // Start recording
     localMediaRecorder.start();
+
+    CLEAN_UP_METHODS.push(() => localMediaRecorder.stop());
 
     setRecorderState({
       state: "recording",
@@ -224,7 +238,6 @@ const useAudioRecorder = () => {
     startRecording,
     stopRecording,
     getFrequencyData,
-    cleanup,
   };
 
   const data = {
@@ -241,7 +254,7 @@ const useAudioRecorder = () => {
           audioBlobs,
           recorderState.audioContext || new AudioContext()
         );
-        blobsRef = [concatted];
+        BLOBS_REF = [concatted];
         setAudioBlobs([concatted]);
       }
     },
@@ -249,7 +262,7 @@ const useAudioRecorder = () => {
       if (recorderState.state === "recording") {
         return;
       }
-      blobsRef = [];
+      BLOBS_REF = [];
       setAudioBlobs(undefined);
     },
   };

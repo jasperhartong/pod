@@ -63,7 +63,7 @@ type AnyRecorderState =
 const useAudioRecorder = () => {
   /* REFERENCES */
   const blobsRef = useRef<Blob[]>([]);
-  const cleanupMethodsRef = useRef<(() => void)[]>([]);
+  const teardownMethodsRef = useRef<(() => void)[]>([]);
 
   /* STATE */
   const [recorderState, setRecorderState] = useState<AnyRecorderState>({
@@ -80,13 +80,13 @@ const useAudioRecorder = () => {
   }, []);
 
   const _unmountCleanup = () => {
-    for (const cleanup of cleanupMethodsRef.current) {
-      console.debug(`useAudioRecorder:: cleanup ${cleanup.toString()}`);
+    for (const teardown of teardownMethodsRef.current) {
+      console.debug(`useAudioRecorder:: cleanup ${teardown.toString()}`);
       try {
-        cleanup();
+        teardown();
       } catch (error) {}
     }
-    cleanupMethodsRef.current = [];
+    teardownMethodsRef.current = [];
   };
 
   /* STATE TRANSTION ACTIONS */
@@ -113,7 +113,7 @@ const useAudioRecorder = () => {
     };
 
     window.addEventListener("focus", _resumeRecorderState);
-    cleanupMethodsRef.current.push(() =>
+    teardownMethodsRef.current.push(() =>
       window.removeEventListener("focus", _resumeRecorderState)
     );
 
@@ -126,7 +126,7 @@ const useAudioRecorder = () => {
         // audioAnalyzer.fftSize = 64
         mediaStreamSource.connect(audioAnalyzer);
 
-        cleanupMethodsRef.current.push(() =>
+        teardownMethodsRef.current.push(() =>
           killMediaAudioStream(mediaStreamSource)
         );
 
@@ -175,7 +175,7 @@ const useAudioRecorder = () => {
     // Start recording
     localMediaRecorder.start();
 
-    cleanupMethodsRef.current.push(() => localMediaRecorder.stop());
+    teardownMethodsRef.current.push(() => localMediaRecorder.stop());
 
     setRecorderState({
       state: "recording",

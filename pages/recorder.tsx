@@ -116,6 +116,7 @@ const AudioVisualizer = (props: Props) => {
   };
 
   useEffect(() => {
+    console.debug("AudioVisualizer:: start");
     // Start animation loop on mount
     requestRef.current = requestAnimationFrame(animateSpectrum);
     // Stop animation loop on unmount

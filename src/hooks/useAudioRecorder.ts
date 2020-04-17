@@ -104,30 +104,13 @@ const useAudioRecorder = () => {
         ? recorderState.audioContext
         : new AudioContext();
 
-    const _resumeRecorderState = () => {
-      // For Safari: When coming out of the background the audioContext needs to be resumed with a delay
-      setTimeout(() => {
-        audioContext.resume();
-        console.debug(`useAudioRecorder:: resumed`);
-      }, 1000);
-    };
-
-    window.addEventListener("focus", _resumeRecorderState);
-    teardownMethodsRef.current.push(() =>
-      window.removeEventListener("focus", _resumeRecorderState)
-    );
-
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream) => {
-        // TODO: Add filter? https://stackoverflow.com/questions/16949768/how-can-i-reduce-the-noise-of-a-microphone-input-with-the-web-audio-api
-        const mediaStreamSource = audioContext.createMediaStreamSource(stream);
-        const audioAnalyzer = audioContext.createAnalyser();
-        // audioAnalyzer.fftSize = 64
-        mediaStreamSource.connect(audioAnalyzer);
-
-        teardownMethodsRef.current.push(() =>
-          killMediaAudioStream(mediaStreamSource)
+        console.debug(`useAudioRecorder:: onStream`);
+        const { mediaStreamSource, audioAnalyzer } = setupStreamAnalyzer(
+          audioContext,
+          stream
         );
 
         setRecorderState({
@@ -137,6 +120,25 @@ const useAudioRecorder = () => {
           audioAnalyzer,
           mediaStreamSource,
         });
+
+        // Setup resume-on-focus
+        const _resumeListeningState = () => {
+          // For Safari: When coming out of the background the audioContext needs to be resumed with a delay
+          setTimeout(() => {
+            // FIXME: when visiting back the tab, the analuzer getByteFrequencyData is return [0,0,0,...]
+            audioContext.resume();
+            console.debug(`useAudioRecorder:: resumed`);
+          }, 1000);
+        };
+        window.addEventListener("focus", _resumeListeningState);
+
+        // Add teardown methods
+        teardownMethodsRef.current.push(() =>
+          window.removeEventListener("focus", _resumeListeningState)
+        );
+        teardownMethodsRef.current.push(() =>
+          killMediaAudioStream(mediaStreamSource)
+        );
       })
       .catch((error) => {
         console.error(error);
@@ -287,6 +289,18 @@ const useAudioRecorder = () => {
 export default useAudioRecorder;
 
 // audio-utils
+const setupStreamAnalyzer = (
+  context: IAudioContext,
+  mediaStream: MediaStream
+) => {
+  // TODO: Add filter? https://stackoverflow.com/questions/16949768/how-can-i-reduce-the-noise-of-a-microphone-input-with-the-web-audio-api
+  const mediaStreamSource = context.createMediaStreamSource(mediaStream);
+  const audioAnalyzer = context.createAnalyser();
+  // audioAnalyzer.fftSize = 64
+  mediaStreamSource.connect(audioAnalyzer);
+  return { mediaStreamSource, audioAnalyzer };
+};
+
 const killMediaAudioStream = (
   mediaStreamSource: IMediaStreamAudioSourceNode<IAudioContext>
 ) => {

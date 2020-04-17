@@ -83,24 +83,25 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// TODO: How to decide on frequence bands?
-const frequencyBandArray: number[] = Array.from(Array(25).keys());
 const AudioVisualizer = (props: Props) => {
+  const amplitudeValuesRef = useRef<Uint8Array | null>(null);
+  const requestRef = useRef<number>(0);
+  // TODO: How to decide on frequence bands?
+  const frequencyBandArrayRef = useRef<number[]>(Array.from(Array(25).keys()));
+
   const classes = useStyles();
 
-  const amplitudeValues = useRef<Uint8Array | null>(null);
-
   const adjustFreqBandStyle = (newAmplitudeData: Uint8Array) => {
-    amplitudeValues.current = newAmplitudeData;
+    amplitudeValuesRef.current = newAmplitudeData;
 
-    let domElements = frequencyBandArray.map((num) =>
+    let domElements = frequencyBandArrayRef.current.map((num) =>
       document.getElementById(`${props.uniqueId}${num}`)
     );
 
-    frequencyBandArray.forEach((num) => {
+    frequencyBandArrayRef.current.forEach((num) => {
       const element = domElements[num];
-      const amplitudeValue = amplitudeValues.current
-        ? amplitudeValues.current[num]
+      const amplitudeValue = amplitudeValuesRef.current
+        ? amplitudeValuesRef.current[num]
         : null;
       if (element && amplitudeValue) {
         element.style.backgroundColor = `rgb(0, 255, ${amplitudeValue})`;
@@ -109,19 +110,20 @@ const AudioVisualizer = (props: Props) => {
     });
   };
 
-  const runSpectrum = () => {
+  const animateSpectrum = () => {
     props.getFrequencyData(adjustFreqBandStyle);
-    requestAnimationFrame(runSpectrum);
+    requestRef.current = requestAnimationFrame(animateSpectrum);
   };
 
   useEffect(() => {
-    requestAnimationFrame(runSpectrum);
+    requestRef.current = requestAnimationFrame(animateSpectrum);
+    return () => cancelAnimationFrame(requestRef.current);
   }, []);
 
   return (
     <div>
       <div className={classes.flexContainer}>
-        {frequencyBandArray.map((num) => (
+        {frequencyBandArrayRef.current.map((num) => (
           <Paper
             className={classes.frequencyBand}
             elevation={4}

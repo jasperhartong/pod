@@ -49,7 +49,7 @@ const Recorder = () => {
       </Box>
 
       <Box textAlign="center" pt={8}>
-        <Typography>Recorder Component v0.2.0</Typography>
+        <Typography>Recorder Component v0.2.1</Typography>
       </Box>
 
       {["recording", "listening"].includes(state.recorderState.state) && (

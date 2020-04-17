@@ -8,7 +8,7 @@ import {
 } from "standardized-audio-context";
 import toWav from "audiobuffer-to-wav";
 
-let blobs: Blob[] = [];
+let blobsRef: Blob[] = [];
 
 /*
   IDLE -> [start_listening] -> LISTENING | LISTEN_ERROR
@@ -138,8 +138,8 @@ const useAudioRecorder = () => {
     localMediaRecorder.addEventListener("dataavailable", (event: Event) => {
       const { data } = (event as unknown) as BlobEvent;
       // complex way of setting state.. these exotic objects seem to require this..
-      blobs.push(data);
-      setAudioBlobs([...blobs]);
+      blobsRef.push(data);
+      setAudioBlobs([...blobsRef]);
 
       // Continue requesting data every segmentDuration while recording
       if (localMediaRecorder.state === "recording") {
@@ -240,6 +240,7 @@ const useAudioRecorder = () => {
           audioBlobs,
           recorderState.audioContext || new AudioContext()
         );
+        blobsRef = [concatted];
         setAudioBlobs([concatted]);
       }
     },
@@ -247,6 +248,7 @@ const useAudioRecorder = () => {
       if (recorderState.state === "recording") {
         return;
       }
+      blobsRef = [];
       setAudioBlobs(undefined);
     },
   };

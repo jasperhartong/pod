@@ -91,7 +91,7 @@ const AudioVisualizer = (props: Props) => {
 
   const classes = useStyles();
 
-  const adjustFreqBandStyle = (newAmplitudeData: Uint8Array) => {
+  const animationCallback = (newAmplitudeData: Uint8Array) => {
     amplitudeValuesRef.current = newAmplitudeData;
 
     let domElements = frequencyBandArrayRef.current.map((num) =>
@@ -111,12 +111,14 @@ const AudioVisualizer = (props: Props) => {
   };
 
   const animateSpectrum = () => {
-    props.getFrequencyData(adjustFreqBandStyle);
+    props.getFrequencyData(animationCallback);
     requestRef.current = requestAnimationFrame(animateSpectrum);
   };
 
   useEffect(() => {
+    // Start animation loop on mount
     requestRef.current = requestAnimationFrame(animateSpectrum);
+    // Stop animation loop on unmount
     return () => cancelAnimationFrame(requestRef.current);
   }, []);
 

@@ -2,36 +2,46 @@ import useAudioRecorder from "../src/hooks/useAudioRecorder";
 import { Container, Box, Button, Typography } from "@material-ui/core";
 
 const Recorder = () => {
-  const {
-    start,
-    stop,
-    clear,
-    audioBlobs,
-    recordStatus,
-    combine,
-  } = useAudioRecorder();
+  const { state, data } = useAudioRecorder();
 
   return (
     <Container maxWidth="lg">
       <Box textAlign="center" pt={8}>
-        <Typography>{recordStatus}</Typography>
+        <Typography
+          color={state.recorderState.isError ? "error" : "textPrimary"}
+        >
+          {state.recorderState.state}
+        </Typography>
       </Box>
 
       <Box textAlign="center" pt={8}>
-        <Button onClick={start}>Start</Button>
-        <Button onClick={stop}>Stop</Button>
-        <Button onClick={clear}>Clear</Button>
-        <Button onClick={combine}>Combine</Button>
-        {audioBlobs !== undefined &&
-          audioBlobs.map((blob, index) => (
+        <Button onClick={state.startListening}>startListening</Button>
+        <Button onClick={state.stopListening}>stopListening</Button>
+        <Button onClick={() => state.startRecording(3000)}>
+          startRecording
+        </Button>
+        <Button onClick={state.stopRecording}>stopRecording</Button>
+      </Box>
+
+      {state.recorderState.state !== "recording" && data.audioBlobs && (
+        <Box textAlign="center" pt={8}>
+          <Button onClick={data.clear}>Clear</Button>
+          <Button onClick={data.combine}>Combine</Button>
+        </Box>
+      )}
+
+      <Box textAlign="center" pt={8}>
+        {data.audioBlobs !== undefined &&
+          data.audioBlobs.map((blob, index) => (
             <Box key={index}>
               <Typography>recording {index + 1}</Typography>
               <audio src={URL.createObjectURL(blob)} controls />
             </Box>
           ))}
       </Box>
+
       <Box textAlign="center" pt={8}>
-        <Typography>v0.0.3</Typography>
+        <Typography>v0.1.13</Typography>
       </Box>
     </Container>
   );

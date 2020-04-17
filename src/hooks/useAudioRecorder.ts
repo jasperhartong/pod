@@ -3,6 +3,7 @@ import utils from "audio-buffer-utils";
 import {
   AudioContext,
   IAudioContext,
+  IAnalyserNode,
   IMediaStreamAudioSourceNode,
 } from "standardized-audio-context";
 import toWav from "audiobuffer-to-wav";
@@ -10,35 +11,23 @@ import toWav from "audiobuffer-to-wav";
 let blobs: Blob[] = [];
 
 /*
-  INITIAL -> [init] -> INITIATED | INIT_ERROR
-  INITIATED -> [start_listening] -> LISTENING | LISTEN_ERROR
+  IDLE -> [start_listening] -> LISTENING | LISTEN_ERROR
   LISTEN_ERROR -> [start_listening] -> LISTENING | LISTEN_ERROR
   LISTENING -> [start_recording] -> RECORDING
   RECORDING -> [stop_recording] -> LISTENING
-  LISTENING -> [stop_listening] -> INITIATED
+  LISTENING -> [stop_listening] -> IDLE
  */
 
-type AudioRecorderState =
-  | "initial"
-  | "initiated"
-  | "listening"
-  | "recording"
-  | "init_error"
-  | "listen_error";
+type AudioRecorderState = "idle" | "listening" | "recording" | "listen_error";
 interface IAudioRecorderState {
   state: AudioRecorderState;
   isError: boolean;
 }
 
-interface IStateInitial extends IAudioRecorderState {
-  state: "initial";
+interface IStateIdle extends IAudioRecorderState {
+  state: "idle";
   isError: false;
-}
-
-interface IStateInitiated extends IAudioRecorderState {
-  state: "initiated";
-  isError: false;
-  audioContext: AudioContext;
+  audioContext?: AudioContext;
 }
 
 interface IStateListening extends IAudioRecorderState {
@@ -46,6 +35,7 @@ interface IStateListening extends IAudioRecorderState {
   isError: false;
   audioContext: AudioContext;
   mediaStreamSource: IMediaStreamAudioSourceNode<IAudioContext>;
+  audioAnalyzer: IAnalyserNode<IAudioContext>;
 }
 
 interface IStateRecording extends IAudioRecorderState {
@@ -53,39 +43,31 @@ interface IStateRecording extends IAudioRecorderState {
   isError: false;
   audioContext: AudioContext;
   mediaStreamSource: IMediaStreamAudioSourceNode<IAudioContext>;
+  audioAnalyzer: IAnalyserNode<IAudioContext>;
   mediaRecorder: MediaRecorder;
 }
 
 interface IStateListenError extends IAudioRecorderState {
   state: "listen_error";
   isError: true;
-  audioContext: AudioContext;
-}
-
-interface IStateInitError extends IAudioRecorderState {
-  state: "init_error";
-  isError: true;
 }
 
 type AnyRecorderState =
-  | IStateInitial
-  | IStateInitiated
+  | IStateIdle
   | IStateListening
   | IStateRecording
-  | IStateListenError
-  | IStateInitError;
+  | IStateListenError;
 
 const useAudioRecorder = () => {
   const [recorderState, setRecorderState] = useState<AnyRecorderState>({
-    state: "initial",
+    state: "idle",
     isError: false,
   });
   const [audioBlobs, setAudioBlobs] = useState<Blob[]>();
 
   useEffect(() => {
-    console.info("useAudioRecorder:: init");
-    init();
-    //FIME: Clean up not really working as it contains stale state
+    // FIME: Clean up not really working as it contains stale state
+    // So for now it needs to be called upon unmount from outside..
     return () => cleanup();
   }, []);
 
@@ -104,47 +86,34 @@ const useAudioRecorder = () => {
     } catch (error) {}
   };
 
-  const init = () => {
-    if (recorderState.state !== "initial") {
-      return;
-    }
-    try {
-      const audioContext = new AudioContext();
-      setRecorderState({
-        state: "initiated",
-        isError: false,
-        audioContext,
-      });
-    } catch (error) {
-      console.error(error);
-      setRecorderState({
-        state: "init_error",
-        isError: true,
-      });
-    }
-  };
-
   const startListening = () => {
     if (
       !(
-        recorderState.state === "initiated" ||
-        recorderState.state === "listen_error"
+        recorderState.state === "idle" || recorderState.state === "listen_error"
       )
     ) {
       return;
     }
 
+    const audioContext =
+      recorderState.state === "idle" && recorderState.audioContext
+        ? recorderState.audioContext
+        : new AudioContext();
+
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream) => {
         // TODO: Add filter? https://stackoverflow.com/questions/16949768/how-can-i-reduce-the-noise-of-a-microphone-input-with-the-web-audio-api
-        const mediaStreamSource = recorderState.audioContext.createMediaStreamSource(
-          stream
-        );
+        const mediaStreamSource = audioContext.createMediaStreamSource(stream);
+        const audioAnalyzer = audioContext.createAnalyser();
+        // audioAnalyzer.fftSize = 64
+        mediaStreamSource.connect(audioAnalyzer);
+
         setRecorderState({
           state: "listening",
           isError: false,
-          audioContext: recorderState.audioContext,
+          audioContext,
+          audioAnalyzer,
           mediaStreamSource,
         });
       })
@@ -153,7 +122,6 @@ const useAudioRecorder = () => {
         setRecorderState({
           state: "listen_error",
           isError: true,
-          audioContext: recorderState.audioContext,
         });
       });
   };
@@ -189,8 +157,9 @@ const useAudioRecorder = () => {
     setRecorderState({
       state: "recording",
       isError: false,
-      audioContext: recorderState.audioContext,
       mediaStreamSource: recorderState.mediaStreamSource,
+      audioContext: recorderState.audioContext,
+      audioAnalyzer: recorderState.audioAnalyzer,
       mediaRecorder: localMediaRecorder,
     });
 
@@ -206,11 +175,14 @@ const useAudioRecorder = () => {
     if (recorderState.state !== "recording") {
       return;
     }
+
     recorderState.mediaRecorder.stop();
+
     setRecorderState({
       state: "listening",
       isError: false,
       audioContext: recorderState.audioContext,
+      audioAnalyzer: recorderState.audioAnalyzer,
       mediaStreamSource: recorderState.mediaStreamSource,
     });
   };
@@ -221,10 +193,27 @@ const useAudioRecorder = () => {
     }
     killMediaAudioStream(recorderState.mediaStreamSource);
     setRecorderState({
-      state: "initiated",
+      state: "idle",
       isError: false,
       audioContext: recorderState.audioContext,
     });
+  };
+
+  const getFrequencyData = (
+    callback: (audioByteFrequencyData: Uint8Array) => void
+  ) => {
+    if (
+      !(
+        recorderState.state === "listening" ||
+        recorderState.state === "recording"
+      )
+    ) {
+      return;
+    }
+    const bufferLength = recorderState.audioAnalyzer.frequencyBinCount;
+    const amplitudeArray = new Uint8Array(bufferLength);
+    recorderState.audioAnalyzer.getByteFrequencyData(amplitudeArray);
+    callback(amplitudeArray);
   };
 
   const state = {
@@ -233,22 +222,23 @@ const useAudioRecorder = () => {
     stopListening,
     startRecording,
     stopRecording,
+    getFrequencyData,
+    cleanup,
   };
 
   const data = {
     audioBlobs,
     combine: async () => {
       if (
-        recorderState.state === "initial" ||
-        recorderState.state === "init_error" ||
-        recorderState.state === "recording"
+        recorderState.state === "recording" ||
+        recorderState.state === "listen_error"
       ) {
         return;
       }
       if (audioBlobs) {
         const concatted = await concatAudioBlobs(
           audioBlobs,
-          recorderState.audioContext
+          recorderState.audioContext || new AudioContext()
         );
         setAudioBlobs([concatted]);
       }

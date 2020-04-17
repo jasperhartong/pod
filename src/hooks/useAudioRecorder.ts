@@ -27,6 +27,7 @@ interface IAudioRecorderState {
 interface IStateIdle extends IAudioRecorderState {
   state: "idle";
   isError: false;
+  // audioContext will be set when user went to "listening" before
   audioContext?: AudioContext;
 }
 

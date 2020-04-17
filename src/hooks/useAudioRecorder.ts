@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import utils from "audio-buffer-utils";
 import {
   AudioContext,
@@ -7,9 +7,6 @@ import {
   IMediaStreamAudioSourceNode,
 } from "standardized-audio-context";
 import toWav from "audiobuffer-to-wav";
-
-let BLOBS_REF: Blob[] = [];
-let CLEAN_UP_METHODS: (() => void)[] = [];
 
 /*
 
@@ -64,6 +61,10 @@ type AnyRecorderState =
   | IStateListenError;
 
 const useAudioRecorder = () => {
+  /* REFERENCES */
+  const blobsRef = useRef<Blob[]>([]);
+  const cleanupMethodsRef = useRef<(() => void)[]>([]);
+
   /* STATE */
   const [recorderState, setRecorderState] = useState<AnyRecorderState>({
     state: "idle",
@@ -79,13 +80,13 @@ const useAudioRecorder = () => {
   }, []);
 
   const _unmountCleanup = () => {
-    for (const cleanup of CLEAN_UP_METHODS) {
+    for (const cleanup of cleanupMethodsRef.current) {
       console.debug(`useAudioRecorder:: cleanup ${cleanup.toString()}`);
       try {
         cleanup();
       } catch (error) {}
     }
-    CLEAN_UP_METHODS = [];
+    cleanupMethodsRef.current = [];
   };
 
   /* STATE TRANSTION ACTIONS */
@@ -112,7 +113,7 @@ const useAudioRecorder = () => {
     };
 
     window.addEventListener("focus", _resumeRecorderState);
-    CLEAN_UP_METHODS.push(() =>
+    cleanupMethodsRef.current.push(() =>
       window.removeEventListener("focus", _resumeRecorderState)
     );
 
@@ -125,7 +126,9 @@ const useAudioRecorder = () => {
         // audioAnalyzer.fftSize = 64
         mediaStreamSource.connect(audioAnalyzer);
 
-        CLEAN_UP_METHODS.push(() => killMediaAudioStream(mediaStreamSource));
+        cleanupMethodsRef.current.push(() =>
+          killMediaAudioStream(mediaStreamSource)
+        );
 
         setRecorderState({
           state: "listening",
@@ -156,8 +159,8 @@ const useAudioRecorder = () => {
     localMediaRecorder.addEventListener("dataavailable", (event: Event) => {
       const { data } = (event as unknown) as BlobEvent;
       // complex way of setting state.. these exotic objects seem to require this..
-      BLOBS_REF.push(data);
-      setAudioBlobs([...BLOBS_REF]);
+      blobsRef.current.push(data);
+      setAudioBlobs([...blobsRef.current]);
 
       // Continue requesting data every segmentDuration while recording
       if (localMediaRecorder.state === "recording") {
@@ -172,7 +175,7 @@ const useAudioRecorder = () => {
     // Start recording
     localMediaRecorder.start();
 
-    CLEAN_UP_METHODS.push(() => localMediaRecorder.stop());
+    cleanupMethodsRef.current.push(() => localMediaRecorder.stop());
 
     setRecorderState({
       state: "recording",
@@ -262,7 +265,7 @@ const useAudioRecorder = () => {
           audioBlobs,
           recorderState.audioContext || new AudioContext()
         );
-        BLOBS_REF = [concatted];
+        blobsRef.current = [concatted];
         setAudioBlobs([concatted]);
       }
     },
@@ -270,7 +273,7 @@ const useAudioRecorder = () => {
       if (recorderState.state === "recording") {
         return;
       }
-      BLOBS_REF = [];
+      blobsRef.current = [];
       setAudioBlobs(undefined);
     },
   };

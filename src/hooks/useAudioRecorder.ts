@@ -12,11 +12,14 @@ let BLOBS_REF: Blob[] = [];
 let CLEAN_UP_METHODS: (() => void)[] = [];
 
 /*
-  IDLE -> [start_listening] -> LISTENING | LISTEN_ERROR
-  LISTEN_ERROR -> [start_listening] -> LISTENING | LISTEN_ERROR
-  LISTENING -> [start_recording] -> RECORDING
-  RECORDING -> [stop_recording] -> LISTENING
-  LISTENING -> [stop_listening] -> IDLE
+
+  States & Transitions:
+
+  idle -> [start_listening] -> listening | listen_error
+  listen_error -> [start_listening] -> listening | listen_error
+  listening -> [start_recording] -> recording
+  recording -> [stop_recording] -> listening
+  listening -> [stop_listening] -> idle
  */
 
 type AudioRecorderState = "idle" | "listening" | "recording" | "listen_error";
@@ -61,12 +64,14 @@ type AnyRecorderState =
   | IStateListenError;
 
 const useAudioRecorder = () => {
+  /* STATE */
   const [recorderState, setRecorderState] = useState<AnyRecorderState>({
     state: "idle",
     isError: false,
   });
   const [audioBlobs, setAudioBlobs] = useState<Blob[]>();
 
+  /* SIDE EFFECT CLEAN UP ON UNMOUNT */
   useEffect(() => {
     return () => {
       _unmountCleanup();
@@ -76,7 +81,6 @@ const useAudioRecorder = () => {
   const _unmountCleanup = () => {
     for (const cleanup of CLEAN_UP_METHODS) {
       console.debug(`useAudioRecorder:: cleanup ${cleanup.toString()}`);
-
       try {
         cleanup();
       } catch (error) {}
@@ -84,6 +88,7 @@ const useAudioRecorder = () => {
     CLEAN_UP_METHODS = [];
   };
 
+  /* STATE TRANSTION ACTIONS */
   const startListening = () => {
     if (
       !(
@@ -214,6 +219,7 @@ const useAudioRecorder = () => {
     });
   };
 
+  /* STATE ACTIONS (no transition) */
   const getFrequencyData = (
     callback: (audioByteFrequencyData: Uint8Array) => void
   ) => {
@@ -228,6 +234,7 @@ const useAudioRecorder = () => {
     const bufferLength = recorderState.audioAnalyzer.frequencyBinCount;
     const amplitudeArray = new Uint8Array(bufferLength);
     recorderState.audioAnalyzer.getByteFrequencyData(amplitudeArray);
+    console.warn(recorderState.audioAnalyzer.context.state);
     callback(amplitudeArray);
   };
 
@@ -240,6 +247,7 @@ const useAudioRecorder = () => {
     getFrequencyData,
   };
 
+  /* DATA ACTIONS */
   const data = {
     audioBlobs,
     combine: async () => {

@@ -70,7 +70,7 @@ type AnyRecorderState =
 const useAudioRecorder = () => {
   /* REFERENCES */
   const blobsRef = useRef<Blob[]>([]);
-  const teardownMethodsRef = useRef<(() => void)[]>([]);
+  const teardownMethodsRef = useRef<(() => void)[]>([]); // TODO: make this a map instead of array to not get duplicate teardowns
 
   /* STATE */
   const [recorderState, setRecorderState] = useState<AnyRecorderState>({
@@ -113,7 +113,7 @@ const useAudioRecorder = () => {
         : new AudioContext();
 
     navigator.mediaDevices
-      .getUserMedia({ audio: true })
+      .getUserMedia({ audio: true, video: false })
       .then((stream) => {
         console.debug(`useAudioRecorder:: onStream`);
         const { mediaStreamSource, audioAnalyzer } = setupStreamWithAnalyzer(
@@ -167,15 +167,26 @@ const useAudioRecorder = () => {
       return;
     }
     const localMediaRecorder = new MediaRecorder(
-      recorderState.mediaStreamSource.mediaStream
+      recorderState.mediaStreamSource.mediaStream.clone()
     );
 
-    // Setup event listener before starting to capture also data when stopped before end of timeSlice
-    localMediaRecorder.addEventListener("dataavailable", (event: Event) => {
+    const handleDataAvailable = (event: Event) => {
       const { data } = (event as unknown) as BlobEvent;
-      // complex way of setting state.. these exotic objects seem to require this..
-      blobsRef.current.push(data);
-      setAudioBlobs([...blobsRef.current]);
+      console.debug(
+        `useAudioRecorder:: handleDataAvailable: ${data.type} - ${data.size}`
+      );
+      if (data.size > 0) {
+        // complex way of setting state.. these exotic objects seem to require this..
+        blobsRef.current.push(data);
+        setAudioBlobs([...blobsRef.current]);
+      }
+
+      // if (data.size === 44) {
+      //   alert(
+      //     "Er is iets fouts gegaan bij de opname. Gebruik je toevallig Airpods op Safari? Deze combinatie werkt niet"
+      //   );
+      //   return setRecorderState({ state: "idle", isError: false });
+      // }
 
       // Continue requesting data every timeSlice while recording
       if (localMediaRecorder.state === "recording") {
@@ -185,7 +196,10 @@ const useAudioRecorder = () => {
           }
         }, timeSlice);
       }
-    });
+    };
+
+    // Setup event listener before starting to capture also data when stopped before end of timeSlice
+    localMediaRecorder.addEventListener("dataavailable", handleDataAvailable);
 
     // Start recording
     localMediaRecorder.start(/* timeSlice does not work well in all browsers, mocked with timeout */);
@@ -253,8 +267,28 @@ const useAudioRecorder = () => {
     const amplitudeArray = new Uint8Array(bufferLength);
     recorderState.audioAnalyzer.getByteFrequencyData(amplitudeArray);
 
+    // const sum = amplitudeArray.reduce((a, b) => a + b);
+    // if (sum === 0) {
+    //   alert(
+    //     "Er is iets fouts gegaan bij de opname. Gebruik je toevallig Airpods op Safari? Deze combinatie werkt niet"
+    //   );
+    //   return setRecorderState({ state: "idle", isError: false });
+    // }
+
     callback(amplitudeArray);
   };
+
+  // const getDevices = () => {
+  //   if (
+  //     !(
+  //       recorderState.state === "listening" ||
+  //       recorderState.state === "recording"
+  //     )
+  //   ) {
+  //     return;
+  //   }
+  //   mediaDevices.enumerateDevices();
+  // };
 
   const state = {
     recorderState,

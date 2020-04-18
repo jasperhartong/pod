@@ -129,6 +129,7 @@ const useAudioRecorder = () => {
           mediaStreamSource,
         });
 
+        teardownMethodsRef.current.push(() => audioContext.close());
         teardownMethodsRef.current.push(() =>
           killMediaAudioStream(mediaStreamSource)
         );

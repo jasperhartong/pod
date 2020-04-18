@@ -162,7 +162,7 @@ const useAudioRecorder = () => {
       });
   };
 
-  const startRecording = (segmentDuration: number = 3000) => {
+  const startRecording = (timeSlice: number = 3000) => {
     if (recorderState.state !== "listening") {
       return;
     }
@@ -170,25 +170,25 @@ const useAudioRecorder = () => {
       recorderState.mediaStreamSource.mediaStream
     );
 
-    // Setup event listener before starting to capture also data when stopped before end of segmentDuration
+    // Setup event listener before starting to capture also data when stopped before end of timeSlice
     localMediaRecorder.addEventListener("dataavailable", (event: Event) => {
       const { data } = (event as unknown) as BlobEvent;
       // complex way of setting state.. these exotic objects seem to require this..
       blobsRef.current.push(data);
       setAudioBlobs([...blobsRef.current]);
 
-      // Continue requesting data every segmentDuration while recording
+      // Continue requesting data every timeSlice while recording
       if (localMediaRecorder.state === "recording") {
         setTimeout(() => {
           if (localMediaRecorder.state === "recording") {
             localMediaRecorder.requestData();
           }
-        }, segmentDuration);
+        }, timeSlice);
       }
     });
 
     // Start recording
-    localMediaRecorder.start();
+    localMediaRecorder.start(/* timeSlice does not work well in all browsers, mocked with timeout */);
 
     teardownMethodsRef.current.push(() => localMediaRecorder.stop());
 
@@ -201,12 +201,12 @@ const useAudioRecorder = () => {
       mediaRecorder: localMediaRecorder,
     });
 
-    // Start requesting data every segmentDuration
+    // Start requesting data every timeSlice
     setTimeout(() => {
       if (localMediaRecorder.state === "recording") {
         localMediaRecorder.requestData();
       }
-    }, segmentDuration);
+    }, timeSlice);
   };
 
   const stopRecording = () => {
@@ -276,6 +276,10 @@ const useAudioRecorder = () => {
         return;
       }
       if (audioBlobs) {
+        /*
+         * Concatting the easy way does not work well in Safari.. so.. we do it the hard way (see `concatAudioBlobs`)
+         * const concatted = new Blob(audioBlobs, { type: audioBlobs[0].type }); // easy way
+         */
         const concatted = await concatAudioBlobs(
           audioBlobs,
           recorderState.audioContext || new AudioContext()

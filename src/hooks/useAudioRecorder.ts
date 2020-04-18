@@ -108,7 +108,7 @@ const useAudioRecorder = () => {
       .getUserMedia({ audio: true })
       .then((stream) => {
         console.debug(`useAudioRecorder:: onStream`);
-        const { mediaStreamSource, audioAnalyzer } = setupStreamAnalyzer(
+        const { mediaStreamSource, audioAnalyzer } = setupStreamWithAnalyzer(
           audioContext,
           stream
         );
@@ -121,24 +121,28 @@ const useAudioRecorder = () => {
           mediaStreamSource,
         });
 
-        // Setup resume-on-focus
-        const _resumeListeningState = () => {
-          // For Safari: When coming out of the background the audioContext needs to be resumed with a delay
-          setTimeout(() => {
-            // FIXME: when visiting back the tab, the analuzer getByteFrequencyData is return [0,0,0,...]
-            audioContext.resume();
-            console.debug(`useAudioRecorder:: resumed`);
-          }, 1000);
-        };
-        window.addEventListener("focus", _resumeListeningState);
-
-        // Add teardown methods
-        teardownMethodsRef.current.push(() =>
-          window.removeEventListener("focus", _resumeListeningState)
-        );
         teardownMethodsRef.current.push(() =>
           killMediaAudioStream(mediaStreamSource)
         );
+
+        /* // Setup resume-on-focus
+        const _resumeOnFocus = () => {
+          console.debug(`useAudioRecorder:: _resumeOnFocus`);
+          navigator.mediaDevices.getUserMedia({ audio: true });
+          // For Safari: When coming out of the background the audioContext needs to be resumed with a delay (sometimes)
+          setTimeout(() => {
+            if (audioContext.state === "suspended") {
+              audioContext.resume();
+              console.debug(`useAudioRecorder:: resumed`);
+            }
+          }, 1000);
+        };
+        window.addEventListener("focus", _resumeOnFocus);
+
+        // Add teardown methods
+        teardownMethodsRef.current.push(() =>
+          window.removeEventListener("focus", _resumeOnFocus)
+        ); */
       })
       .catch((error) => {
         console.error(error);
@@ -239,7 +243,7 @@ const useAudioRecorder = () => {
     const bufferLength = recorderState.audioAnalyzer.frequencyBinCount;
     const amplitudeArray = new Uint8Array(bufferLength);
     recorderState.audioAnalyzer.getByteFrequencyData(amplitudeArray);
-    console.warn(recorderState.audioAnalyzer.context.state);
+
     callback(amplitudeArray);
   };
 
@@ -289,7 +293,7 @@ const useAudioRecorder = () => {
 export default useAudioRecorder;
 
 // audio-utils
-const setupStreamAnalyzer = (
+const setupStreamWithAnalyzer = (
   context: IAudioContext,
   mediaStream: MediaStream
 ) => {
@@ -298,6 +302,15 @@ const setupStreamAnalyzer = (
   const audioAnalyzer = context.createAnalyser();
   // audioAnalyzer.fftSize = 64
   mediaStreamSource.connect(audioAnalyzer);
+  // Ensure that the anaylzer keeps alive by connecting it to the context destination (speakers)
+  audioAnalyzer.connect(context.destination);
+
+  // Add a Muted GainNode to make sure that the stream is not heared by users from the speaker
+  const gainNode = context.createGain();
+  gainNode.gain.value = -1;
+  mediaStreamSource.connect(gainNode);
+  gainNode.connect(context.destination);
+
   return { mediaStreamSource, audioAnalyzer };
 };
 

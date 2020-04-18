@@ -20,7 +20,7 @@ const Recorder = () => {
     <>
       <Box position="absolute" top={0} left={0} p={1}>
         <Typography variant="overline" color="textSecondary">
-          Recorder Test v0.4.0
+          Recorder Test v0.4.1
         </Typography>
       </Box>
 

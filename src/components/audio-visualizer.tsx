@@ -1,8 +1,10 @@
 import { useRef, useEffect } from "react";
 import { makeStyles, Paper } from "@material-ui/core";
+import { AppColors } from "../theme";
 
 interface Props {
   uniqueId: string;
+  state: "listening" | "recording";
   getFrequencyData: (
     callback: (audioByteFrequencyData: Uint8Array) => void
   ) => void;
@@ -13,19 +15,21 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexWrap: "wrap",
     justifyContent: "center",
-    paddingTop: "25%",
+    height: 0,
   },
   frequencyBand: {
-    minWidth: 4,
+    minWidth: 6,
   },
 }));
 
 export const AudioVisualizer = (props: Props) => {
   const amplitudeValuesRef = useRef<Uint8Array | null>(null);
   const requestRef = useRef<number>(0);
+
   // TODO: How to decide on frequence bands?
   const frequencyBandArrayRef = useRef<number[]>(Array.from(Array(25).keys()));
   const classes = useStyles();
+
   const animationCallback = (newAmplitudeData: Uint8Array) => {
     amplitudeValuesRef.current = newAmplitudeData;
     let domElements = frequencyBandArrayRef.current.map((num) =>
@@ -37,21 +41,24 @@ export const AudioVisualizer = (props: Props) => {
         ? amplitudeValuesRef.current[num]
         : null;
       if (element && amplitudeValue) {
-        element.style.backgroundColor = `rgb(0, 255, ${amplitudeValue})`;
         element.style.height = `${amplitudeValue}px`;
+        element.style.opacity = `${(amplitudeValue / 1000) * 3}`;
       }
     });
   };
+
   const animateSpectrum = () => {
     props.getFrequencyData(animationCallback);
     requestRef.current = requestAnimationFrame(animateSpectrum);
   };
+
   useEffect(() => {
     // Start animation loop on mount
     requestRef.current = requestAnimationFrame(animateSpectrum);
     // Stop animation loop on unmount
     return () => cancelAnimationFrame(requestRef.current);
   }, []);
+
   return (
     <div>
       <div className={classes.flexContainer}>
@@ -61,6 +68,12 @@ export const AudioVisualizer = (props: Props) => {
             elevation={4}
             id={`${props.uniqueId}${num}`}
             key={num}
+            style={{
+              backgroundColor:
+                props.state === "recording"
+                  ? AppColors.RED
+                  : `rgba(255,255,255,0.3)`,
+            }}
           />
         ))}
       </div>

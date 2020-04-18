@@ -22,7 +22,11 @@ import {
   listening -> [stop_listening] -> idle
  */
 
-type AudioRecorderState = "idle" | "listening" | "recording" | "listen_error";
+export type AudioRecorderState =
+  | "idle"
+  | "listening"
+  | "recording"
+  | "listen_error";
 interface IAudioRecorderState {
   state: AudioRecorderState;
   isError: boolean;

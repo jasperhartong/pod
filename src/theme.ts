@@ -12,7 +12,7 @@ export enum ThemePaletteType {
 export enum AppColors {
   BLUE = "rgb(38,124,255)",
   PURPLE = "rgb(121,122,202)",
-  RED = "rgb(140,30,58)",
+  RED = "rgb(200,30,35)",
   MAGENTA = "rgb(221,70,98)",
   YELLOW = "rgb(241,197,47)",
   IOS_LIGHT_BACKGROUND = "rgb(250,250,250)",

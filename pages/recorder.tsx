@@ -26,7 +26,7 @@ const Recorder = () => {
 
       <Container maxWidth="lg">
         <Box textAlign="center" pt={8}>
-          {"idle" === state.recorderState.state && (
+          {["listen_error", "idle"].includes(state.recorderState.state) && (
             <Button onClick={state.startListening} variant="outlined">
               Geef toegang tot microfoon
             </Button>

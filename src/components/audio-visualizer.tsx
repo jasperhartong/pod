@@ -4,7 +4,6 @@ import { AppColors } from "../theme";
 
 interface Props {
   uniqueId: string;
-  state: "listening" | "recording";
   getFrequencyData: (
     callback: (audioByteFrequencyData: Uint8Array) => void
   ) => void;
@@ -69,10 +68,7 @@ export const AudioVisualizer = (props: Props) => {
             id={`${props.uniqueId}${num}`}
             key={num}
             style={{
-              backgroundColor:
-                props.state === "recording"
-                  ? AppColors.RED
-                  : `rgba(255,255,255,0.3)`,
+              backgroundColor: AppColors.RED,
             }}
           />
         ))}

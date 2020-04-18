@@ -6,9 +6,11 @@ import {
   Typography,
   Fab,
   Divider,
+  ButtonBase,
 } from "@material-ui/core";
 import { AudioVisualizer } from "../src/components/audio-visualizer";
 import RecordIcon from "@material-ui/icons/Mic";
+import MicOff from "@material-ui/icons/Cancel";
 import themeOptionsProvider, { AppColors } from "../src/theme";
 
 const Recorder = () => {
@@ -64,30 +66,30 @@ const Recorder = () => {
                   ? "Stop met opnemen"
                   : "Start met opnemen"}
               </Fab>
-              <AudioVisualizer
-                uniqueId="recording"
-                state={
-                  state.recorderState.state === "recording"
-                    ? "recording"
-                    : "listening"
-                }
-                getFrequencyData={state.getFrequencyData}
-              />
+
+              {"recording" === state.recorderState.state && (
+                <AudioVisualizer
+                  uniqueId="recording"
+                  getFrequencyData={state.getFrequencyData}
+                />
+              )}
 
               <Box textAlign="center" pt={2}>
-                {"listening" === state.recorderState.state ? (
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    onClick={state.stopListening}
-                  >
-                    Mute microfoon
-                  </Button>
-                ) : (
-                  <Typography variant="overline" color="textSecondary">
-                    Aan het opnemen..
-                  </Typography>
-                )}
+                <Typography variant="overline" color="textSecondary">
+                  {"listening" === state.recorderState.state && (
+                    <>
+                      Microfoon actief{" "}
+                      <ButtonBase
+                        onClick={state.stopListening}
+                        style={{ marginTop: -2 }}
+                      >
+                        <MicOff fontSize="inherit" />
+                      </ButtonBase>
+                    </>
+                  )}
+                  {"recording" === state.recorderState.state &&
+                    "Aan het opnemen.."}
+                </Typography>
               </Box>
             </>
           )}

@@ -2,38 +2,38 @@ import { NextPageContext } from "next";
 import dynamic from "next/dynamic";
 
 import {
-  Container,
   Grid,
   CircularProgress,
   Box,
   Divider,
   Typography,
   Collapse,
+  List,
 } from "@material-ui/core";
 import SurroundSound from "@material-ui/icons/SurroundSound";
-import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
-import { IRoom } from "../../src/app-schema/IRoom";
-import { IEpisode } from "../../src/app-schema/IEpisode";
-import SubscribePanel from "../../src/components/subscribe-panel";
-import PlaylistHeader from "../../src/components/playlist-header";
-import PlaylistGrid from "../../src/components/playlist-grid";
+import { IRoom } from "../../../src/app-schema/IRoom";
+import { IEpisode } from "../../../src/app-schema/IEpisode";
+import SubscribePanel from "../../../src/components/subscribe-panel";
+import PlaylistHeader from "../../../src/components/playlist-header";
+import PlaylistGrid from "../../../src/components/playlist-grid";
 import {
   RoomProvider,
   useRoomContext,
   RoomState,
-} from "../../src/hooks/useRoomContext";
-import BottomDrawer from "../../src/components/bottom-drawer";
-import { IResponse } from "../../src/api/IResponse";
-import roomFetch from "../../src/api/rpc/commands/room.fetch";
-import RoomMenu from "../../src/components/room-menu";
+} from "../../../src/hooks/useRoomContext";
+import BottomDrawer from "../../../src/components/bottom-drawer";
+import { IResponse } from "../../../src/api/IResponse";
+import roomFetch from "../../../src/api/rpc/commands/room.fetch";
+import RoomMenu from "../../../src/components/room-menu";
 import { makeStyles } from "@material-ui/styles";
+import AppContainer from "../../../src/components/app-container";
 
 // Dynamic imports (load on user interaction)
 const SnackbarPlayer = dynamic(() =>
-  import("../../src/components/snackbar-player")
+  import("../../../src/components/snackbar-player")
 );
 const EpisodeCreateForm = dynamic(
-  () => import("../../src/components/episode-create-form"),
+  () => import("../../../src/components/episode-create-form"),
   { loading: () => <div style={{ height: 230 }} /> }
 );
 
@@ -68,21 +68,20 @@ const RoomPage = () => {
 
   // derived state
   const { room, mode, slug } = state;
-  const maxWidth: Breakpoint = "lg";
 
   if (!room) {
     return (
-      <Container className={classes.rootContainer} maxWidth={maxWidth}>
+      <AppContainer>
         <Box textAlign="center" pt={8}>
           <CircularProgress />
         </Box>
-      </Container>
+      </AppContainer>
     );
   }
 
   if (!room.ok || !slug) {
     return (
-      <Container className={classes.rootContainer} maxWidth={maxWidth}>
+      <AppContainer>
         <Box textAlign="center" pt={8}>
           <Typography variant="overline" color="textSecondary">
             Error
@@ -96,7 +95,7 @@ const RoomPage = () => {
             {!room.ok ? room.error : "unknown error"}
           </Typography>
         </Box>
-      </Container>
+      </AppContainer>
     );
   }
 
@@ -106,11 +105,7 @@ const RoomPage = () => {
   );
 
   return (
-    <Container
-      className={classes.rootContainer}
-      maxWidth={maxWidth}
-      style={{ transition: "all 500ms", width: "auto" }}
-    >
+    <AppContainer>
       <Box pt={4} pb={2}>
         <Grid
           container
@@ -131,7 +126,9 @@ const RoomPage = () => {
 
       {room.data.playlists.map((playlist) => (
         <Box pb={4} key={playlist.id}>
-          <PlaylistHeader playlist={playlist} />
+          <List>
+            <PlaylistHeader playlist={playlist} />
+          </List>
           <PlaylistGrid
             playlist={playlist}
             playingId={state.playingEpisode?.episodeId}
@@ -181,7 +178,7 @@ const RoomPage = () => {
           />
         </Box>
       </BottomDrawer>
-    </Container>
+    </AppContainer>
   );
 };
 

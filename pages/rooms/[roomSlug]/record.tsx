@@ -14,7 +14,15 @@ import {
   Breadcrumbs,
   Link,
   Divider,
+  Grid,
+  Container,
+  ListItem,
+  ListItemText,
+  ListSubheader,
+  ListItemAvatar,
+  Avatar,
 } from "@material-ui/core";
+import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import PlaylistHeader from "../../../src/components/playlist-header";
 import AppContainer from "../../../src/components/app-container";
 import { useImmer } from "use-immer";
@@ -62,21 +70,22 @@ const ChoosePlaylistStep = ({ room, dispatch, next }: RecordingStepProps) => {
   return (
     <Paper>
       <Box p={2}>
-        <Typography variant="h4" style={{ maxWidth: 500 }}>
-          In welke collectie wilt u een opname toevoegen?
-        </Typography>
-      </Box>
-      <Divider />
-      <Box p={2}>
         <List>
           {room.playlists.map((p) => (
             <PlaylistHeader
               key={p.id}
               playlist={p}
               onClick={() => selectPlaylist(p)}
+              secondaryAction={<ChevronRightIcon />}
             />
           ))}
         </List>
+      </Box>
+      <Divider />
+      <Box textAlign="center" p={2}>
+        <Button variant="outlined" onClick={() => alert("😅 Coming soon!")}>
+          Nieuwe collectie beginnen
+        </Button>
       </Box>
     </Paper>
   );
@@ -99,23 +108,54 @@ const ChooseTitleStep = ({ state, dispatch, next }: RecordingStepProps) => {
   return (
     <Paper>
       <Box p={2}>
-        <Typography variant="h4" style={{ maxWidth: 500 }}>
-          Welke boek titel gaat u voorlezen?
-        </Typography>
-      </Box>
-      <Box p={2}>
-        <form onSubmit={onSubmit}>
-          <TextField
-            placeholder="Titel"
-            inputRef={inputRef}
-            defaultValue={state.partialEpisode.title}
-          />
-          <Box pt={1}>
-            <Button variant="contained" type="submit">
-              Ga door
-            </Button>
-          </Box>
-        </form>
+        <List>
+          <ListSubheader>Nieuwe aflevering</ListSubheader>
+          <ListItem>
+            <form onSubmit={onSubmit} style={{ width: "100%" }}>
+              <Grid
+                container
+                justify="space-between"
+                alignContent="center"
+                alignItems="center"
+                spacing={2}
+              >
+                <Grid item xs>
+                  <TextField
+                    fullWidth
+                    placeholder="Titel aflevering"
+                    inputRef={inputRef}
+                    defaultValue={state.partialEpisode.title}
+                  />
+                </Grid>
+                <Grid item>
+                  <Button variant="contained" type="submit">
+                    Nieuw
+                  </Button>
+                </Grid>
+              </Grid>
+            </form>
+          </ListItem>
+          <ListSubheader>Laatste 5 afleveringen</ListSubheader>
+          {state.playlist?.episodes.slice(0, 5).map((episode) => (
+            <ListItem key={episode.id}>
+              <ListItemAvatar>
+                <Avatar
+                  variant="square"
+                  alt={episode.title}
+                  src={
+                    episode.image_file.data.thumbnails.find(
+                      (t) => t.width > 100
+                    )?.url
+                  }
+                />
+              </ListItemAvatar>
+              <ListItemText
+                primary={episode.title}
+                secondary={episode.created_on}
+              />
+            </ListItem>
+          ))}
+        </List>
       </Box>
     </Paper>
   );
@@ -171,32 +211,44 @@ const RecordPage = ({ room }: { room: IResponse<IRoom> }) => {
 
   return (
     <AppContainer maxWidth="md">
-      <Box p={1}>
-        <Breadcrumbs aria-label="breadcrumb">
-          <Link color="inherit" href="#" onClick={() => goTo("choosePlaylist")}>
-            <>{room.data.title}</>
-          </Link>
-          {steps.keys["choosePlaylist"] < steps.keys[state.step] && (
+      <Container maxWidth="sm">
+        <Box p={2} textAlign="center">
+          <Typography component="span" variant="h6">
+            {room.data.title}
+          </Typography>
+        </Box>
+        <Box p={1}>
+          <Breadcrumbs aria-label="breadcrumb">
             <Link
-              color="inherit"
               href="#"
+              color="inherit"
               onClick={() => goTo("choosePlaylist")}
             >
-              <>{state.playlist?.title}</>
+              <>Collecties</>
             </Link>
-          )}
-          {steps.keys["chooseBook"] < steps.keys[state.step] && (
-            <Link color="inherit" href="#" onClick={() => goTo("chooseBook")}>
-              {state.partialEpisode.title}
-            </Link>
-          )}
-        </Breadcrumbs>
-      </Box>
-      <Box p={1}>
-        {s === "choosePlaylist" && <ChoosePlaylistStep {...stepProps} />}
-        {s === "chooseBook" && <ChooseTitleStep {...stepProps} />}
-        {s === "recordIntro" && <>TODO</>}
-      </Box>
+
+            {steps.keys["choosePlaylist"] < steps.keys[state.step] && (
+              <Link
+                color="inherit"
+                href="#"
+                onClick={() => goTo("choosePlaylist")}
+              >
+                <>{state.playlist?.title}</>
+              </Link>
+            )}
+            {steps.keys["chooseBook"] < steps.keys[state.step] && (
+              <Link color="inherit" href="#" onClick={() => goTo("chooseBook")}>
+                {state.partialEpisode.title}
+              </Link>
+            )}
+          </Breadcrumbs>
+        </Box>
+        <Box p={1} pt={0}>
+          {s === "choosePlaylist" && <ChoosePlaylistStep {...stepProps} />}
+          {s === "chooseBook" && <ChooseTitleStep {...stepProps} />}
+          {s === "recordIntro" && <>TODO</>}
+        </Box>
+      </Container>
     </AppContainer>
   );
 };

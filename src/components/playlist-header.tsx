@@ -29,7 +29,6 @@ const PlaylistHeader = ({
       // @ts-ignore
       button={!!onClick ? true : undefined}
       onClick={onClick}
-      style={{ paddingLeft: 0 }}
     >
       <ListItemAvatar>
         <Avatar

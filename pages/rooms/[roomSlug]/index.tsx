@@ -13,7 +13,6 @@ import {
 import SurroundSound from "@material-ui/icons/SurroundSound";
 import { IRoom } from "../../../src/app-schema/IRoom";
 import { IEpisode } from "../../../src/app-schema/IEpisode";
-import SubscribePanel from "../../../src/components/subscribe-panel";
 import PlaylistHeader from "../../../src/components/playlist-header";
 import PlaylistGrid from "../../../src/components/playlist-grid";
 import {
@@ -138,12 +137,6 @@ const RoomPage = () => {
           />
         </Box>
       ))}
-
-      <Collapse in={mode === "listen"}>
-        <div>
-          <SubscribePanel slug={slug} />
-        </div>
-      </Collapse>
 
       <Box p={4} textAlign="center">
         <SurroundSound fontSize="large" color="disabled" />

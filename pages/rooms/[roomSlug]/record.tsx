@@ -29,6 +29,7 @@ import { useImmer } from "use-immer";
 import { IPlaylist } from "../../../src/app-schema/IPlaylist";
 import episodeCreateMeta from "../../../src/api/rpc/commands/episode.create.meta";
 import { useRef } from "react";
+import SubscribePanel from "../../../src/components/subscribe-panel";
 
 type EpisodeCreateRequestData = TypeOf<
   typeof episodeCreateMeta["reqValidator"]
@@ -69,7 +70,7 @@ const ChoosePlaylistStep = ({ room, dispatch, next }: RecordingStepProps) => {
 
   return (
     <Paper>
-      <Box p={2}>
+      <Box p={1}>
         <List>
           {room.playlists.map((p) => (
             <PlaylistHeader
@@ -107,7 +108,7 @@ const ChooseTitleStep = ({ state, dispatch, next }: RecordingStepProps) => {
 
   return (
     <Paper>
-      <Box p={2}>
+      <Box p={1}>
         <List>
           <ListSubheader>Nieuwe aflevering</ListSubheader>
           <ListItem>
@@ -211,13 +212,13 @@ const RecordPage = ({ room }: { room: IResponse<IRoom> }) => {
 
   return (
     <AppContainer maxWidth="md">
-      <Container maxWidth="sm">
-        <Box p={2} textAlign="center">
+      <Container maxWidth="sm" style={{ padding: 0 }}>
+        <Box pt={2} pb={2} textAlign="center">
           <Typography component="span" variant="h6">
             {room.data.title}
           </Typography>
         </Box>
-        <Box p={1}>
+        <Box pt={1} pb={1}>
           <Breadcrumbs aria-label="breadcrumb">
             <Link
               href="#"
@@ -243,10 +244,13 @@ const RecordPage = ({ room }: { room: IResponse<IRoom> }) => {
             )}
           </Breadcrumbs>
         </Box>
-        <Box p={1} pt={0}>
+        <Box>
           {s === "choosePlaylist" && <ChoosePlaylistStep {...stepProps} />}
           {s === "chooseBook" && <ChooseTitleStep {...stepProps} />}
           {s === "recordIntro" && <>TODO</>}
+        </Box>
+        <Box pt={4}>
+          <SubscribePanel slug={room.data.slug} />
         </Box>
       </Container>
     </AppContainer>

@@ -159,6 +159,8 @@ const RecordPage = ({ room }: { room: IResponse<IRoom> }) => {
   if (!room.ok) {
     return <>"Error"</>;
   }
+
+  const s = state.step;
   const stepProps = {
     room: room.data,
     state,
@@ -166,10 +168,10 @@ const RecordPage = ({ room }: { room: IResponse<IRoom> }) => {
     next,
     prev,
   };
-  const s = state.step;
+
   return (
     <AppContainer maxWidth="md">
-      <Box p={2}>
+      <Box p={1}>
         <Breadcrumbs aria-label="breadcrumb">
           <Link color="inherit" href="#" onClick={() => goTo("choosePlaylist")}>
             <>{room.data.title}</>
@@ -190,7 +192,7 @@ const RecordPage = ({ room }: { room: IResponse<IRoom> }) => {
           )}
         </Breadcrumbs>
       </Box>
-      <Box p={2} pt={0}>
+      <Box p={1}>
         {s === "choosePlaylist" && <ChoosePlaylistStep {...stepProps} />}
         {s === "chooseBook" && <ChooseTitleStep {...stepProps} />}
         {s === "recordIntro" && <>TODO</>}

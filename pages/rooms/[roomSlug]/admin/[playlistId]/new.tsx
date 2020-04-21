@@ -15,12 +15,14 @@ import {
   Paper,
   Button,
   TextField,
+  IconButton,
 } from "@material-ui/core";
 import { useImmer } from "use-immer";
 import episodeCreateMeta from "../../../../../src/api/rpc/commands/episode.create.meta";
 import { TypeOf } from "io-ts";
 import { useState } from "react";
 import IconNext from "@material-ui/icons/ChevronRight";
+import IconBack from "@material-ui/icons/ChevronLeft";
 
 type EpisodeCreateRequestData = TypeOf<
   typeof episodeCreateMeta["reqValidator"]
@@ -102,13 +104,23 @@ const AdminNewEpisodePage = (props: {
   return (
     <AppContainer maxWidth="md">
       <Container maxWidth="sm" style={{ padding: 0 }}>
-        <Box pt={2} pb={2} textAlign="center">
+        <Box pt={2} pb={2} textAlign="center" position="relative">
           <Typography component="div" variant="h6">
             {playlist.title}
           </Typography>
           <Typography component="div" variant="overline">
             Nieuwe aflevering
           </Typography>
+          <Box position="absolute" top={24} left={16}>
+            <Link
+              href="/rooms/[roomSlug]/admin/[playlistId]"
+              as={`/rooms/${room.slug}/admin/${playlist.id}`}
+            >
+              <IconButton>
+                <IconBack />
+              </IconButton>
+            </Link>
+          </Box>
         </Box>
 
         <Paper>
@@ -143,21 +155,9 @@ const AdminNewEpisodePage = (props: {
                     defaultValue={newEpisode.partialEpisode.title}
                   />
                 </Box>
-                <Grid container justify="space-between">
-                  <Grid item>
-                    <Link
-                      href="/rooms/[roomSlug]/admin/[playlistId]"
-                      as={`/rooms/${room.slug}/admin/${playlist.id}`}
-                    >
-                      <Button variant="outlined">Cancel</Button>
-                    </Link>
-                  </Grid>
-                  <Grid item>
-                    <Button variant="contained" onClick={next}>
-                      Neem intro op <IconNext />
-                    </Button>
-                  </Grid>
-                </Grid>
+                <Button variant="contained" fullWidth onClick={next}>
+                  Neem intro op <IconNext />
+                </Button>
               </Grid>
             </Grid>
           </Box>

@@ -1,9 +1,9 @@
 import { NextPageContext } from "next";
-import roomFetch from "../../../../src/api/rpc/commands/room.fetch";
-import { IResponse } from "../../../../src/api/IResponse";
-import { IRoom } from "../../../../src/app-schema/IRoom";
-import { IPlaylist } from "../../../../src/app-schema/IPlaylist";
-import AdminPageContainer from "../../../../src/components/admin/admin-container";
+import roomFetch from "../../../../../src/api/rpc/commands/room.fetch";
+import { IResponse } from "../../../../../src/api/IResponse";
+import { IRoom } from "../../../../../src/app-schema/IRoom";
+import { IPlaylist } from "../../../../../src/app-schema/IPlaylist";
+import AdminPageContainer from "../../../../../src/components/admin/admin-container";
 
 const AdminPage = (props: {
   room: IResponse<IRoom>;

@@ -16,13 +16,17 @@ import IconBack from "@material-ui/icons/ChevronLeft";
 
 export const AdminPlaylistDetails = ({ state }: AdminPageProps) => {
   if (!state.room.ok || !state.selectedPlayList) {
-    return <>Something went wrong</>;
+    return <>Error</>;
   }
 
   const slug = state.room.data.slug;
   const playlist = state.room.data.playlists.find(
     (p) => p.id === state.selectedPlayList
   );
+
+  if (!playlist) {
+    return <>Error</>;
+  }
 
   return (
     <>
@@ -36,16 +40,17 @@ export const AdminPlaylistDetails = ({ state }: AdminPageProps) => {
       <Paper>
         <Box p={1}>
           <Box p={1}>
-            <Typography variant="h5">{playlist && playlist.title}</Typography>
+            <Typography variant="h5">{playlist.title}</Typography>
           </Box>
           <Box p={1}>
-            <Button
-              fullWidth
-              variant="contained"
-              onClick={() => alert("new episode")}
+            <Link
+              href="/rooms/[roomSlug]/admin/[playlistId]/new"
+              as={`/rooms/${slug}/admin/${playlist.id}/new`}
             >
-              Nieuwe Aflevering
-            </Button>
+              <Button fullWidth variant="contained">
+                Nieuwe Aflevering
+              </Button>
+            </Link>
           </Box>
           <List>
             <ListSubheader>Laatste 5 afleveringen</ListSubheader>

@@ -12,6 +12,7 @@ import {
 } from "@material-ui/core";
 import Link from "next/link";
 import { AdminPageProps } from "./admin-container";
+import IconBack from "@material-ui/icons/ChevronLeft";
 
 export const AdminPlaylistDetails = ({ state }: AdminPageProps) => {
   if (!state.room.ok || !state.selectedPlayList) {
@@ -27,7 +28,9 @@ export const AdminPlaylistDetails = ({ state }: AdminPageProps) => {
     <>
       <Box pt={2} pb={1}>
         <Link href="/rooms/[roomSlug]/admin" as={`/rooms/${slug}/admin`}>
-          <Button variant="outlined">Back</Button>
+          <Button variant="outlined">
+            <IconBack /> {state.room.data.title}
+          </Button>
         </Link>
       </Box>
       <Paper>

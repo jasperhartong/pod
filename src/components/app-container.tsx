@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
-import { Box, Container, makeStyles, LinearProgress } from "@material-ui/core";
+import {
+  Grow,
+  Box,
+  Container,
+  makeStyles,
+  LinearProgress,
+} from "@material-ui/core";
 import { ReactNode } from "react";
 import { useRouter } from "next/dist/client/router";
 
@@ -47,7 +53,9 @@ const AppContainer = ({
           <LinearProgress variant="indeterminate" />
         </Box>
       )}
-      {children}
+      <Grow in={!isTransitioning} timeout={400}>
+        <div>{children}</div>
+      </Grow>
     </Container>
   );
 };

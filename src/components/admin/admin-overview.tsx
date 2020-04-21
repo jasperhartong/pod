@@ -22,7 +22,6 @@ export const AdminOverview = ({ state }: AdminPageProps) => {
 
   useEffect(() => {
     if (state.room.ok) {
-      console.warn("prefetch");
       state.room.data.playlists.forEach((p) =>
         router.prefetch(
           "/rooms/[roomSlug]/admin/[playlistId]",
@@ -69,6 +68,15 @@ export const AdminOverview = ({ state }: AdminPageProps) => {
       </Paper>
       <Box pt={4}>
         <SubscribePanel slug={state.room.data.slug} />
+      </Box>
+      <Box pt={4}>
+        <Button
+          fullWidth
+          variant="outlined"
+          onClick={() => router.push("/rooms/[roomSlug]", `/rooms/${slug}`)}
+        >
+          Open Luisterkamer
+        </Button>
       </Box>
     </>
   );

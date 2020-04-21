@@ -6,17 +6,31 @@ import {
   Typography,
   Divider,
 } from "@material-ui/core";
-import Link from "next/link";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import PlaylistHeader from "../playlist-header";
 import SubscribePanel from "../subscribe-panel";
 import { AdminPageProps } from "./admin-container";
+import { useRouter } from "next/dist/client/router";
+import { useEffect } from "react";
 
 export const AdminOverview = ({ state }: AdminPageProps) => {
   if (!state.room.ok) {
     return <>error</>;
   }
   const slug = state.room.data.slug;
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state.room.ok) {
+      console.warn("prefetch");
+      state.room.data.playlists.forEach((p) =>
+        router.prefetch(
+          "/rooms/[roomSlug]/admin/[playlistId]",
+          `/rooms/${slug}/admin/${p.id}`
+        )
+      );
+    }
+  }, []);
 
   return (
     <>
@@ -32,17 +46,17 @@ export const AdminOverview = ({ state }: AdminPageProps) => {
         <Box p={1}>
           <List>
             {state.room.data.playlists.map((p) => (
-              <Link
-                href="/rooms/[roomSlug]/admin/[playlistId]"
-                as={`/rooms/${slug}/admin/${p.id}`}
-              >
-                <PlaylistHeader
-                  key={p.id}
-                  playlist={p}
-                  onClick={() => {}}
-                  secondaryAction={<ChevronRightIcon />}
-                />
-              </Link>
+              <PlaylistHeader
+                key={p.id}
+                playlist={p}
+                onClick={() =>
+                  router.push(
+                    "/rooms/[roomSlug]/admin/[playlistId]",
+                    `/rooms/${slug}/admin/${p.id}`
+                  )
+                }
+                secondaryAction={<ChevronRightIcon />}
+              />
             ))}
           </List>
         </Box>

@@ -9,6 +9,7 @@ import {
   Avatar,
   ListItemText,
   Typography,
+  Grid,
 } from "@material-ui/core";
 import Link from "next/link";
 import { AdminPageProps } from "./admin-container";
@@ -30,28 +31,16 @@ export const AdminPlaylistDetails = ({ state }: AdminPageProps) => {
 
   return (
     <>
-      <Box pt={2} pb={1}>
-        <Link href="/rooms/[roomSlug]/admin" as={`/rooms/${slug}/admin`}>
-          <Button variant="outlined">
-            <IconBack /> {state.room.data.title}
-          </Button>
-        </Link>
+      <Box pt={2} pb={2} textAlign="center">
+        <Typography component="div" variant="h6">
+          {playlist.title}
+        </Typography>
+        <Typography component="div" variant="overline">
+          afspeellijst
+        </Typography>
       </Box>
       <Paper>
-        <Box p={1}>
-          <Box p={1}>
-            <Typography variant="h5">{playlist.title}</Typography>
-          </Box>
-          <Box p={1}>
-            <Link
-              href="/rooms/[roomSlug]/admin/[playlistId]/new"
-              as={`/rooms/${slug}/admin/${playlist.id}/new`}
-            >
-              <Button fullWidth variant="contained">
-                Nieuwe Aflevering
-              </Button>
-            </Link>
-          </Box>
+        <Box p={2}>
           <List>
             <ListSubheader>Laatste 5 afleveringen</ListSubheader>
             {playlist &&
@@ -75,6 +64,30 @@ export const AdminPlaylistDetails = ({ state }: AdminPageProps) => {
                 </ListItem>
               ))}
           </List>
+          <Box pt={2}>
+            <Grid container justify="space-between">
+              <Grid item>
+                <Link
+                  href="/rooms/[roomSlug]/admin"
+                  as={`/rooms/${slug}/admin`}
+                >
+                  <Button variant="outlined">
+                    <IconBack /> {state.room.data.title}
+                  </Button>
+                </Link>
+              </Grid>
+              <Grid item>
+                <Link
+                  href="/rooms/[roomSlug]/admin/[playlistId]/new"
+                  as={`/rooms/${slug}/admin/${playlist.id}/new`}
+                >
+                  <Button fullWidth variant="contained">
+                    Nieuwe Aflevering
+                  </Button>
+                </Link>
+              </Grid>
+            </Grid>
+          </Box>
         </Box>
       </Paper>
     </>

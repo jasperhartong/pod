@@ -1,9 +1,9 @@
 import * as t from "io-ts";
 import { TypeOf } from "io-ts";
 import { NextPageContext } from "next";
-import roomFetch from "../../../src/api/rpc/commands/room.fetch";
-import { IResponse } from "../../../src/api/IResponse";
-import { IRoom } from "../../../src/app-schema/IRoom";
+import roomFetch from "../../../../src/api/rpc/commands/room.fetch";
+import { IResponse } from "../../../../src/api/IResponse";
+import { IRoom } from "../../../../src/app-schema/IRoom";
 import {
   Button,
   List,
@@ -23,13 +23,13 @@ import {
   Avatar,
 } from "@material-ui/core";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import PlaylistHeader from "../../../src/components/playlist-header";
-import AppContainer from "../../../src/components/app-container";
+import PlaylistHeader from "../../../../src/components/playlist-header";
+import AppContainer from "../../../../src/components/app-container";
 import { useImmer } from "use-immer";
-import { IPlaylist } from "../../../src/app-schema/IPlaylist";
-import episodeCreateMeta from "../../../src/api/rpc/commands/episode.create.meta";
+import { IPlaylist } from "../../../../src/app-schema/IPlaylist";
+import episodeCreateMeta from "../../../../src/api/rpc/commands/episode.create.meta";
 import { useRef } from "react";
-import SubscribePanel from "../../../src/components/subscribe-panel";
+import SubscribePanel from "../../../../src/components/subscribe-panel";
 
 type EpisodeCreateRequestData = TypeOf<
   typeof episodeCreateMeta["reqValidator"]
@@ -214,11 +214,14 @@ const RecordPage = ({ room }: { room: IResponse<IRoom> }) => {
     <AppContainer maxWidth="md">
       <Container maxWidth="sm" style={{ padding: 0 }}>
         <Box pt={2} pb={2} textAlign="center">
-          <Typography component="span" variant="h6">
+          <Typography component="div" variant="h6">
             {room.data.title}
           </Typography>
+          <Typography component="div" variant="overline">
+            admin
+          </Typography>
         </Box>
-        <Box pt={1} pb={1}>
+        {/* <Box pt={1} pb={1}>
           <Breadcrumbs aria-label="breadcrumb">
             <Link
               href="#"
@@ -243,7 +246,7 @@ const RecordPage = ({ room }: { room: IResponse<IRoom> }) => {
               </Link>
             )}
           </Breadcrumbs>
-        </Box>
+        </Box> */}
         <Box>
           {s === "choosePlaylist" && <ChoosePlaylistStep {...stepProps} />}
           {s === "chooseBook" && <ChooseTitleStep {...stepProps} />}

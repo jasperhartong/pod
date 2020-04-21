@@ -92,7 +92,7 @@ const AdminNewEpisodePage = (props: {
   return (
     <AppContainer maxWidth="md">
       <Container maxWidth="sm" style={{ padding: 0 }}>
-        <Box>NEW</Box>
+        <Box>NEW!</Box>
       </Container>
     </AppContainer>
   );

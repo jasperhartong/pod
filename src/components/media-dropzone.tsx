@@ -15,9 +15,9 @@ interface Props {
 const MediaDropZone = ({
   acceptedMimeTypes,
   instructions,
-  onSuccess
+  onSuccess,
 }: Props) => {
-  const { uploadFile, loading, error, data } = useSignedMediaUploader();
+  const { uploadFile, isValidating, error, data } = useSignedMediaUploader();
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     // Only supports multiple=false
@@ -27,7 +27,7 @@ const MediaDropZone = ({
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     accept: acceptedMimeTypes,
-    multiple: false
+    multiple: false,
   });
 
   useEffect(() => {
@@ -43,7 +43,7 @@ const MediaDropZone = ({
       style={{ width: 24 }}
     />
   );
-  if (!loading) {
+  if (!isValidating) {
     icon = <UploadIcon color="disabled" />;
   }
   if (data) {

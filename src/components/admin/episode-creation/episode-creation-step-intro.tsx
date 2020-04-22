@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { EpisodeCreationStepProps } from "./episode-creation-step-props";
 import AdminDualPaneLayout from "../layout/admin-dual-pane";
 import { Box, Typography } from "@material-ui/core";
@@ -5,53 +6,23 @@ import useAudioRecorder from "../../../hooks/useAudioRecorder";
 import AudioRecorderButton from "../../audio-recorder-hook/audio-recorder-button";
 import { AudioRecorderVisualizer } from "../../audio-recorder-hook/audio-recorder-visualizer";
 import useSignedMediaUploader from "../../../hooks/useSignedMediaUploader";
-import { useEffect } from "react";
-import { blobToFile, concatAudioBlobs } from "../../../utils/audio-context";
 
 const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
-  const { context, data } = useAudioRecorder();
   const {
     uploadFile,
-    loading,
-    error,
+    isValidating: isUploading,
     data: mediaUploadData,
   } = useSignedMediaUploader();
 
-  const uploadAudio = async () => {
-    if (
-      context.recorderState.state === "recording" ||
-      context.recorderState.state === "listen_error"
-    ) {
-      return;
-    }
-
-    if (!data.audioBlobs || !context.recorderState.audioContext) {
-      return;
-    }
-
-    const blob = await concatAudioBlobs(
-      data.audioBlobs,
-      context.recorderState.audioContext || new AudioContext()
-    );
-    if (blob) {
-      const file = blobToFile(blob, "");
+  const { context } = useAudioRecorder({
+    fileName: "intro",
+    onFinishRecording: (file: File) => {
       uploadFile(file);
-    }
-  };
+    },
+  });
 
   useEffect(() => {
-    if (
-      data.audioBlobs &&
-      data.audioBlobs.length > 0 &&
-      context.recorderState.state !== "recording"
-    ) {
-      if (!loading) {
-        uploadAudio();
-      }
-    }
-  }, [data.audioBlobs]);
-
-  useEffect(() => {
+    // move on when uploaded
     if (!!mediaUploadData) {
       props.onUpdate({ audio_url: mediaUploadData.downloadUrl });
       // props.onNext();
@@ -100,7 +71,7 @@ const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
               context={context}
               timeSlice={60000}
             />
-            {loading && <Box p={2}>uploading</Box>}
+            {isUploading && <Box p={2}>uploading</Box>}
           </Box>
         </>
       }

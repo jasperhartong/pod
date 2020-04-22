@@ -11,14 +11,14 @@ type ResponseData = TypeOf<typeof signUrlCreateMeta["resValidator"]>;
 
 const useSignedMediaUploader = (): {
   uploadFile: (file: File) => void;
-  loading: boolean;
+  isValidating: boolean;
   error?: string;
   data?: ResponseData;
 } => {
   const [file, uploadFile] = useState<File>();
   const {
-    loading,
-    setLoading,
+    isValidating,
+    setIsvalidating,
     error,
     setError,
     data,
@@ -29,7 +29,7 @@ const useSignedMediaUploader = (): {
     if (!file) {
       return true;
     }
-    setLoading(true);
+    setIsvalidating(true);
 
     // Get SignedUpload Url
     const signedUrlCreation = await RPCClientFactory(signUrlCreateMeta).call({
@@ -61,7 +61,7 @@ const useSignedMediaUploader = (): {
     performUpload();
   }, [file]);
 
-  return { uploadFile, loading, error, data };
+  return { uploadFile, isValidating, error, data };
 };
 
 export default useSignedMediaUploader;

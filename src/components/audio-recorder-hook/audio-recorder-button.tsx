@@ -48,7 +48,7 @@ const AudioRecorderButton = ({
             }}
             onClick={
               "recording" === context.recorderState.state
-                ? context.stopRecording
+                ? context.pauseRecording
                 : () => context.startRecording(timeSlice || defaultTimeSlice)
             }
           >
@@ -62,6 +62,7 @@ const AudioRecorderButton = ({
               ? "Stop met opnemen"
               : "Start met opnemen"}
           </Button>
+          <Button onClick={context.finishRecording}>Done</Button>
         </>
       )}
     </>

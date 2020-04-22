@@ -9,6 +9,7 @@ import {
   setupStreamWithAnalyzer,
   killMediaAudioStream,
   concatAudioBlobs,
+  blobToFile,
 } from "../utils/audio-context";
 
 /*
@@ -67,7 +68,12 @@ type AnyRecorderState =
   | IStateRecording
   | IStateListenError;
 
-const useAudioRecorder = () => {
+interface AudioRecorderOptions {
+  fileName: string;
+  onFinishRecording?: (file: File) => void;
+}
+
+const useAudioRecorder = (options: AudioRecorderOptions) => {
   /* REFERENCES */
   const blobsRef = useRef<Blob[]>([]);
   const isMountedRef = useRef<boolean>(false);
@@ -240,7 +246,7 @@ const useAudioRecorder = () => {
     }, timeSlice);
   };
 
-  const stopRecording = () => {
+  const pauseRecording = () => {
     if (recorderState.state !== "recording") {
       return;
     }
@@ -254,6 +260,23 @@ const useAudioRecorder = () => {
       audioAnalyzer: recorderState.audioAnalyzer,
       mediaStreamSource: recorderState.mediaStreamSource,
     });
+  };
+
+  const finishRecording = async () => {
+    if (data.audioBlobs) {
+      const blob = await concatAudioBlobs(
+        data.audioBlobs,
+        // @ts-ignore
+        context.recorderState.audioContext || new AudioContext()
+      );
+      if (blob) {
+        const file = blobToFile(blob, "");
+        // TODO: Add to state
+        if (options.onFinishRecording) {
+          options.onFinishRecording(file);
+        }
+      }
+    }
   };
 
   const stopListening = () => {
@@ -319,7 +342,8 @@ const useAudioRecorder = () => {
     startListening,
     stopListening,
     startRecording,
-    stopRecording,
+    pauseRecording,
+    finishRecording,
     getFrequencyData,
   };
 

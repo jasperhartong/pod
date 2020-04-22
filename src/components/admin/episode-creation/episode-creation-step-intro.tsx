@@ -8,6 +8,7 @@ import { AudioRecorderVisualizer } from "../../audio-recorder-hook/audio-recorde
 import useSignedMediaUploader from "../../../hooks/useSignedMediaUploader";
 
 const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
+  // Move to shared hook:
   const {
     uploadFile,
     isValidating: isUploading,
@@ -21,25 +22,29 @@ const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
     stopListening,
     startRecording,
     pauseRecording,
-    finish,
+    extractFile,
     getFrequencyData,
     hasData: audioRecorderHasData,
     error: audioRecorderError,
-  } = useAudioRecorder({
-    fileName: "intro",
-    onFinishRecording: (file: File) => {
-      // Finishing: 1) upload file when users finishes
+  } = useAudioRecorder();
+
+  const saveRecording = async () => {
+    // goNext: 1) extract and upload file
+    const file = await extractFile({ fileName: "intro", clear: true });
+    if (file) {
       uploadFile(file);
-    },
-  });
+    }
+    // TODO: add error case
+  };
 
   useEffect(() => {
-    // Finishing: 2) Move on when done uploading
+    // goNext: 2) Move on when done uploading
     if (!!mediaUploadData) {
       props.onUpdate({ audio_url: mediaUploadData.downloadUrl });
       props.onNext();
     }
   }, [mediaUploadData]);
+  // Until here
 
   return (
     <AdminDualPaneLayout
@@ -83,16 +88,14 @@ const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
               isRecording={isRecording}
               error={audioRecorderError}
               startListening={startListening}
-              stopListening={stopListening}
               startRecording={() => startRecording(60000)}
               pauseRecording={pauseRecording}
-              finishRecording={finish}
               fullWidth={true}
             />
 
             <Button
               disabled={!audioRecorderHasData || isRecording || isUploading}
-              onClick={finish}
+              onClick={saveRecording}
             >
               Upload & volgende
             </Button>

@@ -11,10 +11,8 @@ interface Props {
   isRecording: boolean;
   error?: Error;
   startListening: () => void;
-  stopListening: () => void;
   startRecording: () => void;
   pauseRecording: () => void;
-  finishRecording: () => void;
   fullWidth?: boolean;
 }
 
@@ -23,10 +21,8 @@ const AudioRecorderButton = ({
   isRecording,
   error,
   startListening,
-  stopListening,
   startRecording,
   pauseRecording,
-  finishRecording,
   fullWidth,
 }: Props) => {
   return (

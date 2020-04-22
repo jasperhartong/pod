@@ -13,11 +13,6 @@ import {
   blobToFile,
 } from "../utils/audio-context";
 
-interface AudioRecorderOptions {
-  fileName: string;
-  onFinishRecording?: (file: File) => void;
-}
-
 interface TearDowns {
   mediaStreamSource?: () => void;
   mediaRecorder?: () => void;
@@ -36,7 +31,7 @@ const ImmerStartState: ImmerState = {
   hasData: false,
 };
 
-const useAudioRecorder = (options: AudioRecorderOptions) => {
+const useAudioRecorder = () => {
   /* REFERENCES */
   const isMountedRef = useRef<boolean>(false);
   const blobsRef = useRef<Blob[]>([]);
@@ -231,32 +226,6 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
     });
   };
 
-  const finish = async () => {
-    if (state.isRecording) {
-      return;
-    }
-
-    if (blobsRef.current && blobsRef.current.length > 0) {
-      const superBlob = await concatAudioBlobs(
-        blobsRef.current,
-        getAudioContext()
-      );
-      if (superBlob) {
-        const file = blobToFile(superBlob, "");
-        // TODO: Add to state
-        if (options.onFinishRecording) {
-          options.onFinishRecording(file);
-        }
-      }
-    }
-
-    // Clear upon finish
-    blobsRef.current = [];
-    dispatch((state) => {
-      state.hasData = false;
-    });
-  };
-
   const stopListening = () => {
     if (!state.isListening) {
       return;
@@ -304,13 +273,45 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
     callback(amplitudeArray);
   };
 
+  const extractFile = async ({
+    fileName,
+    clear,
+  }: {
+    fileName: string;
+    clear: boolean;
+  }) => {
+    let file: File | undefined = undefined;
+    if (state.isRecording) {
+      return undefined;
+    }
+
+    if (blobsRef.current && blobsRef.current.length > 0) {
+      const superBlob = await concatAudioBlobs(
+        blobsRef.current,
+        getAudioContext()
+      );
+      if (superBlob) {
+        file = blobToFile(superBlob, fileName);
+      }
+    }
+
+    // Clear upon finish
+    if (clear) {
+      blobsRef.current = [];
+      dispatch((state) => {
+        state.hasData = false;
+      });
+    }
+    return file;
+  };
+
   return {
     ...state,
     startListening,
     stopListening,
     startRecording,
     pauseRecording,
-    finish,
+    extractFile,
     getFrequencyData,
   };
 };

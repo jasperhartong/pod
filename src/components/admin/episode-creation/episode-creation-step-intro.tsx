@@ -4,14 +4,59 @@ import { Box, Typography } from "@material-ui/core";
 import useAudioRecorder from "../../../hooks/useAudioRecorder";
 import AudioRecorderButton from "../../audio-recorder-hook/audio-recorder-button";
 import { AudioRecorderVisualizer } from "../../audio-recorder-hook/audio-recorder-visualizer";
+import useSignedMediaUploader from "../../../hooks/useSignedMediaUploader";
+import { useEffect } from "react";
+import { blobToFile, concatAudioBlobs } from "../../../utils/audio-context";
 
 const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
   const { context, data } = useAudioRecorder();
+  const {
+    uploadFile,
+    loading,
+    error,
+    data: mediaUploadData,
+  } = useSignedMediaUploader();
 
-  const onSubmit = (formData: { title: string }) => {
-    props.onUpdate(formData);
-    props.onNext();
+  const uploadAudio = async () => {
+    if (
+      context.recorderState.state === "recording" ||
+      context.recorderState.state === "listen_error"
+    ) {
+      return;
+    }
+
+    if (!data.audioBlobs || !context.recorderState.audioContext) {
+      return;
+    }
+
+    const blob = await concatAudioBlobs(
+      data.audioBlobs,
+      context.recorderState.audioContext || new AudioContext()
+    );
+    if (blob) {
+      const file = blobToFile(blob, "");
+      uploadFile(file);
+    }
   };
+
+  useEffect(() => {
+    if (
+      data.audioBlobs &&
+      data.audioBlobs.length > 0 &&
+      context.recorderState.state !== "recording"
+    ) {
+      if (!loading) {
+        uploadAudio();
+      }
+    }
+  }, [data.audioBlobs]);
+
+  useEffect(() => {
+    if (!!mediaUploadData) {
+      props.onUpdate({ audio_url: mediaUploadData.downloadUrl });
+      // props.onNext();
+    }
+  }, [mediaUploadData]);
 
   return (
     <AdminDualPaneLayout
@@ -23,6 +68,12 @@ const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
       }}
       firstItem={
         <>
+          {"recording" === context.recorderState.state && (
+            <AudioRecorderVisualizer
+              uniqueId={`${props.playlist.id}-new-intro`}
+              getFrequencyData={context.getFrequencyData}
+            />
+          )}
           <Box
             width="100%"
             height="100%"
@@ -34,12 +85,6 @@ const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
               backgroundRepeat: "no-repeat",
             }}
           />
-          {"recording" === context.recorderState.state && (
-            <AudioRecorderVisualizer
-              uniqueId={`${props.playlist.id}-new-intro`}
-              getFrequencyData={context.getFrequencyData}
-            />
-          )}
         </>
       }
       secondItem={
@@ -50,7 +95,12 @@ const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
           </Typography>
 
           <Box pt={2} pb={2} textAlign="center">
-            <AudioRecorderButton context={context} />
+            <AudioRecorderButton
+              fullWidth={true}
+              context={context}
+              timeSlice={60000}
+            />
+            {loading && <Box p={2}>uploading</Box>}
           </Box>
         </>
       }

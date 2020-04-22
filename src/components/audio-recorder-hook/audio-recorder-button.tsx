@@ -9,10 +9,16 @@ import RecordIcon from "@material-ui/icons/Mic";
 
 type AudioRecorderContext = ReturnType<typeof useAudioRecorder>["context"];
 
+const defaultTimeSlice = 3000;
+
 const AudioRecorderButton = ({
   context,
+  timeSlice,
+  fullWidth,
 }: {
   context: AudioRecorderContext;
+  timeSlice?: number;
+  fullWidth?: boolean;
 }) => {
   return (
     <>
@@ -33,6 +39,7 @@ const AudioRecorderButton = ({
           <Button
             variant="contained"
             color="secondary"
+            fullWidth={fullWidth}
             style={{
               color:
                 "recording" === context.recorderState.state
@@ -42,7 +49,7 @@ const AudioRecorderButton = ({
             onClick={
               "recording" === context.recorderState.state
                 ? context.stopRecording
-                : () => context.startRecording(3000)
+                : () => context.startRecording(timeSlice || defaultTimeSlice)
             }
           >
             <RecordIcon

@@ -41,7 +41,7 @@ const useEpisodeCreationState = (playlistId?: IPlaylist["id"]) => {
 
 const steps = t.keyof({
   title: 1,
-  intro: 2,
+  introAudio: 2,
   record: 3,
   image: 4,
 });
@@ -106,7 +106,7 @@ const AdminEpisodeCreationPage = (props: {
         {currentStep === "title" && (
           <EpisodeCreationStepTitle {...episodeCreationStepProps} />
         )}
-        {currentStep === "intro" && (
+        {currentStep === "introAudio" && (
           <EpisodeCreationStepIntroAudio {...episodeCreationStepProps} />
         )}
       </Container>

@@ -1,6 +1,10 @@
 import { useRef, useEffect } from "react";
 import { makeStyles, Paper } from "@material-ui/core";
-import { AppColors } from "../theme";
+import { AppColors } from "../../theme";
+
+/* 
+  For usage with useAudioRecorder
+ */
 
 interface Props {
   uniqueId: string;
@@ -21,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const AudioVisualizer = (props: Props) => {
+export const AudioRecorderVisualizer = (props: Props) => {
   const amplitudeValuesRef = useRef<Uint8Array | null>(null);
   const requestRef = useRef<number>(0);
 

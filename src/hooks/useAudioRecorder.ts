@@ -290,7 +290,7 @@ const useAudioRecorder = () => {
   //   mediaDevices.enumerateDevices();
   // };
 
-  const state = {
+  const context = {
     recorderState,
     startListening,
     stopListening,
@@ -332,7 +332,7 @@ const useAudioRecorder = () => {
   };
 
   return {
-    state,
+    context,
     data,
   };
 };

@@ -12,12 +12,10 @@ import IconNext from "@material-ui/icons/ChevronRight";
 import { useForm, Controller, ErrorMessage } from "react-hook-form";
 
 const EpisodeCreationStepTitle = (props: EpisodeCreationStepProps) => {
-  const defaultValues = { title: props.partialEpisode.title };
   const { handleSubmit, control, formState, errors } = useForm<{
     title: string;
   }>({
     mode: "onChange",
-    defaultValues,
   });
 
   const disabled = formState.isSubmitting;
@@ -61,6 +59,9 @@ const EpisodeCreationStepTitle = (props: EpisodeCreationStepProps) => {
               <FormGroup>
                 {/* Title */}
                 <Controller
+                  // set default value at least to a string to counter "uncontrolled to controlled error"
+                  // https://github.com/react-hook-form/react-hook-form-website/issues/133
+                  defaultValue={props.partialEpisode.title || ""}
                   control={control}
                   rules={{ required: true }}
                   as={TextField}

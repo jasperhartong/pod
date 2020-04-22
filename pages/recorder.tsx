@@ -8,7 +8,7 @@ import {
   Divider,
   ButtonBase,
 } from "@material-ui/core";
-import { AudioRecorderVisualizer } from "../src/components/audio-recorder/audio-recorder-visualizer";
+import { AudioRecorderVisualizer } from "../src/components/audio-recorder-hook/audio-recorder-visualizer";
 import RecordIcon from "@material-ui/icons/Mic";
 import MicOff from "@material-ui/icons/Cancel";
 import themeOptionsProvider, { AppColors } from "../src/theme";

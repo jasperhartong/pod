@@ -2,8 +2,8 @@ import { EpisodeCreationStepProps } from "./episode-creation-step-props";
 import AdminDualPaneLayout from "../layout/admin-dual-pane";
 import { Box, Typography } from "@material-ui/core";
 import useAudioRecorder from "../../../hooks/useAudioRecorder";
-import AudioRecorderButton from "../../audio-recorder/audio-recorder-button";
-import { AudioRecorderVisualizer } from "../../audio-recorder/audio-recorder-visualizer";
+import AudioRecorderButton from "../../audio-recorder-hook/audio-recorder-button";
+import { AudioRecorderVisualizer } from "../../audio-recorder-hook/audio-recorder-visualizer";
 
 const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
   const { context, data } = useAudioRecorder();

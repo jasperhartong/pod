@@ -42,7 +42,7 @@ const useEpisodeCreationState = (playlistId?: IPlaylist["id"]) => {
 const steps = t.keyof({
   title: 1,
   introAudio: 2,
-  record: 3,
+  recordAudio: 3,
   image: 4,
 });
 type IStep = t.TypeOf<typeof steps>;
@@ -108,6 +108,9 @@ const AdminEpisodeCreationPage = (props: {
         )}
         {currentStep === "introAudio" && (
           <EpisodeCreationStepIntroAudio {...episodeCreationStepProps} />
+        )}
+        {currentStep === "recordAudio" && (
+          <>{JSON.stringify(newEpisode.partialEpisode)}</>
         )}
       </Container>
     </AppContainer>

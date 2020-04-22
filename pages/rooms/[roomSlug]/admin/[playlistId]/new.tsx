@@ -12,6 +12,7 @@ import episodeCreateMeta from "../../../../../src/api/rpc/commands/episode.creat
 import { TypeOf } from "io-ts";
 import { useState } from "react";
 import EpisodeCreationStepTitle from "../../../../../src/components/admin/episode-creation/episode-creation-step-title";
+import EpisodeCreationStepIntroAudio from "../../../../../src/components/admin/episode-creation/episode-creation-step-intro";
 
 type EpisodeCreateRequestData = TypeOf<
   typeof episodeCreateMeta["reqValidator"]
@@ -104,6 +105,9 @@ const AdminEpisodeCreationPage = (props: {
       <Container maxWidth="sm" style={{ padding: 0 }}>
         {currentStep === "title" && (
           <EpisodeCreationStepTitle {...episodeCreationStepProps} />
+        )}
+        {currentStep === "intro" && (
+          <EpisodeCreationStepIntroAudio {...episodeCreationStepProps} />
         )}
       </Container>
     </AppContainer>

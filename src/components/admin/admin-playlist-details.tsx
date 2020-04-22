@@ -8,12 +8,10 @@ import {
   ListItemAvatar,
   Avatar,
   ListItemText,
-  Typography,
-  IconButton,
 } from "@material-ui/core";
 import Link from "next/link";
 import { AdminPageProps } from "./admin-container";
-import IconBack from "@material-ui/icons/ChevronLeft";
+import AdminHeader from "./layout/admin-header";
 
 export const AdminPlaylistDetails = ({ state }: AdminPageProps) => {
   if (!state.room.ok || !state.selectedPlayList) {
@@ -31,21 +29,14 @@ export const AdminPlaylistDetails = ({ state }: AdminPageProps) => {
 
   return (
     <>
-      <Box pt={2} pb={2} textAlign="center" position="relative">
-        <Typography component="div" variant="h6">
-          {playlist.title}
-        </Typography>
-        <Typography component="div" variant="overline">
-          overzicht
-        </Typography>
-        <Box position="absolute" top={24} left={16}>
-          <Link href="/rooms/[roomSlug]/admin" as={`/rooms/${slug}/admin`}>
-            <IconButton>
-              <IconBack />
-            </IconButton>
-          </Link>
-        </Box>
-      </Box>
+      <AdminHeader
+        title={playlist.title}
+        subtitle="Overzicht"
+        backLink={{
+          href: "/rooms/[roomSlug]/admin",
+          as: `/rooms/${slug}/admin`,
+        }}
+      />
 
       <Paper>
         <Box p={2}>

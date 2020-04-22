@@ -41,16 +41,11 @@ interface IStateIdle extends IAudioRecorderState {
 interface IStateListening extends IAudioRecorderState {
   state: "listening";
   isError: false;
-  mediaStreamSource: IMediaStreamAudioSourceNode<IAudioContext>;
-  audioAnalyzer: IAnalyserNode<IAudioContext>;
 }
 
 interface IStateRecording extends IAudioRecorderState {
   state: "recording";
   isError: false;
-  mediaStreamSource: IMediaStreamAudioSourceNode<IAudioContext>;
-  audioAnalyzer: IAnalyserNode<IAudioContext>;
-  mediaRecorder: MediaRecorder;
 }
 
 interface IStateListenError extends IAudioRecorderState {
@@ -64,7 +59,8 @@ type AnyRecorderState =
   | IStateRecording
   | IStateListenError;
 
-// Try to reuse the audiocontext as much as possible... Safari will error out when you've start more then 4 in 1 session
+// Try to reuse the audiocontext as much as possible...
+// Safari will error out when you've start more then 4 in 1 session
 let globalAudioContext: AudioContext | undefined = undefined;
 
 const getAudioContext = () => {
@@ -83,8 +79,15 @@ interface AudioRecorderOptions {
 
 const useAudioRecorder = (options: AudioRecorderOptions) => {
   /* REFERENCES */
+  const mediaStreamSourceRef = useRef<
+    IMediaStreamAudioSourceNode<IAudioContext>
+  >();
+  const audioAnalyzerRef = useRef<IAnalyserNode<IAudioContext>>();
+  const mediaRecorderRef = useRef<MediaRecorder>();
+
   const blobsRef = useRef<Blob[]>([]);
   const isMountedRef = useRef<boolean>(false);
+
   const teardownMethodsRef = useRef<(() => void)[]>([]); // TODO: make this a map instead of array to not get duplicate teardowns
 
   /* STATE */
@@ -143,17 +146,17 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
           stream
         );
 
+        mediaStreamSourceRef.current = mediaStreamSource;
+        audioAnalyzerRef.current = audioAnalyzer;
         setRecorderState({
           state: "listening",
           isError: false,
-          audioAnalyzer,
-          mediaStreamSource,
         });
 
-        // teardownMethodsRef.current.push(() => audioContext.close());
-        teardownMethodsRef.current.push(() =>
-          killMediaAudioStream(mediaStreamSource)
-        );
+        teardownMethodsRef.current.push(() => {
+          killMediaAudioStream(mediaStreamSourceRef.current);
+          mediaStreamSourceRef.current = undefined;
+        });
       })
       .catch((error) => {
         console.error(error);
@@ -165,11 +168,11 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
   };
 
   const startRecording = (timeSlice: number = 3000) => {
-    if (recorderState.state !== "listening") {
+    if (!mediaStreamSourceRef.current) {
       return;
     }
-    const localMediaRecorder = new MediaRecorder(
-      recorderState.mediaStreamSource.mediaStream.clone()
+    mediaRecorderRef.current = new MediaRecorder(
+      mediaStreamSourceRef.current.mediaStream.clone()
     );
 
     const handleDataAvailable = (event: Event) => {
@@ -178,14 +181,21 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
         `useAudioRecorder:: handleDataAvailable: ${data.type} - ${data.size}`
       );
       if (!isMountedRef.current) {
-        console.debug(`useAudioRecorder:: handleDataAvailable ignored`);
-        return;
+        return console.debug(
+          `useAudioRecorder:: handleDataAvailable ignored: not mounted`
+        );
       }
 
       if (data.size > 0) {
         // complex way of setting state.. these exotic objects seem to require this..
         blobsRef.current.push(data);
         setAudioBlobs([...blobsRef.current]);
+      }
+
+      if (!mediaRecorderRef.current) {
+        return console.debug(
+          `useAudioRecorder:: handleDataAvailable not continuing: no mediaRecorder`
+        );
       }
 
       // if (data.size === 44) {
@@ -196,51 +206,62 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
       // }
 
       // Continue requesting data every timeSlice while recording
-      if (localMediaRecorder.state === "recording") {
+      if (mediaRecorderRef.current.state === "recording") {
         setTimeout(() => {
-          if (localMediaRecorder.state === "recording") {
-            localMediaRecorder.requestData();
+          if (
+            mediaRecorderRef.current &&
+            mediaRecorderRef.current.state === "recording"
+          ) {
+            mediaRecorderRef.current.requestData();
           }
         }, timeSlice);
       }
     };
 
     // Setup event listener before starting to capture also data when stopped before end of timeSlice
-    localMediaRecorder.addEventListener("dataavailable", handleDataAvailable);
+    mediaRecorderRef.current.addEventListener(
+      "dataavailable",
+      handleDataAvailable
+    );
 
     // Start recording
-    localMediaRecorder.start(/* timeSlice does not work well in all browsers, mocked with timeout */);
+    mediaRecorderRef.current.start(/* timeSlice does not work well in all browsers, mocked with timeout */);
 
-    teardownMethodsRef.current.push(() => localMediaRecorder.stop());
+    teardownMethodsRef.current.push(() => {
+      if (mediaRecorderRef.current) {
+        mediaRecorderRef.current.stop();
+      }
+      mediaRecorderRef.current = undefined;
+    });
 
     setRecorderState({
       state: "recording",
       isError: false,
-      mediaStreamSource: recorderState.mediaStreamSource,
-      audioAnalyzer: recorderState.audioAnalyzer,
-      mediaRecorder: localMediaRecorder,
     });
 
     // Start requesting data every timeSlice
     setTimeout(() => {
-      if (localMediaRecorder.state === "recording") {
-        localMediaRecorder.requestData();
+      if (
+        mediaRecorderRef.current &&
+        mediaRecorderRef.current.state === "recording"
+      ) {
+        mediaRecorderRef.current.requestData();
       }
     }, timeSlice);
   };
 
   const pauseRecording = () => {
-    if (recorderState.state !== "recording") {
-      return;
+    if (!mediaRecorderRef.current) {
+      return console.debug(
+        `useAudioRecorder:: pauseRecording ignoring: no mediaRecorder`
+      );
     }
 
-    recorderState.mediaRecorder.stop();
+    mediaRecorderRef.current.stop();
 
     setRecorderState({
       state: "listening",
       isError: false,
-      audioAnalyzer: recorderState.audioAnalyzer,
-      mediaStreamSource: recorderState.mediaStreamSource,
     });
   };
 
@@ -261,7 +282,7 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
     if (recorderState.state !== "listening") {
       return;
     }
-    killMediaAudioStream(recorderState.mediaStreamSource);
+    killMediaAudioStream(mediaStreamSourceRef.current);
     setRecorderState({
       state: "idle",
       isError: false,
@@ -278,18 +299,24 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
         recorderState.state === "recording"
       )
     ) {
-      console.debug(`useAudioRecorder:: getFrequencyData rejected`);
-      return;
+      return console.debug(`useAudioRecorder:: getFrequencyData rejected`);
     }
 
     if (!isMountedRef.current) {
-      console.debug(`useAudioRecorder:: getFrequencyData ignored`);
-      return;
+      return console.debug(
+        `useAudioRecorder:: getFrequencyData ignored: not mounted`
+      );
     }
 
-    const bufferLength = recorderState.audioAnalyzer.frequencyBinCount;
+    if (!audioAnalyzerRef.current) {
+      return console.debug(
+        `useAudioRecorder:: getFrequencyData ignored: no analyzer`
+      );
+    }
+
+    const bufferLength = audioAnalyzerRef.current.frequencyBinCount;
     const amplitudeArray = new Uint8Array(bufferLength);
-    recorderState.audioAnalyzer.getByteFrequencyData(amplitudeArray);
+    audioAnalyzerRef.current.getByteFrequencyData(amplitudeArray);
 
     // const sum = amplitudeArray.reduce((a, b) => a + b);
     // if (sum === 0) {

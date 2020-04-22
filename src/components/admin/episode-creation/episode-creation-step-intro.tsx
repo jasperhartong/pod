@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { EpisodeCreationStepProps } from "./episode-creation-step-props";
 import AdminDualPaneLayout from "../layout/admin-dual-pane";
-import { Box, Typography } from "@material-ui/core";
+import { Box, Typography, Button } from "@material-ui/core";
 import useAudioRecorder from "../../../hooks/useAudioRecorder";
 import AudioRecorderButton from "../../audio-recorder-hook/audio-recorder-button";
 import { AudioRecorderVisualizer } from "../../audio-recorder-hook/audio-recorder-visualizer";
@@ -14,18 +14,30 @@ const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
     data: mediaUploadData,
   } = useSignedMediaUploader();
 
-  const { context } = useAudioRecorder({
+  const {
+    isListening,
+    isRecording,
+    startListening,
+    stopListening,
+    startRecording,
+    pauseRecording,
+    finish,
+    getFrequencyData,
+    hasData: audioRecorderHasData,
+    error: audioRecorderError,
+  } = useAudioRecorder({
     fileName: "intro",
     onFinishRecording: (file: File) => {
+      // Finishing: 1) upload file when users finishes
       uploadFile(file);
     },
   });
 
   useEffect(() => {
-    // move on when uploaded
+    // Finishing: 2) Move on when done uploading
     if (!!mediaUploadData) {
       props.onUpdate({ audio_url: mediaUploadData.downloadUrl });
-      // props.onNext();
+      props.onNext();
     }
   }, [mediaUploadData]);
 
@@ -39,10 +51,10 @@ const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
       }}
       firstItem={
         <>
-          {"recording" === context.recorderState.state && (
+          {isRecording && (
             <AudioRecorderVisualizer
               uniqueId={`${props.playlist.id}-new-intro`}
-              getFrequencyData={context.getFrequencyData}
+              getFrequencyData={getFrequencyData}
             />
           )}
           <Box
@@ -67,10 +79,24 @@ const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
 
           <Box pt={2} pb={2} textAlign="center">
             <AudioRecorderButton
+              isListening={isListening}
+              isRecording={isRecording}
+              error={audioRecorderError}
+              startListening={startListening}
+              stopListening={stopListening}
+              startRecording={() => startRecording(60000)}
+              pauseRecording={pauseRecording}
+              finishRecording={finish}
               fullWidth={true}
-              context={context}
-              timeSlice={60000}
             />
+
+            <Button
+              disabled={!audioRecorderHasData || isRecording || isUploading}
+              onClick={finish}
+            >
+              Upload & volgende
+            </Button>
+
             {isUploading && <Box p={2}>uploading</Box>}
           </Box>
         </>

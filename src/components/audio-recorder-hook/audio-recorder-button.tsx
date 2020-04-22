@@ -1,5 +1,4 @@
-import useAudioRecorder from "../../hooks/useAudioRecorder";
-import { Button, Typography, Fab } from "@material-ui/core";
+import { Button, Typography } from "@material-ui/core";
 import themeOptionsProvider, { AppColors } from "../../theme";
 import RecordIcon from "@material-ui/icons/Mic";
 
@@ -7,50 +6,55 @@ import RecordIcon from "@material-ui/icons/Mic";
   For usage with useAudioRecorder
  */
 
-type AudioRecorderContext = ReturnType<typeof useAudioRecorder>["context"];
-
-const defaultTimeSlice = 3000;
+interface Props {
+  isListening: boolean;
+  isRecording: boolean;
+  error?: Error;
+  startListening: () => void;
+  stopListening: () => void;
+  startRecording: () => void;
+  pauseRecording: () => void;
+  finishRecording: () => void;
+  fullWidth?: boolean;
+}
 
 const AudioRecorderButton = ({
-  context,
-  timeSlice,
+  isListening,
+  isRecording,
+  error,
+  startListening,
+  stopListening,
+  startRecording,
+  pauseRecording,
+  finishRecording,
   fullWidth,
-}: {
-  context: AudioRecorderContext;
-  timeSlice?: number;
-  fullWidth?: boolean;
-}) => {
+}: Props) => {
   return (
     <>
-      {["listen_error", "idle"].includes(context.recorderState.state) && (
-        <Button onClick={context.startListening} variant="outlined">
+      {!isListening && (
+        <Button onClick={startListening} variant="outlined">
           Geef toegang tot microfoon
         </Button>
       )}
-      {["listen_error"].includes(context.recorderState.state) && (
+      {error && (
         <Typography color={"error"}>
           Oeps er ging iets mis. Heb je wel toegang gegeven? Probeer het anders
           in een andere browsers
         </Typography>
       )}
 
-      {["listening", "recording"].includes(context.recorderState.state) && (
+      {(isListening || isRecording) && (
         <>
           <Button
             variant="contained"
             color="secondary"
             fullWidth={fullWidth}
             style={{
-              color:
-                "recording" === context.recorderState.state
-                  ? AppColors.RED
-                  : themeOptionsProvider.theme.palette.secondary.contrastText,
+              color: isRecording
+                ? AppColors.RED
+                : themeOptionsProvider.theme.palette.secondary.contrastText,
             }}
-            onClick={
-              "recording" === context.recorderState.state
-                ? context.pauseRecording
-                : () => context.startRecording(timeSlice || defaultTimeSlice)
-            }
+            onClick={isRecording ? pauseRecording : () => startRecording()}
           >
             <RecordIcon
               style={{
@@ -58,11 +62,8 @@ const AudioRecorderButton = ({
                 color: AppColors.RED,
               }}
             />{" "}
-            {"recording" === context.recorderState.state
-              ? "Stop met opnemen"
-              : "Start met opnemen"}
+            {isRecording ? "Stop met opnemen" : "Start met opnemen"}
           </Button>
-          <Button onClick={context.finishRecording}>Done</Button>
         </>
       )}
     </>

@@ -1,131 +1,82 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
+import { useImmer } from "use-immer";
 import {
-  AudioContext,
   IAudioContext,
   IAnalyserNode,
   IMediaStreamAudioSourceNode,
 } from "standardized-audio-context";
 import {
+  getAudioContext,
   setupStreamWithAnalyzer,
   killMediaAudioStream,
   concatAudioBlobs,
   blobToFile,
 } from "../utils/audio-context";
 
-/*
-
-  States & Transitions:
-
-  idle -> [start_listening] -> listening | listen_error
-  listen_error -> [start_listening] -> listening | listen_error
-  listening -> [start_recording] -> recording
-  recording -> [stop_recording] -> listening
-  listening -> [stop_listening] -> idle
- */
-
-export type AudioRecorderState =
-  | "idle"
-  | "listening"
-  | "recording"
-  | "listen_error";
-interface IAudioRecorderState {
-  state: AudioRecorderState;
-  isError: boolean;
-}
-
-interface IStateIdle extends IAudioRecorderState {
-  state: "idle";
-  isError: false;
-}
-
-interface IStateListening extends IAudioRecorderState {
-  state: "listening";
-  isError: false;
-}
-
-interface IStateRecording extends IAudioRecorderState {
-  state: "recording";
-  isError: false;
-}
-
-interface IStateListenError extends IAudioRecorderState {
-  state: "listen_error";
-  isError: true;
-}
-
-type AnyRecorderState =
-  | IStateIdle
-  | IStateListening
-  | IStateRecording
-  | IStateListenError;
-
-// Try to reuse the audiocontext as much as possible...
-// Safari will error out when you've start more then 4 in 1 session
-let globalAudioContext: AudioContext | undefined = undefined;
-
-const getAudioContext = () => {
-  const audioContext = globalAudioContext || new AudioContext();
-  if (audioContext.state === "suspended") {
-    console.debug(`useAudioRecorder:: resumed`);
-    audioContext.resume();
-  }
-  return audioContext;
-};
-
 interface AudioRecorderOptions {
   fileName: string;
   onFinishRecording?: (file: File) => void;
 }
 
+interface TearDowns {
+  mediaStreamSource?: () => void;
+  mediaRecorder?: () => void;
+}
+
+interface ImmerState {
+  isListening: boolean;
+  isRecording: boolean;
+  hasData: boolean;
+  error?: Error;
+}
+
+const ImmerStartState: ImmerState = {
+  isListening: false,
+  isRecording: false,
+  hasData: false,
+};
+
 const useAudioRecorder = (options: AudioRecorderOptions) => {
   /* REFERENCES */
+  const isMountedRef = useRef<boolean>(false);
+  const blobsRef = useRef<Blob[]>([]);
+  const audioAnalyzerRef = useRef<IAnalyserNode<IAudioContext>>();
+  const mediaRecorderRef = useRef<MediaRecorder>();
   const mediaStreamSourceRef = useRef<
     IMediaStreamAudioSourceNode<IAudioContext>
   >();
-  const audioAnalyzerRef = useRef<IAnalyserNode<IAudioContext>>();
-  const mediaRecorderRef = useRef<MediaRecorder>();
-
-  const blobsRef = useRef<Blob[]>([]);
-  const isMountedRef = useRef<boolean>(false);
-
-  const teardownMethodsRef = useRef<(() => void)[]>([]); // TODO: make this a map instead of array to not get duplicate teardowns
+  const tearDownRefs = useRef<TearDowns>({});
 
   /* STATE */
-  const [recorderState, setRecorderState] = useState<AnyRecorderState>({
-    state: "idle",
-    isError: false,
-  });
-  const [audioBlobs, setAudioBlobs] = useState<Blob[]>();
+  const [state, dispatch] = useImmer<ImmerState>(ImmerStartState);
 
   /* SIDE EFFECT CLEAN UP ON UNMOUNT */
   useEffect(() => {
     isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
-      _unmountCleanup();
+      __tearDown();
     };
   }, []);
 
-  const _unmountCleanup = async () => {
-    for (const teardown of teardownMethodsRef.current) {
-      console.debug(`useAudioRecorder:: cleanup ${teardown.toString()}`);
-      try {
-        await teardown();
-      } catch (error) {
-        console.debug(`useAudioRecorder:: cleanup failed`);
-        console.debug(error);
+  const __tearDown = async () => {
+    Object.values(tearDownRefs.current).forEach((method) => {
+      if (method) {
+        try {
+          console.debug(`useAudioRecorder:: cleanup ${method.toString()}`);
+          (method as () => void)();
+        } catch (error) {
+          console.debug(`useAudioRecorder:: cleanup failed`);
+          console.debug(error);
+        }
       }
-    }
-    teardownMethodsRef.current = [];
+    });
+    tearDownRefs.current = {};
   };
 
   /* STATE TRANSTION ACTIONS */
   const startListening = () => {
-    if (
-      !(
-        recorderState.state === "idle" || recorderState.state === "listen_error"
-      )
-    ) {
+    if (state.isListening) {
       return;
     }
 
@@ -148,29 +99,35 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
 
         mediaStreamSourceRef.current = mediaStreamSource;
         audioAnalyzerRef.current = audioAnalyzer;
-        setRecorderState({
-          state: "listening",
-          isError: false,
-        });
 
-        teardownMethodsRef.current.push(() => {
+        tearDownRefs.current["mediaStreamSource"] = () => {
           killMediaAudioStream(mediaStreamSourceRef.current);
           mediaStreamSourceRef.current = undefined;
+        };
+
+        dispatch((state) => {
+          state.isListening = true;
+          state.error = undefined;
         });
       })
       .catch((error) => {
         console.error(error);
-        setRecorderState({
-          state: "listen_error",
-          isError: true,
+        dispatch((state) => {
+          state.isListening = false;
+          state.error = error;
         });
       });
   };
 
   const startRecording = (timeSlice: number = 3000) => {
+    if (state.isRecording) {
+      return;
+    }
+
     if (!mediaStreamSourceRef.current) {
       return;
     }
+
     mediaRecorderRef.current = new MediaRecorder(
       mediaStreamSourceRef.current.mediaStream.clone()
     );
@@ -187,9 +144,14 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
       }
 
       if (data.size > 0) {
-        // complex way of setting state.. these exotic objects seem to require this..
         blobsRef.current.push(data);
-        setAudioBlobs([...blobsRef.current]);
+
+        // Update hasData state
+        if (!state.hasData) {
+          dispatch((state) => {
+            state.hasData = true;
+          });
+        }
       }
 
       if (!mediaRecorderRef.current) {
@@ -227,16 +189,16 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
     // Start recording
     mediaRecorderRef.current.start(/* timeSlice does not work well in all browsers, mocked with timeout */);
 
-    teardownMethodsRef.current.push(() => {
+    tearDownRefs.current["mediaRecorder"] = () => {
       if (mediaRecorderRef.current) {
         mediaRecorderRef.current.stop();
       }
       mediaRecorderRef.current = undefined;
-    });
+    };
 
-    setRecorderState({
-      state: "recording",
-      isError: false,
+    dispatch((state) => {
+      state.isRecording = true;
+      state.error = undefined;
     });
 
     // Start requesting data every timeSlice
@@ -251,6 +213,10 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
   };
 
   const pauseRecording = () => {
+    if (!state.isRecording) {
+      return;
+    }
+
     if (!mediaRecorderRef.current) {
       return console.debug(
         `useAudioRecorder:: pauseRecording ignoring: no mediaRecorder`
@@ -259,33 +225,47 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
 
     mediaRecorderRef.current.stop();
 
-    setRecorderState({
-      state: "listening",
-      isError: false,
+    dispatch((state) => {
+      state.isRecording = false;
+      state.error = undefined;
     });
   };
 
-  const finishRecording = async () => {
-    if (data.audioBlobs) {
-      const blob = await concatAudioBlobs(data.audioBlobs, getAudioContext());
-      if (blob) {
-        const file = blobToFile(blob, "");
+  const finish = async () => {
+    if (state.isRecording) {
+      return;
+    }
+
+    if (blobsRef.current && blobsRef.current.length > 0) {
+      const superBlob = await concatAudioBlobs(
+        blobsRef.current,
+        getAudioContext()
+      );
+      if (superBlob) {
+        const file = blobToFile(superBlob, "");
         // TODO: Add to state
         if (options.onFinishRecording) {
           options.onFinishRecording(file);
         }
       }
     }
+
+    // Clear upon finish
+    blobsRef.current = [];
+    dispatch((state) => {
+      state.hasData = false;
+    });
   };
 
   const stopListening = () => {
-    if (recorderState.state !== "listening") {
+    if (!state.isListening) {
       return;
     }
     killMediaAudioStream(mediaStreamSourceRef.current);
-    setRecorderState({
-      state: "idle",
-      isError: false,
+
+    dispatch((state) => {
+      state.isListening = false;
+      state.error = undefined;
     });
   };
 
@@ -293,12 +273,7 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
   const getFrequencyData = (
     callback: (audioByteFrequencyData: Uint8Array) => void
   ) => {
-    if (
-      !(
-        recorderState.state === "listening" ||
-        recorderState.state === "recording"
-      )
-    ) {
+    if (!state.isListening) {
       return console.debug(`useAudioRecorder:: getFrequencyData rejected`);
     }
 
@@ -329,60 +304,14 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
     callback(amplitudeArray);
   };
 
-  // const getDevices = () => {
-  //   if (
-  //     !(
-  //       recorderState.state === "listening" ||
-  //       recorderState.state === "recording"
-  //     )
-  //   ) {
-  //     return;
-  //   }
-  //   mediaDevices.enumerateDevices();
-  // };
-
-  const context = {
-    recorderState,
+  return {
+    ...state,
     startListening,
     stopListening,
     startRecording,
     pauseRecording,
-    finishRecording,
+    finish,
     getFrequencyData,
-  };
-
-  /* DATA ACTIONS */
-  const data = {
-    audioBlobs,
-    combine: async () => {
-      if (
-        recorderState.state === "recording" ||
-        recorderState.state === "listen_error"
-      ) {
-        return;
-      }
-      if (audioBlobs) {
-        /*
-         * Concatting the easy way does not work well in Safari.. so.. we do it the hard way (see `concatAudioBlobs`)
-         * const concatted = new Blob(audioBlobs, { type: audioBlobs[0].type }); // easy way
-         */
-        const concatted = await concatAudioBlobs(audioBlobs, getAudioContext());
-        blobsRef.current = [concatted];
-        setAudioBlobs([concatted]);
-      }
-    },
-    clear: async () => {
-      if (recorderState.state === "recording") {
-        return;
-      }
-      blobsRef.current = [];
-      setAudioBlobs(undefined);
-    },
-  };
-
-  return {
-    context,
-    data,
   };
 };
 

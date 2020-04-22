@@ -1,9 +1,23 @@
 import utils from "audio-buffer-utils";
 import {
+  AudioContext,
   IAudioContext,
   IMediaStreamAudioSourceNode,
 } from "standardized-audio-context";
 import toWav from "audiobuffer-to-wav";
+
+// Try to reuse the audiocontext as much as possible...
+// Safari will error out when you've start more then 4 in 1 session
+let globalAudioContext: AudioContext | undefined = undefined;
+
+export const getAudioContext = () => {
+  const audioContext = globalAudioContext || new AudioContext();
+  if (audioContext.state === "suspended") {
+    console.debug(`useAudioRecorder:: resumed`);
+    audioContext.resume();
+  }
+  return audioContext;
+};
 
 export const setupStreamWithAnalyzer = (
   context: IAudioContext,

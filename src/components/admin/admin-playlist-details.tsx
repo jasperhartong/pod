@@ -9,7 +9,6 @@ import {
   Avatar,
   ListItemText,
   Typography,
-  Grid,
   IconButton,
 } from "@material-ui/core";
 import Link from "next/link";

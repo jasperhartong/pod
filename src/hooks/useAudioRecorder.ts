@@ -36,14 +36,11 @@ interface IAudioRecorderState {
 interface IStateIdle extends IAudioRecorderState {
   state: "idle";
   isError: false;
-  // audioContext will be set when user went to "listening" before
-  audioContext?: AudioContext;
 }
 
 interface IStateListening extends IAudioRecorderState {
   state: "listening";
   isError: false;
-  audioContext: AudioContext;
   mediaStreamSource: IMediaStreamAudioSourceNode<IAudioContext>;
   audioAnalyzer: IAnalyserNode<IAudioContext>;
 }
@@ -51,7 +48,6 @@ interface IStateListening extends IAudioRecorderState {
 interface IStateRecording extends IAudioRecorderState {
   state: "recording";
   isError: false;
-  audioContext: AudioContext;
   mediaStreamSource: IMediaStreamAudioSourceNode<IAudioContext>;
   audioAnalyzer: IAnalyserNode<IAudioContext>;
   mediaRecorder: MediaRecorder;
@@ -67,6 +63,18 @@ type AnyRecorderState =
   | IStateListening
   | IStateRecording
   | IStateListenError;
+
+// Try to reuse the audiocontext as much as possible... Safari will error out when you've start more then 4 in 1 session
+let globalAudioContext: AudioContext | undefined = undefined;
+
+const getAudioContext = () => {
+  const audioContext = globalAudioContext || new AudioContext();
+  if (audioContext.state === "suspended") {
+    console.debug(`useAudioRecorder:: resumed`);
+    audioContext.resume();
+  }
+  return audioContext;
+};
 
 interface AudioRecorderOptions {
   fileName: string;
@@ -119,11 +127,7 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
     }
 
     // Reuse audioContext if used before
-    const audioContext =
-      recorderState.state === "idle" && recorderState.audioContext
-        ? recorderState.audioContext
-        : new AudioContext();
-
+    const audioContext = getAudioContext();
     navigator.mediaDevices
       .getUserMedia({ audio: true, video: false })
       .then((stream) => {
@@ -142,34 +146,14 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
         setRecorderState({
           state: "listening",
           isError: false,
-          audioContext,
           audioAnalyzer,
           mediaStreamSource,
         });
 
-        teardownMethodsRef.current.push(() => audioContext.close());
+        // teardownMethodsRef.current.push(() => audioContext.close());
         teardownMethodsRef.current.push(() =>
           killMediaAudioStream(mediaStreamSource)
         );
-
-        /* // Setup resume-on-focus
-        const _resumeOnFocus = () => {
-          console.debug(`useAudioRecorder:: _resumeOnFocus`);
-          navigator.mediaDevices.getUserMedia({ audio: true });
-          // For Safari: When coming out of the background the audioContext needs to be resumed with a delay (sometimes)
-          setTimeout(() => {
-            if (audioContext.state === "suspended") {
-              audioContext.resume();
-              console.debug(`useAudioRecorder:: resumed`);
-            }
-          }, 1000);
-        };
-        window.addEventListener("focus", _resumeOnFocus);
-
-        // Add teardown methods
-        teardownMethodsRef.current.push(() =>
-          window.removeEventListener("focus", _resumeOnFocus)
-        ); */
       })
       .catch((error) => {
         console.error(error);
@@ -233,7 +217,6 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
       state: "recording",
       isError: false,
       mediaStreamSource: recorderState.mediaStreamSource,
-      audioContext: recorderState.audioContext,
       audioAnalyzer: recorderState.audioAnalyzer,
       mediaRecorder: localMediaRecorder,
     });
@@ -256,7 +239,6 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
     setRecorderState({
       state: "listening",
       isError: false,
-      audioContext: recorderState.audioContext,
       audioAnalyzer: recorderState.audioAnalyzer,
       mediaStreamSource: recorderState.mediaStreamSource,
     });
@@ -264,11 +246,7 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
 
   const finishRecording = async () => {
     if (data.audioBlobs) {
-      const blob = await concatAudioBlobs(
-        data.audioBlobs,
-        // @ts-ignore
-        context.recorderState.audioContext || new AudioContext()
-      );
+      const blob = await concatAudioBlobs(data.audioBlobs, getAudioContext());
       if (blob) {
         const file = blobToFile(blob, "");
         // TODO: Add to state
@@ -287,7 +265,6 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
     setRecorderState({
       state: "idle",
       isError: false,
-      audioContext: recorderState.audioContext,
     });
   };
 
@@ -362,10 +339,7 @@ const useAudioRecorder = (options: AudioRecorderOptions) => {
          * Concatting the easy way does not work well in Safari.. so.. we do it the hard way (see `concatAudioBlobs`)
          * const concatted = new Blob(audioBlobs, { type: audioBlobs[0].type }); // easy way
          */
-        const concatted = await concatAudioBlobs(
-          audioBlobs,
-          recorderState.audioContext || new AudioContext()
-        );
+        const concatted = await concatAudioBlobs(audioBlobs, getAudioContext());
         blobsRef.current = [concatted];
         setAudioBlobs([concatted]);
       }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
 import {
   Grow,
@@ -12,11 +12,27 @@ import { useRouter } from "next/dist/client/router";
 
 const useRouterTransition = () => {
   const router = useRouter();
+  const isMountedRef = useRef<boolean>(false);
   const [isTransitioning, setIsTransitioning] = useState<boolean>(false);
 
+  const handleStart = () => {
+    isMountedRef.current && setIsTransitioning(true);
+  };
+  const handleComplete = () => {
+    isMountedRef.current && setIsTransitioning(false);
+  };
+
   useEffect(() => {
-    router.events.on("routeChangeStart", () => setIsTransitioning(true));
-    router.events.on("routeChangeComplete", () => setIsTransitioning(false));
+    console.debug("useRouterTransition:: setup");
+    isMountedRef.current = true;
+    router.events.on("routeChangeStart", handleStart);
+    router.events.on("routeChangeComplete", () => handleComplete);
+    return () => {
+      console.debug("useRouterTransition:: cleanup");
+      isMountedRef.current = false;
+      router.events.off("routeChangeStart", handleStart);
+      router.events.off("routeChangeComplete", () => handleComplete);
+    };
   }, []);
 
   return { isTransitioning };

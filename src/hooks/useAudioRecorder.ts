@@ -70,6 +70,7 @@ type AnyRecorderState =
 const useAudioRecorder = () => {
   /* REFERENCES */
   const blobsRef = useRef<Blob[]>([]);
+  const isMountedRef = useRef<boolean>(false);
   const teardownMethodsRef = useRef<(() => void)[]>([]); // TODO: make this a map instead of array to not get duplicate teardowns
 
   /* STATE */
@@ -81,17 +82,22 @@ const useAudioRecorder = () => {
 
   /* SIDE EFFECT CLEAN UP ON UNMOUNT */
   useEffect(() => {
+    isMountedRef.current = true;
     return () => {
+      isMountedRef.current = false;
       _unmountCleanup();
     };
   }, []);
 
-  const _unmountCleanup = () => {
+  const _unmountCleanup = async () => {
     for (const teardown of teardownMethodsRef.current) {
       console.debug(`useAudioRecorder:: cleanup ${teardown.toString()}`);
       try {
-        teardown();
-      } catch (error) {}
+        await teardown();
+      } catch (error) {
+        console.debug(`useAudioRecorder:: cleanup failed`);
+        console.debug(error);
+      }
     }
     teardownMethodsRef.current = [];
   };
@@ -116,6 +122,12 @@ const useAudioRecorder = () => {
       .getUserMedia({ audio: true, video: false })
       .then((stream) => {
         console.debug(`useAudioRecorder:: onStream`);
+
+        if (!isMountedRef.current) {
+          console.debug(`useAudioRecorder:: onStream ignored`);
+          return;
+        }
+
         const { mediaStreamSource, audioAnalyzer } = setupStreamWithAnalyzer(
           audioContext,
           stream
@@ -175,6 +187,11 @@ const useAudioRecorder = () => {
       console.debug(
         `useAudioRecorder:: handleDataAvailable: ${data.type} - ${data.size}`
       );
+      if (!isMountedRef.current) {
+        console.debug(`useAudioRecorder:: handleDataAvailable ignored`);
+        return;
+      }
+
       if (data.size > 0) {
         // complex way of setting state.. these exotic objects seem to require this..
         blobsRef.current.push(data);
@@ -261,8 +278,15 @@ const useAudioRecorder = () => {
         recorderState.state === "recording"
       )
     ) {
+      console.debug(`useAudioRecorder:: getFrequencyData rejected`);
       return;
     }
+
+    if (!isMountedRef.current) {
+      console.debug(`useAudioRecorder:: getFrequencyData ignored`);
+      return;
+    }
+
     const bufferLength = recorderState.audioAnalyzer.frequencyBinCount;
     const amplitudeArray = new Uint8Array(bufferLength);
     recorderState.audioAnalyzer.getByteFrequencyData(amplitudeArray);

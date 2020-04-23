@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { EpisodeCreationStepProps } from "./episode-creation-step-props";
 import AdminDualPaneLayout from "../layout/admin-dual-pane";
-import { Box, Typography, Button } from "@material-ui/core";
+import { Box, Typography, Button, LinearProgress } from "@material-ui/core";
 import useAudioRecorder from "../../../hooks/useAudioRecorder";
 import AudioRecorderButton from "../../audio-recorder-hook/audio-recorder-button";
 import { AudioRecorderVisualizer } from "../../audio-recorder-hook/audio-recorder-visualizer";
@@ -13,6 +13,7 @@ const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
     uploadFile,
     isValidating: isUploading,
     data: mediaUploadData,
+    percentCompleted,
   } = useSignedMediaUploader();
 
   const {
@@ -100,7 +101,14 @@ const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
               Upload & volgende
             </Button>
 
-            {isUploading && <Box p={2}>uploading</Box>}
+            {isUploading && (
+              <Box p={2}>
+                <LinearProgress
+                  variant="determinate"
+                  value={percentCompleted || 0}
+                />
+              </Box>
+            )}
           </Box>
         </>
       }

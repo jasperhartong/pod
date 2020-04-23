@@ -9,13 +9,17 @@ import { RPCClientFactory } from "../api/rpc/rpc-client";
 
 type ResponseData = TypeOf<typeof signUrlCreateMeta["resValidator"]>;
 
-const useSignedMediaUploader = (): {
+interface ReturnProps {
   uploadFile: (file: File) => void;
   isValidating: boolean;
   error?: string;
   data?: ResponseData;
-} => {
+  percentCompleted?: number;
+}
+
+const useSignedMediaUploader = (): ReturnProps => {
   const [file, uploadFile] = useState<File>();
+  const [percentCompleted, setPercentCompleted] = useState<number>();
   const {
     isValidating,
     setIsvalidating,
@@ -48,7 +52,8 @@ const useSignedMediaUploader = (): {
     const response = await uploadMedia(
       signedUrlCreation.data.uploadUrl,
       file,
-      file.type
+      file.type,
+      setPercentCompleted
     );
     if (response.ok) {
       setData(signedUrlCreation.data);
@@ -61,7 +66,7 @@ const useSignedMediaUploader = (): {
     performUpload();
   }, [file]);
 
-  return { uploadFile, isValidating, error, data };
+  return { uploadFile, isValidating, error, data, percentCompleted };
 };
 
 export default useSignedMediaUploader;
@@ -70,7 +75,8 @@ export default useSignedMediaUploader;
 export const uploadMedia = async (
   uploadUrl: string,
   file: File,
-  fileType: string
+  fileType: string,
+  onPercentCompleted: (percentCompleted: number) => void
 ): Promise<IResponse<{}>> => {
   try {
     var options: AxiosRequestConfig = {
@@ -78,6 +84,12 @@ export const uploadMedia = async (
         "Content-Type": fileType,
       },
       timeout: 60000,
+      onUploadProgress: function (progressEvent) {
+        const percentCompleted = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total
+        );
+        onPercentCompleted(percentCompleted);
+      },
     };
     await axios.put(uploadUrl, file, options);
     return OK<{}>({});

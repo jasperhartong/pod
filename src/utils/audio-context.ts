@@ -10,13 +10,17 @@ import toWav from "audiobuffer-to-wav";
 // Safari will error out when you've start more then 4 in 1 session
 let globalAudioContext: AudioContext | undefined = undefined;
 
-export const getAudioContext = () => {
-  const audioContext = globalAudioContext || new AudioContext();
-  if (audioContext.state === "suspended") {
-    console.debug(`useAudioRecorder:: resumed`);
-    audioContext.resume();
+export const getAudioContext = async () => {
+  if (!globalAudioContext) {
+    globalAudioContext = new AudioContext();
   }
-  return audioContext;
+
+  if (globalAudioContext.state === "suspended") {
+    // TODO: might also be needed to resum on focus. But let's see
+    console.debug(`useAudioRecorder:: resumed`);
+    await globalAudioContext.resume();
+  }
+  return globalAudioContext;
 };
 
 export const setupStreamWithAnalyzer = (

@@ -70,13 +70,13 @@ const useAudioRecorder = () => {
   };
 
   /* STATE TRANSTION ACTIONS */
-  const startListening = () => {
+  const startListening = async () => {
     if (state.isListening) {
       return;
     }
 
     // Reuse audioContext if used before
-    const audioContext = getAudioContext();
+    const audioContext = await getAudioContext();
     navigator.mediaDevices
       .getUserMedia({ audio: true, video: false })
       .then((stream) => {
@@ -288,7 +288,7 @@ const useAudioRecorder = () => {
     if (blobsRef.current && blobsRef.current.length > 0) {
       const superBlob = await concatAudioBlobs(
         blobsRef.current,
-        getAudioContext()
+        await getAudioContext()
       );
       if (superBlob) {
         file = blobToFile(superBlob, fileName);

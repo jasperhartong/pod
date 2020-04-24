@@ -37,7 +37,7 @@ export const AdminOverview = ({ state }: AdminPageProps) => {
   };
 
   useEffect(() => {
-    requestAnimationFrame(() => {
+    setTimeout(() => {
       if (!state.room.ok) {
         return;
       }
@@ -52,7 +52,7 @@ export const AdminOverview = ({ state }: AdminPageProps) => {
           setExpanded(panelIdFromPlaylistId(playlists[0].id));
         }
       }
-    });
+    }, 600);
   }, []);
 
   if (!state.room.ok) {
@@ -72,11 +72,11 @@ export const AdminOverview = ({ state }: AdminPageProps) => {
             onChange={handleChange(panelIdFromPlaylistId(p.id))}
           >
             <ExpansionPanelSummary
-              expandIcon={<IconExpandMore />}
+              style={{ padding: 0 }}
               aria-controls={`playlist-content-${p.id}`}
               id={`playlist-header-${p.id}`}
             >
-              <List style={{ width: "100%" }}>
+              <List style={{ padding: 0, width: "100%" }}>
                 <PlaylistHeader
                   key={p.id}
                   playlist={p}
@@ -95,7 +95,7 @@ export const AdminOverview = ({ state }: AdminPageProps) => {
             </ExpansionPanelSummary>
             <ExpansionPanelDetails
               id={`playlist-content-${p.id}`}
-              style={{ paddingTop: 0 }}
+              style={{ padding: 0 }}
             >
               <AdminEpisodeList episodes={p.episodes} />
             </ExpansionPanelDetails>
@@ -154,7 +154,7 @@ const AdminEpisodeList = ({ episodes }: { episodes: IEpisode[] }) => {
         </ListItem>
       ))}
 
-      <Box p={2} pt={1} pb={0}>
+      <Box p={2} pt={1}>
         {maxLength === undefined && (
           <Link color="textSecondary" href="#" onClick={() => setMaxLength(3)}>
             <Typography variant="subtitle2">Minder...</Typography>

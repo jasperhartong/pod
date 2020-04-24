@@ -19,7 +19,6 @@ import SubscribePanel from "../subscribe-panel";
 import { AdminPageProps } from "./admin-container";
 import { useState, useEffect, ChangeEvent } from "react";
 import AdminHeader from "./layout/admin-header";
-import IconExpandMore from "@material-ui/icons/ExpandMore";
 import IconAdd from "@material-ui/icons/Add";
 import { IPlaylist } from "../../app-schema/IPlaylist";
 import { parseDbDate } from "../../api/collection-storage/backends/directus-utils";
@@ -123,8 +122,11 @@ export const AdminOverview = ({ state }: AdminPageProps) => {
   );
 };
 
+const initialMaxLength = 3;
 const AdminEpisodeList = ({ episodes }: { episodes: IEpisode[] }) => {
-  const [maxLength, setMaxLength] = useState<number | undefined>(3);
+  const [maxLength, setMaxLength] = useState<number | undefined>(
+    initialMaxLength
+  );
 
   const limitedEpisodes =
     maxLength === undefined ? episodes : episodes.slice(0, maxLength);
@@ -156,7 +158,11 @@ const AdminEpisodeList = ({ episodes }: { episodes: IEpisode[] }) => {
 
       <Box p={2} pt={1}>
         {maxLength === undefined && (
-          <Link color="textSecondary" href="#" onClick={() => setMaxLength(3)}>
+          <Link
+            color="textSecondary"
+            href="#"
+            onClick={() => setMaxLength(initialMaxLength)}
+          >
             <Typography variant="subtitle2">Minder...</Typography>
           </Link>
         )}

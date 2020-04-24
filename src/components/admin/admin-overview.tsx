@@ -1,6 +1,5 @@
 import NextLink from "next/link";
 import {
-  Grid,
   Link,
   Button,
   List,
@@ -9,11 +8,11 @@ import {
   ExpansionPanel,
   ExpansionPanelSummary,
   ExpansionPanelDetails,
-  ListSubheader,
   ListItem,
   ListItemAvatar,
   Avatar,
   ListItemText,
+  Typography,
 } from "@material-ui/core";
 import PlaylistHeader from "../playlist-header";
 import SubscribePanel from "../subscribe-panel";
@@ -22,7 +21,6 @@ import { useState, useEffect, ChangeEvent } from "react";
 import AdminHeader from "./layout/admin-header";
 import IconExpandMore from "@material-ui/icons/ExpandMore";
 import IconAdd from "@material-ui/icons/Add";
-import IconInfo from "@material-ui/icons/InfoOutlined";
 import { IPlaylist } from "../../app-schema/IPlaylist";
 import { parseDbDate } from "../../api/collection-storage/backends/directus-utils";
 import { IEpisode } from "../../app-schema/IEpisode";
@@ -133,35 +131,6 @@ const AdminEpisodeList = ({ episodes }: { episodes: IEpisode[] }) => {
 
   return (
     <List style={{ width: "100%", padding: 0 }}>
-      <ListSubheader disableSticky>
-        {maxLength !== undefined ? (
-          <Grid container justify="space-between">
-            <Grid item>Laatste {maxLength} afleveringen</Grid>
-            <Grid item>
-              <Link
-                color="textSecondary"
-                href="#"
-                onClick={() => setMaxLength(undefined)}
-              >
-                Toon allen
-              </Link>
-            </Grid>
-          </Grid>
-        ) : (
-          <Grid container justify="space-between">
-            <Grid item>All {episodes.length} afleveringen</Grid>
-            <Grid item>
-              <Link
-                color="textSecondary"
-                href="#"
-                onClick={() => setMaxLength(3)}
-              >
-                Toon laatste 3
-              </Link>
-            </Grid>
-          </Grid>
-        )}
-      </ListSubheader>
       {limitedEpisodes.map((episode) => (
         <ListItem
           key={episode.id}
@@ -184,6 +153,26 @@ const AdminEpisodeList = ({ episodes }: { episodes: IEpisode[] }) => {
           />
         </ListItem>
       ))}
+
+      <Box p={2} pt={1} pb={0}>
+        {maxLength === undefined && (
+          <Link color="textSecondary" href="#" onClick={() => setMaxLength(3)}>
+            <Typography variant="subtitle2">Minder...</Typography>
+          </Link>
+        )}
+
+        {maxLength !== undefined && episodes.length > maxLength && (
+          <Link
+            color="textSecondary"
+            href="#"
+            onClick={() => setMaxLength(undefined)}
+          >
+            <Typography variant="subtitle2">
+              {episodes.length - maxLength} meer...
+            </Typography>
+          </Link>
+        )}
+      </Box>
     </List>
   );
 };

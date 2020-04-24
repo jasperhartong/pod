@@ -203,4 +203,11 @@ const alwayDarkThemeOptionsProvider = new ThemeOptionsProvider(
   ThemePaletteType.DARK
 );
 
+const alwayLightThemeOptionsProvider = new ThemeOptionsProvider(
+  baseTheme,
+  iOSlightTheme,
+  iOSlightTheme,
+  ThemePaletteType.LIGHT
+);
+
 export default alwayDarkThemeOptionsProvider;

@@ -23,6 +23,7 @@ import IconAdd from "@material-ui/icons/Add";
 import { IPlaylist } from "../../app-schema/IPlaylist";
 import { parseDbDate } from "../../api/collection-storage/backends/directus-utils";
 import { IEpisode } from "../../app-schema/IEpisode";
+import SurroundSound from "@material-ui/icons/SurroundSound";
 
 const panelIdFromPlaylistId = (id: IPlaylist["id"]) => `panel-playlist-${id}`;
 
@@ -117,6 +118,19 @@ export const AdminOverview = ({ state }: AdminPageProps) => {
             Open Luisterkamer
           </Button>
         </NextLink>
+      </Box>
+      <Box p={4} textAlign="center">
+        <SurroundSound fontSize="large" color="disabled" />
+        <Typography
+          component="div"
+          variant="overline"
+          style={{ lineHeight: "110%" }}
+        >
+          Tapes.me ©2020
+        </Typography>
+        <Typography component="div" variant="overline" color="textSecondary">
+          {state.room.data.slug || ""}
+        </Typography>
       </Box>
     </>
   );

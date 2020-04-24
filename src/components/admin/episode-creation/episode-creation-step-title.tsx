@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ReactNode } from "react";
 import { EpisodeCreationStepProps } from "./episode-creation-step-props";
 import AdminDualPaneLayout from "../layout/admin-dual-pane";
@@ -7,9 +8,11 @@ import {
   TextField,
   Button,
   FormGroup,
+  IconButton,
 } from "@material-ui/core";
 import IconNext from "@material-ui/icons/ChevronRight";
 import { useForm, Controller, ErrorMessage } from "react-hook-form";
+import CloseIcon from "@material-ui/icons/Close";
 
 const EpisodeCreationStepTitle = (props: EpisodeCreationStepProps) => {
   const { handleSubmit, control, formState, errors } = useForm<{
@@ -29,10 +32,16 @@ const EpisodeCreationStepTitle = (props: EpisodeCreationStepProps) => {
     <AdminDualPaneLayout
       title={props.playlist.title}
       subtitle="Nieuwe aflevering"
-      backLink={{
-        href: `/rooms/[roomSlug]/admin/[playlistId]`,
-        as: `/rooms/${props.room.slug}/admin/${props.playlist.id}`,
-      }}
+      leftAction={
+        <Link
+          href={`/rooms/[roomSlug]/admin`}
+          as={`/rooms/${props.room.slug}/admin`}
+        >
+          <IconButton>
+            <CloseIcon />
+          </IconButton>
+        </Link>
+      }
       firstItem={
         <Box
           width="100%"

@@ -1,14 +1,10 @@
-import Link from "next/link";
+import { ReactNode } from "react";
 import { Typography, Box, IconButton } from "@material-ui/core";
-import IconBack from "@material-ui/icons/ChevronLeft";
 
 export interface AdminHeaderProps {
   title: string;
   subtitle: string;
-  backLink?: {
-    href: string;
-    as: string;
-  };
+  leftAction?: ReactNode;
 }
 
 const AdminHeader = (props: AdminHeaderProps) => (
@@ -19,13 +15,9 @@ const AdminHeader = (props: AdminHeaderProps) => (
     <Typography component="div" variant="overline">
       {props.subtitle}
     </Typography>
-    {props.backLink && (
+    {props.leftAction && (
       <Box position="absolute" top={24} left={16}>
-        <Link href={props.backLink.href} as={props.backLink.as}>
-          <IconButton>
-            <IconBack />
-          </IconButton>
-        </Link>
+        {props.leftAction}
       </Box>
     )}
   </Box>

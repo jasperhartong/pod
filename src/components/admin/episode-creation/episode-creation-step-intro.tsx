@@ -1,11 +1,19 @@
+import Link from "next/link";
 import { useEffect } from "react";
 import { EpisodeCreationStepProps } from "./episode-creation-step-props";
 import AdminDualPaneLayout from "../layout/admin-dual-pane";
-import { Box, Typography, Button, LinearProgress } from "@material-ui/core";
+import {
+  Box,
+  Typography,
+  Button,
+  LinearProgress,
+  IconButton,
+} from "@material-ui/core";
 import useAudioRecorder from "../../../hooks/useAudioRecorder";
 import AudioRecorderButton from "../../audio-recorder-hook/audio-recorder-button";
 import { AudioRecorderVisualizer } from "../../audio-recorder-hook/audio-recorder-visualizer";
 import useSignedMediaUploader from "../../../hooks/useSignedMediaUploader";
+import CloseIcon from "@material-ui/icons/Close";
 
 const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
   // Move to shared hook:
@@ -51,10 +59,16 @@ const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
     <AdminDualPaneLayout
       title={props.playlist.title}
       subtitle="Nieuwe aflevering"
-      backLink={{
-        href: `/rooms/[roomSlug]/admin/[playlistId]`,
-        as: `/rooms/${props.room.slug}/admin/${props.playlist.id}`,
-      }}
+      leftAction={
+        <Link
+          href={`/rooms/[roomSlug]/admin`}
+          as={`/rooms/${props.room.slug}/admin`}
+        >
+          <IconButton>
+            <CloseIcon />
+          </IconButton>
+        </Link>
+      }
       firstItem={
         <>
           {isRecording && (

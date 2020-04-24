@@ -5,7 +5,6 @@ import { AdminOverview } from "./admin-overview";
 import { IResponse } from "../../api/IResponse";
 import { IRoom } from "../../app-schema/IRoom";
 import { IPlaylist } from "../../app-schema/IPlaylist";
-import { AdminPlaylistDetails } from "./admin-playlist-details";
 
 interface IAdminState {
   room: IResponse<IRoom>;
@@ -47,9 +46,6 @@ const AdminPageContainer = ({
         <Box>
           {!adminPageState.state.selectedPlayList && (
             <AdminOverview {...adminPageState} />
-          )}
-          {adminPageState.state.selectedPlayList && (
-            <AdminPlaylistDetails {...adminPageState} />
           )}
         </Box>
       </Container>

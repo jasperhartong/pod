@@ -13,7 +13,7 @@ const AdminDualPaneLayout = (props: Props) => {
       <AdminHeader
         title={props.title}
         subtitle={props.subtitle}
-        backLink={props.backLink}
+        leftAction={props.leftAction}
       />
       <Paper>
         <Box p={2}>

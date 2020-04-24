@@ -20,7 +20,9 @@ import { useState, useEffect, ChangeEvent } from "react";
 import AdminHeader from "./layout/admin-header";
 import IconExpandMore from "@material-ui/icons/ExpandMore";
 import IconAdd from "@material-ui/icons/Add";
+import IconInfo from "@material-ui/icons/InfoOutlined";
 import { IPlaylist } from "../../app-schema/IPlaylist";
+import { parseDbDate } from "../../api/collection-storage/backends/directus-utils";
 
 const panelIdFromPlaylistId = (id: IPlaylist["id"]) => `panel-playlist-${id}`;
 
@@ -94,33 +96,35 @@ export const AdminOverview = ({ state }: AdminPageProps) => {
               id={`playlist-content-${p.id}`}
               style={{ paddingTop: 0 }}
             >
-              <Box>
-                <List style={{ width: "100%", padding: 0 }}>
-                  <ListSubheader disableSticky>
-                    Laatste 3 afleveringen
-                  </ListSubheader>
-                  {p &&
-                    p.episodes.slice(0, 3).map((episode) => (
-                      <ListItem key={episode.id}>
-                        <ListItemAvatar>
-                          <Avatar
-                            variant="square"
-                            alt={episode.title}
-                            src={
-                              episode.image_file.data.thumbnails.find(
-                                (t) => t.width > 100
-                              )?.url
-                            }
-                          />
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary={episode.title}
-                          secondary={episode.created_on}
+              <List style={{ width: "100%", padding: 0 }}>
+                <ListSubheader disableSticky>
+                  Laatste 3 afleveringen
+                </ListSubheader>
+                {p &&
+                  p.episodes.slice(0, 3).map((episode) => (
+                    <ListItem
+                      key={episode.id}
+                      onClick={() => alert("😅 Coming soon!")}
+                      button
+                    >
+                      <ListItemAvatar>
+                        <Avatar
+                          variant="square"
+                          alt={episode.title}
+                          src={
+                            episode.image_file.data.thumbnails.find(
+                              (t) => t.width > 100
+                            )?.url
+                          }
                         />
-                      </ListItem>
-                    ))}
-                </List>
-              </Box>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={episode.title}
+                        secondary={parseDbDate(episode.created_on).toRelative()}
+                      />
+                    </ListItem>
+                  ))}
+              </List>
             </ExpansionPanelDetails>
           </ExpansionPanel>
         ))}

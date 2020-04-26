@@ -1,6 +1,6 @@
 import { useState } from "react";
 import useAudioRecorder from "../src/hooks/useAudioRecorder";
-import { Button, Container } from "@material-ui/core";
+import { Button, Container, Box } from "@material-ui/core";
 import { AudioRecorderVisualizer } from "../src/components/audio-recorder-hook/audio-recorder-visualizer";
 import FilePlayer from "react-player/lib/players/FilePlayer";
 import { formatBytes } from "../src/utils/audio-context";
@@ -19,6 +19,7 @@ const Recorder = () => {
     dataType,
     dataSize,
     dataSeconds,
+    clearData,
     error,
   } = useAudioRecorder();
   const [blob, setBlob] = useState<Blob>();
@@ -39,19 +40,24 @@ const Recorder = () => {
         stopListening,
         startRecording,
         stopRecording,
+        clearData,
         showMp3,
       ].map((method) => (
-        <Button key={method.name} onClick={() => method()}>
-          {method.name}
-        </Button>
+        <li key={method.name}>
+          <Button key={method.name} onClick={() => method()} variant="outlined">
+            {method.name}
+          </Button>
+        </li>
       ))}
-      {dataType && <div>Recording in {dataType}</div>}
-      {dataSize && <div>Recorded {formatBytes(dataSize)}</div>}
+      <Box p={4}>
+        {!!dataType && <div>Recording in {dataType}</div>}
+        {!!dataSize && <div>Recorded {formatBytes(dataSize)}</div>}
 
-      <div>
-        Recorded{" "}
-        {Duration.fromObject({ seconds: dataSeconds }).toFormat("m:ss")}
-      </div>
+        <div>
+          Recorded{" "}
+          {Duration.fromObject({ seconds: dataSeconds }).toFormat("m:ss")}
+        </div>
+      </Box>
 
       {isRecording && (
         <AudioRecorderVisualizer

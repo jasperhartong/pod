@@ -24,36 +24,29 @@ import { IPlaylist } from "../../app-schema/IPlaylist";
 import { parseDbDate } from "../../api/collection-storage/backends/directus-utils";
 import { IEpisode } from "../../app-schema/IEpisode";
 import SurroundSound from "@material-ui/icons/SurroundSound";
+import { IResponse } from "../../api/IResponse";
+import { IRoom } from "../../app-schema/IRoom";
 
 const panelIdFromPlaylistId = (id: IPlaylist["id"]) => `panel-playlist-${id}`;
 
+const defaultPlaylistPanelId = (room: IResponse<IRoom>) => {
+  if (room.ok && room.data.playlists.length > 0) {
+    return panelIdFromPlaylistId(room.data.playlists[0].id);
+  }
+  return false;
+};
+
 export const AdminOverview = ({ state }: AdminPageProps) => {
-  const [expanded, setExpanded] = useState<string | false>(false);
+  const [expanded, setExpanded] = useState<string | false>(
+    defaultPlaylistPanelId(state.room)
+  );
+
   const handleChange = (panel: string) => (
     _: ChangeEvent<{}>,
     isExpanded: boolean
   ) => {
     setExpanded(isExpanded ? panel : false);
   };
-
-  useEffect(() => {
-    setTimeout(() => {
-      if (!state.room.ok) {
-        return;
-      }
-      const playlists = state.room.data.playlists;
-      if (playlists.length > 0) {
-        if (
-          state.selectedPlayList &&
-          playlists.find((p) => p.id === state.selectedPlayList)
-        ) {
-          setExpanded(panelIdFromPlaylistId(state.selectedPlayList));
-        } else {
-          setExpanded(panelIdFromPlaylistId(playlists[0].id));
-        }
-      }
-    }, 600);
-  }, []);
 
   if (!state.room.ok) {
     return <>error</>;

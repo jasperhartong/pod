@@ -7,6 +7,10 @@
 // https://github.com/zeit/next.js/blob/canary/packages/next-polyfill-nomodule/src/index.js
 console.log("Load polyfills");
 
-// MediaRecorder polyfill for Safari
+// MediaRecorder polyfill for all browsers: let them all use mp3
 import AudioRecorder from "audio-recorder-polyfill";
+import mpegEncoder from "audio-recorder-polyfill/mpeg-encoder";
+
+AudioRecorder.encoder = mpegEncoder;
+AudioRecorder.prototype.mimeType = "audio/mpeg";
 window.MediaRecorder = AudioRecorder;

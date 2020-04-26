@@ -16,19 +16,26 @@ import {
 interface TearDowns {
   mediaStreamSource?: () => void;
   mediaRecorder?: () => void;
+  recordingInterval?: () => void;
 }
 
 interface ImmerState {
   isListening: boolean;
   isRecording: boolean;
-  hasData: boolean;
+  dataSeconds: number;
+  dataSize: number;
+  dataType?:
+    | "audio/mpeg" /* polyfill (safari) */
+    | "audio/webm" /* Chrome */
+    | "audio/ogg" /* Firefox */;
   error?: Error;
 }
 
 const ImmerStartState: ImmerState = {
   isListening: false,
   isRecording: false,
-  hasData: false,
+  dataSeconds: 0,
+  dataSize: 0,
 };
 
 const useAudioRecorder = () => {
@@ -40,6 +47,7 @@ const useAudioRecorder = () => {
   const mediaStreamSourceRef = useRef<
     IMediaStreamAudioSourceNode<IAudioContext>
   >();
+  const recordingIntervalRef = useRef<ReturnType<typeof setInterval>>();
   const tearDownRefs = useRef<TearDowns>({});
 
   /* STATE */
@@ -114,111 +122,108 @@ const useAudioRecorder = () => {
       });
   };
 
-  const startRecording = (timeSlice: number = 3000) => {
-    if (state.isRecording) {
+  const __handleDataAvailable = (event: Event, timeSlice?: number) => {
+    if (!isMountedRef.current) {
+      return console.debug(
+        `useAudioRecorder:: handleDataAvailable ignored: not mounted`
+      );
+    }
+
+    const { data } = (event as unknown) as BlobEvent;
+    console.debug(
+      `useAudioRecorder:: handleDataAvailable: ${data.type} - ${data.size}`
+    );
+
+    if (data.size > 0) {
+      blobsRef.current.push(data);
+
+      // Update hasData state
+      dispatch((state) => {
+        state.dataSize = state.dataSize + data.size;
+        state.dataType = data.type as ImmerState["dataType"];
+      });
+    }
+
+    // Continue requesting data every timeSlice while recording
+    if (timeSlice && mediaRecorderRef.current?.state === "recording") {
+      setTimeout(() => {
+        if (mediaRecorderRef.current?.state === "recording") {
+          mediaRecorderRef.current.requestData();
+        }
+      }, timeSlice);
+    }
+  };
+
+  const startRecording = (timeSlice?: number) => {
+    if (state.isRecording || !mediaStreamSourceRef.current) {
       return;
     }
 
-    if (!mediaStreamSourceRef.current) {
-      return;
-    }
-
+    // instantiate new MediaRecorder based on current stream
     mediaRecorderRef.current = new MediaRecorder(
       mediaStreamSourceRef.current.mediaStream.clone()
     );
 
-    const handleDataAvailable = (event: Event) => {
-      const { data } = (event as unknown) as BlobEvent;
-      console.debug(
-        `useAudioRecorder:: handleDataAvailable: ${data.type} - ${data.size}`
-      );
-      if (!isMountedRef.current) {
-        return console.debug(
-          `useAudioRecorder:: handleDataAvailable ignored: not mounted`
-        );
-      }
-
-      if (data.size > 0) {
-        blobsRef.current.push(data);
-
-        // Update hasData state
-        if (!state.hasData) {
-          dispatch((state) => {
-            state.hasData = true;
-          });
-        }
-      }
-
-      if (!mediaRecorderRef.current) {
-        return console.debug(
-          `useAudioRecorder:: handleDataAvailable not continuing: no mediaRecorder`
-        );
-      }
-
-      // if (data.size === 44) {
-      //   alert(
-      //     "Er is iets fouts gegaan bij de opname. Gebruik je toevallig Airpods op Safari? Deze combinatie werkt niet"
-      //   );
-      //   return setRecorderState({ state: "idle", isError: false });
-      // }
-
-      // Continue requesting data every timeSlice while recording
-      if (mediaRecorderRef.current.state === "recording") {
-        setTimeout(() => {
-          if (
-            mediaRecorderRef.current &&
-            mediaRecorderRef.current.state === "recording"
-          ) {
-            mediaRecorderRef.current.requestData();
-          }
-        }, timeSlice);
-      }
-    };
-
     // Setup event listener before starting to capture also data when stopped before end of timeSlice
-    mediaRecorderRef.current.addEventListener(
-      "dataavailable",
-      handleDataAvailable
+    mediaRecorderRef.current.addEventListener("dataavailable", (event: Event) =>
+      __handleDataAvailable(event, timeSlice)
     );
 
-    // Start recording
+    // Actually start recording
     mediaRecorderRef.current.start(/* timeSlice does not work well in all browsers, mocked with timeout */);
-
+    // Register mediaRecorder related teardown
     tearDownRefs.current["mediaRecorder"] = () => {
-      if (mediaRecorderRef.current) {
-        mediaRecorderRef.current.stop();
-      }
+      mediaRecorderRef.current?.stop();
       mediaRecorderRef.current = undefined;
     };
 
+    // Set up interval to track recording time
+    recordingIntervalRef.current = setInterval(() => {
+      dispatch((state) => {
+        state.dataSeconds = state.dataSeconds + 1;
+      });
+    }, 1000);
+    // Register related teardown
+    tearDownRefs.current["recordingInterval"] = () => {
+      clearInterval(recordingIntervalRef.current!);
+      recordingIntervalRef.current = undefined;
+    };
+
+    // Start requesting data every timeSlice (otherwise __handleDataAvailable only called on stop)
+    if (timeSlice && mediaRecorderRef.current?.state === "recording") {
+      setTimeout(() => {
+        if (mediaRecorderRef.current?.state === "recording") {
+          mediaRecorderRef.current.requestData();
+        }
+      }, timeSlice);
+    }
+
+    // Transition into isRecording
     dispatch((state) => {
       state.isRecording = true;
       state.error = undefined;
     });
-
-    // Start requesting data every timeSlice
-    setTimeout(() => {
-      if (
-        mediaRecorderRef.current &&
-        mediaRecorderRef.current.state === "recording"
-      ) {
-        mediaRecorderRef.current.requestData();
-      }
-    }, timeSlice);
   };
 
-  const pauseRecording = () => {
+  const stopRecording = () => {
     if (!state.isRecording) {
-      return;
+      return console.debug(
+        `useAudioRecorder:: stopRecording ignoring: already recording`
+      );
     }
 
     if (!mediaRecorderRef.current) {
       return console.debug(
-        `useAudioRecorder:: pauseRecording ignoring: no mediaRecorder`
+        `useAudioRecorder:: stopRecording ignoring: no mediaRecorder`
       );
     }
 
     mediaRecorderRef.current.stop();
+    mediaRecorderRef.current = undefined;
+    if (recordingIntervalRef.current) {
+      clearInterval(recordingIntervalRef.current);
+      recordingIntervalRef.current = undefined;
+    }
 
     dispatch((state) => {
       state.isRecording = false;
@@ -228,7 +233,9 @@ const useAudioRecorder = () => {
 
   const stopListening = () => {
     if (!state.isListening) {
-      return;
+      return console.debug(
+        `useAudioRecorder:: stopListening ignoring: not listening`
+      );
     }
     killMediaAudioStream(mediaStreamSourceRef.current);
 
@@ -243,7 +250,9 @@ const useAudioRecorder = () => {
     callback: (audioByteFrequencyData: Uint8Array) => void
   ) => {
     if (!state.isListening) {
-      return console.debug(`useAudioRecorder:: getFrequencyData rejected`);
+      return console.debug(
+        `useAudioRecorder:: getFrequencyData ignored: not listening`
+      );
     }
 
     if (!isMountedRef.current) {
@@ -273,36 +282,24 @@ const useAudioRecorder = () => {
     callback(amplitudeArray);
   };
 
-  const extractFile = async ({
-    fileName,
-    clear,
-  }: {
-    fileName: string;
-    clear: boolean;
-  }) => {
-    let file: File | undefined = undefined;
+  const extractBlobs = async () => {
     if (state.isRecording) {
       return undefined;
     }
 
-    if (blobsRef.current && blobsRef.current.length > 0) {
-      const superBlob = await concatAudioBlobs(
-        blobsRef.current,
-        await getAudioContext()
-      );
-      if (superBlob) {
-        file = blobToFile(superBlob, fileName);
-      }
+    if (!blobsRef.current || blobsRef.current.length === 0) {
+      return undefined;
     }
 
-    // Clear upon finish
-    if (clear) {
-      blobsRef.current = [];
-      dispatch((state) => {
-        state.hasData = false;
-      });
-    }
-    return file;
+    return blobsRef.current;
+  };
+
+  const clearData = async () => {
+    blobsRef.current = [];
+    dispatch((state) => {
+      state.dataSize = 0;
+      state.dataSeconds = 0;
+    });
   };
 
   return {
@@ -310,9 +307,10 @@ const useAudioRecorder = () => {
     startListening,
     stopListening,
     startRecording,
-    pauseRecording,
-    extractFile,
+    stopRecording,
     getFrequencyData,
+    extractBlobs,
+    clearData,
   };
 };
 

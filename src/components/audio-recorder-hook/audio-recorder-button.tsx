@@ -12,7 +12,7 @@ interface Props {
   error?: Error;
   startListening: () => void;
   startRecording: () => void;
-  pauseRecording: () => void;
+  stopRecording: () => void;
   fullWidth?: boolean;
 }
 
@@ -22,7 +22,7 @@ const AudioRecorderButton = ({
   error,
   startListening,
   startRecording,
-  pauseRecording,
+  stopRecording,
   fullWidth,
 }: Props) => {
   return (
@@ -50,7 +50,7 @@ const AudioRecorderButton = ({
                 ? AppColors.RED
                 : themeOptionsProvider.theme.palette.secondary.contrastText,
             }}
-            onClick={isRecording ? pauseRecording : () => startRecording()}
+            onClick={isRecording ? stopRecording : () => startRecording()}
           >
             <RecordIcon
               style={{

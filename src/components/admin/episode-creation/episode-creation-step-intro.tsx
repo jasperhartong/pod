@@ -14,6 +14,7 @@ import AudioRecorderButton from "../../audio-recorder-hook/audio-recorder-button
 import { AudioRecorderVisualizer } from "../../audio-recorder-hook/audio-recorder-visualizer";
 import useSignedMediaUploader from "../../../hooks/useSignedMediaUploader";
 import CloseIcon from "@material-ui/icons/Close";
+import { blobToFile } from "../../../utils/audio-context";
 
 const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
   // Move to shared hook:
@@ -30,18 +31,19 @@ const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
     startListening,
     stopListening,
     startRecording,
-    pauseRecording,
-    extractFile,
+    stopRecording,
+    extractBlobs,
     getFrequencyData,
-    hasData: audioRecorderHasData,
+    dataType,
+    dataSize: audioRecorderHasData,
     error: audioRecorderError,
   } = useAudioRecorder();
 
   const saveRecording = async () => {
     // goNext: 1) extract and upload file
-    const file = await extractFile({ fileName: "intro", clear: true });
-    if (file) {
-      uploadFile(file);
+    const blobs = await extractBlobs();
+    if (blobs) {
+      uploadFile(blobToFile(blobs[0], "intro"));
     }
     // TODO: add error case
   };
@@ -56,77 +58,80 @@ const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
   // Until here
 
   return (
-    <AdminDualPaneLayout
-      title={props.playlist.title}
-      subtitle="Nieuwe aflevering"
-      leftAction={
-        <Link
-          href={`/rooms/[roomSlug]/admin`}
-          as={`/rooms/${props.room.slug}/admin`}
-        >
-          <IconButton>
-            <CloseIcon />
-          </IconButton>
-        </Link>
-      }
-      firstItem={
-        <>
-          {isRecording && (
-            <AudioRecorderVisualizer
-              uniqueId={`${props.playlist.id}-new-intro`}
-              getFrequencyData={getFrequencyData}
-            />
-          )}
-          <Box
-            width="100%"
-            height="100%"
-            minHeight={200}
-            style={{
-              backgroundImage: `url("/background.png")`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-            }}
-          />
-        </>
-      }
-      secondItem={
-        <>
-          <Typography variant="h6">Neem een korte intro op</Typography>
-          <Typography variant="body1" color="textSecondary">
-            Zeg iets liefs, kunnen we meteen de microfoon uittesten!
-          </Typography>
-
-          <Box pt={2} pb={2} textAlign="center">
-            <AudioRecorderButton
-              isListening={isListening}
-              isRecording={isRecording}
-              error={audioRecorderError}
-              startListening={startListening}
-              startRecording={() => startRecording(60000)}
-              pauseRecording={pauseRecording}
-              fullWidth={true}
-            />
-
-            <Button
-              disabled={!audioRecorderHasData || isRecording || isUploading}
-              onClick={saveRecording}
-            >
-              Upload & volgende
-            </Button>
-
-            {isUploading && (
-              <Box p={2}>
-                <LinearProgress
-                  variant="determinate"
-                  value={percentCompleted || 0}
-                />
-              </Box>
+    <>
+      <AdminDualPaneLayout
+        title={props.playlist.title}
+        subtitle="Nieuwe aflevering"
+        leftAction={
+          <Link
+            href={`/rooms/[roomSlug]/admin`}
+            as={`/rooms/${props.room.slug}/admin`}
+          >
+            <IconButton>
+              <CloseIcon />
+            </IconButton>
+          </Link>
+        }
+        firstItem={
+          <>
+            {isRecording && (
+              <AudioRecorderVisualizer
+                uniqueId={`${props.playlist.id}-new-intro`}
+                getFrequencyData={getFrequencyData}
+              />
             )}
-          </Box>
-        </>
-      }
-    />
+            <Box
+              width="100%"
+              height="100%"
+              minHeight={200}
+              style={{
+                backgroundImage: `url("/background.png")`,
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+              }}
+            />
+          </>
+        }
+        secondItem={
+          <>
+            <Typography variant="h6">Neem een korte intro op</Typography>
+            <Typography variant="body1" color="textSecondary">
+              Zeg iets liefs, kunnen we meteen de microfoon uittesten!
+            </Typography>
+
+            <Box pt={2} pb={2} textAlign="center">
+              <AudioRecorderButton
+                isListening={isListening}
+                isRecording={isRecording}
+                error={audioRecorderError}
+                startListening={startListening}
+                startRecording={() => startRecording(60000)}
+                stopRecording={stopRecording}
+                fullWidth={true}
+              />
+
+              <Button
+                disabled={!audioRecorderHasData || isRecording || isUploading}
+                onClick={saveRecording}
+              >
+                Upload & volgende
+              </Button>
+
+              {isUploading && (
+                <Box p={2}>
+                  <LinearProgress
+                    variant="determinate"
+                    value={percentCompleted || 0}
+                  />
+                </Box>
+              )}
+            </Box>
+          </>
+        }
+      />
+      <Box>Recording in {dataType}</Box>
+    </>
   );
 };
 

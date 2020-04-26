@@ -110,7 +110,10 @@ const AdminEpisodeCreationPage = (props: {
           <EpisodeCreationStepIntroAudio {...episodeCreationStepProps} />
         )}
         {currentStep === "recordAudio" && (
-          <>{JSON.stringify(newEpisode.partialEpisode)}</>
+          <>
+            {JSON.stringify(newEpisode.partialEpisode)}
+            <audio src={newEpisode.partialEpisode.audio_url} controls></audio>
+          </>
         )}
       </Container>
     </AppContainer>

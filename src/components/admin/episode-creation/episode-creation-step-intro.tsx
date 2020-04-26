@@ -55,7 +55,6 @@ const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
       props.onNext();
     }
   }, [mediaUploadData]);
-  // Until here
 
   return (
     <>
@@ -130,7 +129,6 @@ const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
           </>
         }
       />
-      <Box>Recording in {dataType}</Box>
     </>
   );
 };

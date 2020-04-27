@@ -13,7 +13,7 @@ export interface AdminHeaderProps {
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     position: "relative",
-    height: 320,
+    height: 220,
   },
   image: {
     height: "100%",

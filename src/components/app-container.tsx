@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
 import {
-  Grow,
+  Fade,
   Box,
   Container,
   makeStyles,
@@ -69,9 +69,9 @@ const AppContainer = ({
           <LinearProgress variant="indeterminate" />
         </Box>
       )}
-      <Grow in={!isTransitioning} timeout={400}>
+      <Fade in={!isTransitioning} timeout={400}>
         <div>{children}</div>
-      </Grow>
+      </Fade>
     </Container>
   );
 };

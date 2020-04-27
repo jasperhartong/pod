@@ -11,11 +11,12 @@ const AdminDualPaneLayout = (props: Props) => {
   return (
     <>
       <AdminHeader
+        image={props.image}
         title={props.title}
         subtitle={props.subtitle}
-        leftAction={props.leftAction}
+        action={props.action}
       />
-      <Paper>
+      <Paper square={true}>
         <Box p={2}>
           <Grid container spacing={2}>
             <Grid item sm={6} xs={12}>

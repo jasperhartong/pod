@@ -46,6 +46,9 @@ const baseTheme: ThemeOptions = {
       fontFamily: font,
     },
   },
+  shape: {
+    borderRadius: 16,
+  },
   palette: {
     primary: {
       main: AppColors.BLUE,

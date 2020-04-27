@@ -30,9 +30,10 @@ const EpisodeCreationStepTitle = (props: EpisodeCreationStepProps) => {
 
   return (
     <AdminDualPaneLayout
+      image={props.playlist.cover_file.data.full_url}
       title={props.playlist.title}
       subtitle="Nieuwe aflevering"
-      leftAction={
+      action={
         <Link
           href={`/rooms/[roomSlug]/admin`}
           as={`/rooms/${props.room.slug}/admin`}

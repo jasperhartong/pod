@@ -105,7 +105,7 @@ const RoomPage = () => {
 
   return (
     <AppContainer>
-      <Box pt={4} pb={2}>
+      <Box p={2}>
         <Grid
           container
           spacing={1}
@@ -128,13 +128,15 @@ const RoomPage = () => {
           <List>
             <PlaylistHeader playlist={playlist} />
           </List>
-          <PlaylistGrid
-            playlist={playlist}
-            playingId={state.playingEpisode?.episodeId}
-            setPlayingId={actions.playingEpisode.initiate}
-            isPaused={Boolean(state.playingEpisode?.isPaused)}
-            setIsPaused={actions.playingEpisode.pause}
-          />
+          <Box p={2}>
+            <PlaylistGrid
+              playlist={playlist}
+              playingId={state.playingEpisode?.episodeId}
+              setPlayingId={actions.playingEpisode.initiate}
+              isPaused={Boolean(state.playingEpisode?.isPaused)}
+              setIsPaused={actions.playingEpisode.pause}
+            />
+          </Box>
         </Box>
       ))}
 

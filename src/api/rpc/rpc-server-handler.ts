@@ -38,7 +38,7 @@ export const RPCHandlerFactory = <Tq, Oq, Iq, Ts, Os, Is>(
       // Validate response
       const resValidation = this.meta.resValidator.decode(response.data);
       if (isLeft(resValidation)) {
-        console.error(resValidation.left);
+        console.error(JSON.stringify(resValidation.left));
         // TODO: wrap io-ts Errors errors into ERR
         return ERR("invalid response payload", HttpStatus.METHOD_FAILURE);
       }

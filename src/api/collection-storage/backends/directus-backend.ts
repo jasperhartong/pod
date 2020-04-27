@@ -39,6 +39,7 @@ class DirectusTapesMeBackend implements IBackend {
           },
           fields: [
             "*",
+            "cover_file.data",
             "playlists.*",
             "playlists.cover_file.data",
             "playlists.episodes.*",

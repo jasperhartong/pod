@@ -40,11 +40,11 @@ const useRouterTransition = () => {
 
 const useStyles = makeStyles((theme) => ({
   rootContainer: {
-    backgroundImage: "url(/background.png)",
-    backgroundRepeat: "no-repeat",
-    backgroundPositionX: "right",
-    backgroundPositionY: -400,
-    minHeight: 500,
+    // backgroundImage: "url(/background.png)",
+    // backgroundRepeat: "no-repeat",
+    // backgroundPositionX: "right",
+    // backgroundPositionY: -400,
+    // minHeight: 500,
   },
 }));
 
@@ -62,7 +62,7 @@ const AppContainer = ({
     <Container
       className={classes.rootContainer}
       maxWidth={maxWidth || "lg"}
-      style={{ transition: "all 500ms", width: "auto" }}
+      style={{ transition: "all 500ms", width: "auto", padding: 0 }}
     >
       {isTransitioning && (
         <Box position="absolute" top={0} left={0} right={0}>

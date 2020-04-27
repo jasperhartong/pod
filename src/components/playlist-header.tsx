@@ -32,6 +32,7 @@ const PlaylistHeader = ({
     >
       <ListItemAvatar>
         <Avatar
+          variant="square"
           style={{ height: 80, width: 80, marginRight: 16 }}
           alt={playlist.title}
           src={cover}

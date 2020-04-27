@@ -12,12 +12,12 @@ import {
   ListItemAvatar,
   Avatar,
   ListItemText,
+  Container,
   Typography,
 } from "@material-ui/core";
 import PlaylistHeader from "../playlist-header";
 import SubscribePanel from "../subscribe-panel";
-import { AdminPageProps } from "./admin-container";
-import { useState, useEffect, ChangeEvent } from "react";
+import { useState, ChangeEvent } from "react";
 import AdminHeader from "./layout/admin-header";
 import IconAdd from "@material-ui/icons/Add";
 import { IPlaylist } from "../../app-schema/IPlaylist";
@@ -26,6 +26,7 @@ import { IEpisode } from "../../app-schema/IEpisode";
 import SurroundSound from "@material-ui/icons/SurroundSound";
 import { IResponse } from "../../api/IResponse";
 import { IRoom } from "../../app-schema/IRoom";
+import AppContainer from "../app-container";
 
 const panelIdFromPlaylistId = (id: IPlaylist["id"]) => `panel-playlist-${id}`;
 
@@ -36,9 +37,9 @@ const defaultPlaylistPanelId = (room: IResponse<IRoom>) => {
   return false;
 };
 
-export const AdminOverview = ({ state }: AdminPageProps) => {
+export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
   const [expanded, setExpanded] = useState<string | false>(
-    defaultPlaylistPanelId(state.room)
+    defaultPlaylistPanelId(room)
   );
 
   const handleChange = (panel: string) => (
@@ -48,84 +49,102 @@ export const AdminOverview = ({ state }: AdminPageProps) => {
     setExpanded(isExpanded ? panel : false);
   };
 
-  if (!state.room.ok) {
+  if (!room.ok) {
     return <>error</>;
   }
-  const slug = state.room.data.slug;
+  const slug = room.data.slug;
 
   return (
-    <>
-      <AdminHeader title={state.room.data.title} subtitle="admin" />
+    <AppContainer maxWidth="md">
+      <Container maxWidth="sm" style={{ padding: 0 }}>
+        <AdminHeader
+          image={room.data.cover_file.data.full_url}
+          title={room.data.title}
+          subtitle="admin"
+        />
 
-      <Box>
-        {state.room.data.playlists.map((p) => (
+        <Box>
+          {room.data.playlists.map((p) => (
+            <ExpansionPanel
+              square={true}
+              key={p.id}
+              expanded={expanded === panelIdFromPlaylistId(p.id)}
+              onChange={handleChange(panelIdFromPlaylistId(p.id))}
+            >
+              <ExpansionPanelSummary
+                style={{ padding: 0 }}
+                aria-controls={`playlist-content-${p.id}`}
+                id={`playlist-header-${p.id}`}
+              >
+                <List style={{ padding: 0, width: "100%" }}>
+                  <PlaylistHeader
+                    key={p.id}
+                    playlist={p}
+                    secondaryAction={
+                      <NextLink
+                        href="/rooms/[roomSlug]/admin/[playlistId]/new"
+                        as={`/rooms/${slug}/admin/${p.id}/new`}
+                      >
+                        <Fab size="small">
+                          <IconAdd />
+                        </Fab>
+                      </NextLink>
+                    }
+                  />
+                </List>
+              </ExpansionPanelSummary>
+              <ExpansionPanelDetails
+                id={`playlist-content-${p.id}`}
+                style={{ padding: 0 }}
+              >
+                <AdminEpisodeList episodes={p.episodes} />
+              </ExpansionPanelDetails>
+            </ExpansionPanel>
+          ))}
           <ExpansionPanel
-            key={p.id}
-            expanded={expanded === panelIdFromPlaylistId(p.id)}
-            onChange={handleChange(panelIdFromPlaylistId(p.id))}
+            square={true}
+            key={"new"}
+            // expanded={expanded === panelIdFromPlaylistId(p.id)}
+            // onChange={handleChange(panelIdFromPlaylistId(p.id))}
           >
-            <ExpansionPanelSummary
-              style={{ padding: 0 }}
-              aria-controls={`playlist-content-${p.id}`}
-              id={`playlist-header-${p.id}`}
-            >
-              <List style={{ padding: 0, width: "100%" }}>
-                <PlaylistHeader
-                  key={p.id}
-                  playlist={p}
-                  secondaryAction={
-                    <NextLink
-                      href="/rooms/[roomSlug]/admin/[playlistId]/new"
-                      as={`/rooms/${slug}/admin/${p.id}/new`}
-                    >
-                      <Fab size="small">
-                        <IconAdd />
-                      </Fab>
-                    </NextLink>
-                  }
-                />
-              </List>
+            <ExpansionPanelSummary>
+              {/* <Box textAlign="center" p={2}> */}
+              <Button
+                variant="outlined"
+                onClick={() => alert("😅 Coming soon!")}
+              >
+                Nieuwe collectie beginnen
+              </Button>
+              {/* </Box> */}
             </ExpansionPanelSummary>
-            <ExpansionPanelDetails
-              id={`playlist-content-${p.id}`}
-              style={{ padding: 0 }}
-            >
-              <AdminEpisodeList episodes={p.episodes} />
-            </ExpansionPanelDetails>
           </ExpansionPanel>
-        ))}
-      </Box>
+        </Box>
 
-      <Box textAlign="center" p={2}>
-        <Button variant="outlined" onClick={() => alert("😅 Coming soon!")}>
-          Nieuwe collectie beginnen
-        </Button>
-      </Box>
-
-      <Box pt={4}>
-        <SubscribePanel slug={state.room.data.slug} />
-      </Box>
-      <Box pt={4}>
-        <NextLink href="/rooms/[roomSlug]" as={`/rooms/${slug}`}>
-          <Button fullWidth variant="outlined">
-            Open Luisterkamer
-          </Button>
-        </NextLink>
-      </Box>
-      <Box p={4} textAlign="center">
-        <SurroundSound fontSize="large" color="disabled" />
-        <Typography
-          component="div"
-          variant="overline"
-          style={{ lineHeight: "110%" }}
-        >
-          Tapes.me ©2020
-        </Typography>
-        <Typography component="div" variant="overline" color="textSecondary">
-          {state.room.data.slug || ""}
-        </Typography>
-      </Box>
-    </>
+        <Box pt={4}>
+          <SubscribePanel slug={room.data.slug} />
+        </Box>
+        <Box pt={4}>
+          <NextLink href="/rooms/[roomSlug]" as={`/rooms/${slug}`}>
+            <Button fullWidth variant="outlined">
+              Open Luisterkamer
+            </Button>
+          </NextLink>
+        </Box>
+        <Box p={4} textAlign="center">
+          <SurroundSound fontSize="large" color="disabled" />
+          <Typography
+            component="div"
+            variant="overline"
+            style={{ lineHeight: "110%" }}
+          >
+            Tapes.me ©2020
+          </Typography>
+          <Typography component="div" variant="overline" color="textSecondary">
+            {room.data.slug || ""}
+          </Typography>
+        </Box>
+      </Container>
+    </AppContainer>
   );
 };
 

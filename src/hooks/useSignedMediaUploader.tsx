@@ -1,5 +1,5 @@
 import { TypeOf } from "io-ts";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import axios, { AxiosRequestConfig } from "axios";
 import { IResponse, OK, ERR } from "../api/IResponse";
 import useLoadingState from "./useLoadingState";
@@ -15,6 +15,9 @@ interface ReturnProps {
   error?: string;
   data?: ResponseData;
   percentCompleted?: number;
+  onSuccess: (callback: (data: ResponseData) => void) => void;
+  onError: (callback: (message: string) => void) => void;
+  onProgress: (callback: (percentCompleted: number) => void) => void;
 }
 
 const useSignedMediaUploader = (): ReturnProps => {
@@ -28,6 +31,9 @@ const useSignedMediaUploader = (): ReturnProps => {
     data,
     setData,
   } = useLoadingState<ResponseData>();
+  const onProgressRef = useRef<(percentCompleted: number) => void>();
+  const onSuccessRef = useRef<(data: ResponseData) => void>();
+  const onErrorRef = useRef<(message: string) => void>();
 
   const performUpload = async () => {
     if (!file) {
@@ -48,17 +54,31 @@ const useSignedMediaUploader = (): ReturnProps => {
       return;
     }
 
+    const handleProgress = (percentCompleted: number) => {
+      if (onProgressRef.current) {
+        onProgressRef.current(percentCompleted);
+      }
+      setPercentCompleted(percentCompleted);
+    };
+
     // Upload file
     const response = await uploadMedia(
       signedUrlCreation.data.uploadUrl,
       file,
       file.type,
-      setPercentCompleted
+      handleProgress
     );
     if (response.ok) {
       setData(signedUrlCreation.data);
+      if (onSuccessRef.current) {
+        onSuccessRef.current(signedUrlCreation.data);
+      }
     } else {
-      setError(`File ${file.name} could not be uploaded`);
+      const message = `File ${file.name} could not be uploaded`;
+      setError(message);
+      if (onErrorRef.current) {
+        onErrorRef.current(message);
+      }
     }
   };
 
@@ -66,7 +86,26 @@ const useSignedMediaUploader = (): ReturnProps => {
     performUpload();
   }, [file]);
 
-  return { uploadFile, isValidating, error, data, percentCompleted };
+  const onProgress = (callback: (percentCompleted: number) => void) => {
+    onProgressRef.current = callback;
+  };
+  const onSuccess = (callback: (data: ResponseData) => void) => {
+    onSuccessRef.current = callback;
+  };
+  const onError = (callback: (message: string) => void) => {
+    onErrorRef.current = callback;
+  };
+
+  return {
+    uploadFile,
+    isValidating,
+    error,
+    data,
+    percentCompleted,
+    onProgress,
+    onSuccess,
+    onError,
+  };
 };
 
 export default useSignedMediaUploader;

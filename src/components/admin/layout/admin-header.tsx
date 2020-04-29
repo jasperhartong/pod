@@ -26,16 +26,16 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   text: {
     position: "absolute",
-    bottom: 0,
+    top: 0,
     left: 0,
     right: 0,
     padding: theme.spacing(2),
     background:
-      "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)",
+      "linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)",
   },
   action: {
     position: "absolute",
-    bottom: theme.spacing(2),
+    top: theme.spacing(2),
     right: theme.spacing(2),
   },
 }));

@@ -12,7 +12,7 @@ import themeOptionsProvider from "../src/theme";
 
 class MyApp extends App {
   state = {
-    theme: themeOptionsProvider.theme
+    theme: themeOptionsProvider.theme,
   };
 
   componentDidMount() {
@@ -23,7 +23,7 @@ class MyApp extends App {
     }
     themeOptionsProvider.setupListeners(() => {
       this.setState(() => ({
-        theme: themeOptionsProvider.theme
+        theme: themeOptionsProvider.theme,
       }));
     });
   }

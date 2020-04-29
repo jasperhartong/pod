@@ -87,13 +87,9 @@ const PlaylistGrid = (props: Props) => {
               className={classes.imageButton}
               style={{
                 backgroundImage: `url(${
-                  episode.image_file &&
-                  episode.image_file.data &&
-                  episode.image_file.data.thumbnails !== null
-                    ? episode.image_file.data.thumbnails.find(
-                        (t) => t.height > 100
-                      )!.url
-                    : ""
+                  episode.image_file.data.thumbnails.find(
+                    (t) => t.height > 100
+                  )!.url
                 })`,
               }}
             />

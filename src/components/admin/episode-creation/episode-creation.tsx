@@ -15,6 +15,9 @@ import { IRoom } from "../../../app-schema/IRoom";
 import { IPlaylist } from "../../../app-schema/IPlaylist";
 import useSignedMediaUploadDropZone from "../../../hooks/useSignedMediaUploadDropZone";
 import { EpisodeCoverInDropZone } from "./episode-creation-cover-file";
+import { RPCClientFactory } from "../../../api/rpc/rpc-client";
+import episodeCreateMeta from "../../../api/rpc/commands/episode.create.meta";
+import { useRouter } from "next/dist/client/router";
 
 interface Props {
   room: IRoom;
@@ -23,34 +26,45 @@ interface Props {
 
 interface FormValues {
   title: string;
-  cover_file_url: string;
+  coverFileUrl: string;
 }
 
 const EpisodeCreation = ({ room, playlist }: Props) => {
-  const formContext = useForm<FormValues>({
+  const router = useRouter();
+  const form = useForm<FormValues>({
     mode: "onChange",
     reValidateMode: "onChange",
   });
-
   const dropZone = useSignedMediaUploadDropZone({
     onSuccess: (downloadUrl) => {
       // Sync dropzone state to formState
-      formContext.setValue("cover_file_url", downloadUrl, true);
+      form.setValue("coverFileUrl", downloadUrl, true);
     },
     acceptedMimeTypes: ["image/jpg", "image/jpeg"],
   });
 
   const defaultTitle = `Deel ${playlist.episodes.length + 1}`;
-  const watchedTitle = formContext.watch("title");
-  const SubmitDisabled =
-    formContext.formState.isSubmitting || !formContext.formState.isValid;
+  const watchedTitle = form.watch("title");
+  const SubmitDisabled = form.formState.isSubmitting || !form.formState.isValid;
 
-  const handleSubmit = (formData: FormValues) => {
-    console.warn(formData);
+  const handleSubmit = async (formData: FormValues) => {
+    const response = await RPCClientFactory(episodeCreateMeta).call({
+      title: formData.title,
+      status: "draft",
+      playlist: playlist.id.toString(),
+      image_url: formData.coverFileUrl,
+    });
+    if (response.ok) {
+      router.push(
+        `/rooms/[roomSlug]/admin/[playListId]/[episodeId]`,
+        `/rooms/${room.slug}/admin/${playlist.id}/${response.data.id}`
+      );
+    }
+    // TODO: Handle !ok
   };
   const handleCoverDelete = () => {
     // Sync dropzone state to formState
-    formContext.setValue("cover_file_url", undefined, true);
+    form.setValue("coverFileUrl", undefined, true);
     dropZone.reset();
   };
 
@@ -82,24 +96,24 @@ const EpisodeCreation = ({ room, playlist }: Props) => {
       }
       secondItem={
         <Box pt={2}>
-          <form onSubmit={formContext.handleSubmit(handleSubmit)}>
+          <form onSubmit={form.handleSubmit(handleSubmit)}>
             <FormGroup>
               {/* Title */}
               <Controller
                 // set default value at least to a string to counter "uncontrolled to controlled error"
                 // https://github.com/react-hook-form/react-hook-form-website/issues/133
                 defaultValue={defaultTitle}
-                control={formContext.control}
+                control={form.control}
                 rules={{ required: true }}
                 as={TextField}
                 label="Titel"
                 placeholder="Titel aflevering"
                 name="title"
-                disabled={formContext.formState.isSubmitting}
+                disabled={form.formState.isSubmitting}
               />
             </FormGroup>
             <ErrorMessage
-              errors={formContext.errors}
+              errors={form.errors}
               name="title"
               as={<ErrorMessageTypography />}
               message="Vul een titel in"
@@ -107,8 +121,8 @@ const EpisodeCreation = ({ room, playlist }: Props) => {
 
             <input
               type="hidden"
-              ref={formContext.register({ required: true })}
-              name="cover_file_url"
+              ref={form.register({ required: true })}
+              name="coverFileUrl"
             />
             {/* submit */}
             <Box mt={2}>

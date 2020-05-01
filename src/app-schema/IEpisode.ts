@@ -10,13 +10,18 @@ export const TEpisodeStatus = t.keyof({
   deleted: null,
 });
 
-export const TEpisode = t.type({
+export const TEpisodeRequired = t.type({
   id: t.number,
   status: TEpisodeStatus,
   created_on: TDateString,
   title: t.string,
-  audio_file: t.string,
   image_file: t.type({ data: TImageData }),
 });
+
+export const TEpisodeOptional = t.partial({
+  audio_file: t.string,
+});
+
+export const TEpisode = t.intersection([TEpisodeRequired, TEpisodeOptional]);
 
 export type IEpisode = t.TypeOf<typeof TEpisode>;

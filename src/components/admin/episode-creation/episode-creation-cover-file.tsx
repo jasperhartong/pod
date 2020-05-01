@@ -7,12 +7,12 @@ import {
   IconButton,
   Grow,
   CircularProgress,
+  useTheme,
 } from "@material-ui/core";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
 import ImageIcon from "@material-ui/icons/Image";
-import IconDelete from "@material-ui/icons/Delete";
+import IconDelete from "@material-ui/icons/DeleteOutline";
 import { CSSProperties } from "@material-ui/styles";
-import themeOptionsProvider from "../../../theme";
 
 const useStyles = makeStyles((theme: Theme) => ({
   image: {
@@ -75,12 +75,16 @@ export const EpisodeCoverInDropZone = ({
   isUploading,
   uploadPercentCompleted,
   onDelete,
+  uploadError,
 }: {
   imageUrl?: string;
+  uploadError?: boolean;
   isUploading: boolean;
   uploadPercentCompleted?: number;
   onDelete: () => void;
 }) => {
+  const theme = useTheme();
+
   return (
     <EpisodeCoverLayout
       style={{ width: 240, height: 240 }}
@@ -88,7 +92,13 @@ export const EpisodeCoverInDropZone = ({
       centeredChildren={
         <Grow in={!imageUrl}>
           <Box>
-            {isUploading ? (
+            {!imageUrl && !isUploading && (
+              <Box pb={1}>
+                <ImageIcon fontSize="large" />
+                <Typography variant="subtitle2">Selecteer plaatje</Typography>
+              </Box>
+            )}
+            {isUploading && (
               <CircularProgress
                 value={uploadPercentCompleted}
                 variant={
@@ -97,10 +107,12 @@ export const EpisodeCoverInDropZone = ({
                     : "determinate"
                 }
               />
-            ) : (
+            )}
+            {uploadError && (
               <Box pb={1}>
-                <ImageIcon fontSize="large" />
-                <Typography variant="subtitle2">Selecteer plaatje</Typography>
+                <Typography variant="subtitle2" color="error">
+                  Er ging iets mis bij het uploaden, probeer het nogmaals
+                </Typography>
               </Box>
             )}
           </Box>
@@ -109,9 +121,11 @@ export const EpisodeCoverInDropZone = ({
       bottomRightAction={
         <Grow in={!!imageUrl}>
           <IconButton
-            color="secondary"
             style={{
-              background: themeOptionsProvider.theme.palette.action.selected,
+              background: theme.palette.action.selected,
+              color: theme.palette.getContrastText(
+                theme.palette.action.selected
+              ),
             }}
             onClick={(event: MouseEvent<HTMLElement>) => {
               event.preventDefault();

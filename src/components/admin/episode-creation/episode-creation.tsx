@@ -74,6 +74,7 @@ const EpisodeCreation = ({ room, playlist }: Props) => {
             <EpisodeCoverInDropZone
               imageUrl={dropZone.downloadUrl}
               isUploading={dropZone.uploading}
+              uploadError={!!dropZone.uploadError}
               uploadPercentCompleted={dropZone.uploadPercentCompleted}
               onDelete={handleCoverDelete}
             />

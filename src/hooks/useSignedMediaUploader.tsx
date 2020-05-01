@@ -28,7 +28,7 @@ interface ReturnProps {
 }
 
 const useSignedMediaUploader = (
-  callbacks: Partial<Callbacks> | undefined
+  callbacks?: Partial<Callbacks>
 ): ReturnProps => {
   const [file, setFile] = useState<File | undefined>();
   const [percentCompleted, setPercentCompleted] = useState<number>();

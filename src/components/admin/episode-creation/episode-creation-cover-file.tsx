@@ -5,13 +5,14 @@ import {
   Grid,
   Typography,
   IconButton,
-  Fade,
+  Grow,
   CircularProgress,
 } from "@material-ui/core";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
 import ImageIcon from "@material-ui/icons/Image";
 import IconDelete from "@material-ui/icons/Delete";
 import { CSSProperties } from "@material-ui/styles";
+import themeOptionsProvider from "../../../theme";
 
 const useStyles = makeStyles((theme: Theme) => ({
   image: {
@@ -85,7 +86,7 @@ export const EpisodeCoverInDropZone = ({
       style={{ width: 240, height: 240 }}
       imageUrl={imageUrl}
       centeredChildren={
-        <Fade in={!imageUrl}>
+        <Grow in={!imageUrl}>
           <Box>
             {isUploading ? (
               <CircularProgress
@@ -103,11 +104,15 @@ export const EpisodeCoverInDropZone = ({
               </Box>
             )}
           </Box>
-        </Fade>
+        </Grow>
       }
       bottomRightAction={
-        <Fade in={!!imageUrl}>
+        <Grow in={!!imageUrl}>
           <IconButton
+            color="secondary"
+            style={{
+              background: themeOptionsProvider.theme.palette.action.selected,
+            }}
             onClick={(event: MouseEvent<HTMLElement>) => {
               event.preventDefault();
               event.stopPropagation();
@@ -116,7 +121,7 @@ export const EpisodeCoverInDropZone = ({
           >
             <IconDelete fontSize="small" />
           </IconButton>
-        </Fade>
+        </Grow>
       }
     />
   );

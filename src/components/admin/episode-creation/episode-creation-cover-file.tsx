@@ -87,22 +87,21 @@ export const EpisodeCoverInDropZone = ({
       centeredChildren={
         <Fade in={!imageUrl}>
           <Box>
-            <Box pb={1}>
-              {isUploading ? (
-                <CircularProgress
-                  value={uploadPercentCompleted}
-                  variant={
-                    uploadPercentCompleted === 0 ||
-                    uploadPercentCompleted === 100
-                      ? "indeterminate"
-                      : "determinate"
-                  }
-                />
-              ) : (
+            {isUploading ? (
+              <CircularProgress
+                value={uploadPercentCompleted}
+                variant={
+                  [undefined, 0, 100].includes(uploadPercentCompleted)
+                    ? "indeterminate"
+                    : "determinate"
+                }
+              />
+            ) : (
+              <Box pb={1}>
                 <ImageIcon fontSize="large" />
-              )}
-            </Box>
-            <Typography variant="subtitle2">Selecteer plaatje</Typography>
+                <Typography variant="subtitle2">Selecteer plaatje</Typography>
+              </Box>
+            )}
           </Box>
         </Fade>
       }

@@ -7,6 +7,7 @@ import { IPlaylist } from "../../../../../src/app-schema/IPlaylist";
 import ErrorPage from "../../../../../src/components/error-page";
 import { IEpisode } from "../../../../../src/app-schema/IEpisode";
 import { Box } from "@material-ui/core";
+import EpisodeEdit from "../../../../../src/components/admin/episode-edit";
 
 interface Props {
   roomResponse: IResponse<IRoom>;
@@ -28,15 +29,16 @@ const AdminEpisodeEditPage = ({
   const playlist = room.playlists.find((p) => p.id === playlistId);
 
   if (!playlist) {
-    return <ErrorPage error="No playlist found" />;
+    return <ErrorPage error="Playlist not found in room" />;
   }
 
-  return (
-    <Box>
-      <li>{playlistId}</li>
-      <li>{episodeId}</li>
-    </Box>
-  );
+  const episode = playlist.episodes.find((e) => e.id === episodeId);
+
+  if (!episode) {
+    return <ErrorPage error="Episode not found in room" />;
+  }
+
+  return <EpisodeEdit room={room} playlist={playlist} episode={episode} />;
 };
 
 export default AdminEpisodeEditPage;

@@ -27,6 +27,7 @@ import SurroundSound from "@material-ui/icons/SurroundSound";
 import { IResponse } from "../../api/IResponse";
 import { IRoom } from "../../app-schema/IRoom";
 import AppContainer from "../app-container";
+import { useRouter } from "next/dist/client/router";
 
 const panelIdFromPlaylistId = (id: IPlaylist["id"]) => `panel-playlist-${id}`;
 
@@ -97,7 +98,11 @@ export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
                 id={`playlist-content-${p.id}`}
                 style={{ padding: 0 }}
               >
-                <AdminEpisodeList episodes={p.episodes} />
+                <AdminEpisodeList
+                  roomSlug={room.data.slug}
+                  playlistId={p.id}
+                  episodes={p.episodes}
+                />
               </ExpansionPanelDetails>
             </ExpansionPanel>
           ))}
@@ -149,10 +154,19 @@ export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
 };
 
 const initialMaxLength = 3;
-const AdminEpisodeList = ({ episodes }: { episodes: IEpisode[] }) => {
+const AdminEpisodeList = ({
+  roomSlug,
+  playlistId,
+  episodes,
+}: {
+  roomSlug: IRoom["slug"];
+  playlistId: IPlaylist["id"];
+  episodes: IEpisode[];
+}) => {
   const [maxLength, setMaxLength] = useState<number | undefined>(
     initialMaxLength
   );
+  const router = useRouter();
 
   const limitedEpisodes =
     maxLength === undefined ? episodes : episodes.slice(0, maxLength);
@@ -162,7 +176,12 @@ const AdminEpisodeList = ({ episodes }: { episodes: IEpisode[] }) => {
       {limitedEpisodes.map((episode) => (
         <ListItem
           key={episode.id}
-          onClick={() => alert("😅 Coming soon!")}
+          onClick={() =>
+            router.push(
+              "/rooms/[roomSlug]/admin/[playlistId]/[episodeId]",
+              `/rooms/${roomSlug}/admin/${playlistId}/${episode.id}`
+            )
+          }
           button
         >
           <ListItemAvatar>

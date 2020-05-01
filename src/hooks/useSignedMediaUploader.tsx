@@ -9,18 +9,28 @@ import { RPCClientFactory } from "../api/rpc/rpc-client";
 
 type ResponseData = TypeOf<typeof signUrlCreateMeta["resValidator"]>;
 
+interface Callbacks {
+  onSuccess: (data: ResponseData) => void;
+  onError: (message: string) => void;
+  onProgress: (percentCompleted: number) => void;
+}
+
 interface ReturnProps {
   uploadFile: (file: File) => void;
   isValidating: boolean;
   error?: string;
   data?: ResponseData;
   percentCompleted?: number;
-  onSuccess: (callback: (data: ResponseData) => void) => void;
-  onError: (callback: (message: string) => void) => void;
-  onProgress: (callback: (percentCompleted: number) => void) => void;
+  setOnSuccess: (callback: Callbacks["onSuccess"]) => void;
+  setOnError: (callback: Callbacks["onError"]) => void;
+  setOnProgress: (callback: Callbacks["onProgress"]) => void;
 }
 
-const useSignedMediaUploader = (): ReturnProps => {
+const useSignedMediaUploader = ({
+  onSuccess,
+  onError,
+  onProgress,
+}: Partial<Callbacks>): ReturnProps => {
   const [file, uploadFile] = useState<File>();
   const [percentCompleted, setPercentCompleted] = useState<number>();
   const {
@@ -31,9 +41,9 @@ const useSignedMediaUploader = (): ReturnProps => {
     data,
     setData,
   } = useLoadingState<ResponseData>();
-  const onProgressRef = useRef<(percentCompleted: number) => void>();
-  const onSuccessRef = useRef<(data: ResponseData) => void>();
-  const onErrorRef = useRef<(message: string) => void>();
+  const onSuccessRef = useRef<Callbacks["onSuccess"] | undefined>(onSuccess);
+  const onErrorRef = useRef<Callbacks["onError"] | undefined>(onError);
+  const onProgressRef = useRef<Callbacks["onProgress"] | undefined>(onProgress);
 
   const performUpload = async () => {
     if (!file) {
@@ -86,13 +96,14 @@ const useSignedMediaUploader = (): ReturnProps => {
     performUpload();
   }, [file]);
 
-  const onProgress = (callback: (percentCompleted: number) => void) => {
+  // Allow to also set callbacks AFTER initiating hook
+  const setOnProgress = (callback: (percentCompleted: number) => void) => {
     onProgressRef.current = callback;
   };
-  const onSuccess = (callback: (data: ResponseData) => void) => {
+  const setOnSuccess = (callback: (data: ResponseData) => void) => {
     onSuccessRef.current = callback;
   };
-  const onError = (callback: (message: string) => void) => {
+  const setOnError = (callback: (message: string) => void) => {
     onErrorRef.current = callback;
   };
 
@@ -102,9 +113,9 @@ const useSignedMediaUploader = (): ReturnProps => {
     error,
     data,
     percentCompleted,
-    onProgress,
-    onSuccess,
-    onError,
+    setOnProgress,
+    setOnSuccess,
+    setOnError,
   };
 };
 

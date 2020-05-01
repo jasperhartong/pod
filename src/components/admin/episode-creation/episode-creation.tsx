@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { ReactNode } from "react";
-import { EpisodeCreationStepProps } from "./episode-creation-step-props";
 import AdminDualPaneLayout from "../layout/admin-dual-pane";
 import {
   Box,
@@ -13,31 +12,34 @@ import {
 import IconNext from "@material-ui/icons/ChevronRight";
 import { useForm, Controller, ErrorMessage } from "react-hook-form";
 import CloseIcon from "@material-ui/icons/Close";
+import { IRoom } from "../../../app-schema/IRoom";
+import { IPlaylist } from "../../../app-schema/IPlaylist";
 
-const EpisodeCreationStepTitle = (props: EpisodeCreationStepProps) => {
-  const { handleSubmit, control, formState, errors } = useForm<{
+interface Props {
+  room: IRoom;
+  playlist: IPlaylist;
+}
+
+const EpisodeCreation = ({ room, playlist }: Props) => {
+  const { handleSubmit, control, formState, errors, watch } = useForm<{
     title: string;
   }>({
     mode: "onChange",
   });
 
-  const disabled = formState.isSubmitting;
+  const defaultTitle = `Deel ${playlist.episodes.length + 1}`;
+  const watchedTitle = watch("title");
+  const SubmitDisabled = formState.isSubmitting;
 
-  const onSubmit = (formData: { title: string }) => {
-    props.onUpdate(formData);
-    props.onNext();
-  };
+  const onSubmit = (formData: { title: string }) => {};
 
   return (
     <AdminDualPaneLayout
-      image={props.playlist.cover_file.data.full_url}
-      title={props.playlist.title}
-      subtitle="Nieuwe aflevering"
+      image={playlist.cover_file.data.full_url}
+      title={playlist.title}
+      subtitle={watchedTitle || defaultTitle}
       action={
-        <Link
-          href={`/rooms/[roomSlug]/admin`}
-          as={`/rooms/${props.room.slug}/admin`}
-        >
+        <Link href={`/rooms/[roomSlug]/admin`} as={`/rooms/${room.slug}/admin`}>
           <IconButton>
             <CloseIcon />
           </IconButton>
@@ -71,14 +73,14 @@ const EpisodeCreationStepTitle = (props: EpisodeCreationStepProps) => {
                 <Controller
                   // set default value at least to a string to counter "uncontrolled to controlled error"
                   // https://github.com/react-hook-form/react-hook-form-website/issues/133
-                  defaultValue={props.partialEpisode.title || ""}
+                  defaultValue={defaultTitle}
                   control={control}
                   rules={{ required: true }}
                   as={TextField}
                   label="Titel"
                   placeholder="Titel aflevering"
                   name="title"
-                  disabled={disabled}
+                  disabled={SubmitDisabled}
                 />
               </FormGroup>
               <ErrorMessage
@@ -90,7 +92,7 @@ const EpisodeCreationStepTitle = (props: EpisodeCreationStepProps) => {
             </Box>
             {/* submit */}
             <Button
-              disabled={disabled}
+              disabled={SubmitDisabled}
               type="submit"
               variant="contained"
               fullWidth
@@ -104,7 +106,7 @@ const EpisodeCreationStepTitle = (props: EpisodeCreationStepProps) => {
   );
 };
 
-export default EpisodeCreationStepTitle;
+export default EpisodeCreation;
 
 const ErrorMessageTypography = ({ children }: { children?: ReactNode }) => (
   <Typography variant="subtitle2" color="error">

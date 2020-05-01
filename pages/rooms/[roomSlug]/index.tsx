@@ -26,6 +26,7 @@ import roomFetch from "../../../src/api/rpc/commands/room.fetch";
 import RoomMenu from "../../../src/components/room-menu";
 import { makeStyles } from "@material-ui/styles";
 import AppContainer from "../../../src/components/app-container";
+import ErrorPage from "../../../src/components/error-page";
 
 // Dynamic imports (load on user interaction)
 const SnackbarPlayer = dynamic(() =>
@@ -79,23 +80,7 @@ const RoomPage = () => {
   }
 
   if (!room.ok || !slug) {
-    return (
-      <AppContainer>
-        <Box textAlign="center" pt={8}>
-          <Typography variant="overline" color="textSecondary">
-            Error
-          </Typography>
-          <Divider />
-          <Typography
-            variant="overline"
-            color="textSecondary"
-            style={{ opacity: 0.2 }}
-          >
-            {!room.ok ? room.error : "unknown error"}
-          </Typography>
-        </Box>
-      </AppContainer>
-    );
+    return <ErrorPage error={!room.ok ? room.error : undefined} />;
   }
 
   const playingItem: IEpisode | undefined = findEpisodeById(

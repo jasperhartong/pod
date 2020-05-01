@@ -1,15 +1,14 @@
-import React, { useCallback, useEffect } from "react";
-import { useDropzone } from "react-dropzone";
-import useSignedMediaUploader from "../hooks/useSignedMediaUploader";
+import React from "react";
 import { CircularProgress, Button, Box, Typography } from "@material-ui/core";
 import UploadIcon from "@material-ui/icons/CloudUpload";
 import SuccessIcon from "@material-ui/icons/CloudDone";
+import useSignedMediaUploadDropZone from "../hooks/useSignedMediaUploadDropZone";
 
 interface Props {
   // http://www.iana.org/assignments/media-types/media-types.xhtml
   acceptedMimeTypes: string[];
-  instructions: string;
   onSuccess(downloadUrl: string): void;
+  instructions: string;
 }
 
 const MediaDropZone = ({
@@ -17,24 +16,13 @@ const MediaDropZone = ({
   instructions,
   onSuccess,
 }: Props) => {
-  const { uploadFile, isValidating, error, data } = useSignedMediaUploader();
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    // Only supports multiple=false
-    uploadFile(acceptedFiles[0]);
-  }, []);
-
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    accept: acceptedMimeTypes,
-    multiple: false,
-  });
-
-  useEffect(() => {
-    if (!!data) {
-      onSuccess(data.downloadUrl);
-    }
-  }, [data]);
+  const {
+    getRootProps,
+    getInputProps,
+    uploading,
+    uploadError,
+    downloadUrl,
+  } = useSignedMediaUploadDropZone({ onSuccess, acceptedMimeTypes });
 
   let icon = (
     <CircularProgress
@@ -43,10 +31,10 @@ const MediaDropZone = ({
       style={{ width: 24 }}
     />
   );
-  if (!isValidating) {
+  if (!uploading) {
     icon = <UploadIcon color="disabled" />;
   }
-  if (data) {
+  if (downloadUrl) {
     icon = <SuccessIcon />;
   }
 
@@ -60,10 +48,10 @@ const MediaDropZone = ({
           {instructions}
         </Box>
       </Button>
-      {error && (
+      {uploadError && (
         <Box pt={1} pb={1}>
           <Typography variant="subtitle2" color="error">
-            {error}
+            {uploadError}
           </Typography>
         </Box>
       )}

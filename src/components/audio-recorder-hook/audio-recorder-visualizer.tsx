@@ -36,7 +36,7 @@ export const AudioRecorderVisualizer = (props: Props) => {
   const animationCallback = (newAmplitudeData: Uint8Array) => {
     amplitudeValuesRef.current = newAmplitudeData;
     let domElements = frequencyBandArrayRef.current.map((num) =>
-      document.getElementById(`${props.uniqueId}${num}`)
+      document.getElementById(`audio-visualizer-${props.uniqueId}${num}`)
     );
     frequencyBandArrayRef.current.forEach((num) => {
       const element = domElements[num];
@@ -69,7 +69,7 @@ export const AudioRecorderVisualizer = (props: Props) => {
           <Paper
             className={classes.frequencyBand}
             elevation={4}
-            id={`${props.uniqueId}${num}`}
+            id={`audio-visualizer-${props.uniqueId}${num}`}
             key={num}
             style={{
               backgroundColor: AppColors.RED,

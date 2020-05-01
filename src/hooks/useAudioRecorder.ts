@@ -9,8 +9,6 @@ import {
   getAudioContext,
   setupStreamWithAnalyzer,
   killMediaAudioStream,
-  concatAudioBlobs,
-  blobToFile,
 } from "../utils/audio-context";
 
 interface TearDowns {
@@ -23,6 +21,7 @@ interface ImmerState {
   isListening: boolean;
   isRecording: boolean;
   dataSeconds: number;
+  dataBlobs: Blob[];
   dataSize: number;
   dataType?:
     | "audio/mpeg" /* polyfill (safari) */
@@ -34,6 +33,7 @@ interface ImmerState {
 const ImmerStartState: ImmerState = {
   isListening: false,
   isRecording: false,
+  dataBlobs: [],
   dataSeconds: 0,
   dataSize: 0,
 };
@@ -85,41 +85,46 @@ const useAudioRecorder = () => {
 
     // Reuse audioContext if used before
     const audioContext = await getAudioContext();
-    navigator.mediaDevices
-      .getUserMedia({ audio: true, video: false })
-      .then((stream) => {
-        console.debug(`useAudioRecorder:: onStream`);
 
-        if (!isMountedRef.current) {
-          console.debug(`useAudioRecorder:: onStream ignored`);
-          return;
-        }
+    return new Promise((resolve, reject) => {
+      navigator.mediaDevices
+        .getUserMedia({ audio: true, video: false })
+        .then((stream) => {
+          console.debug(`useAudioRecorder:: onStream`);
 
-        const { mediaStreamSource, audioAnalyzer } = setupStreamWithAnalyzer(
-          audioContext,
-          stream
-        );
+          if (!isMountedRef.current) {
+            console.debug(`useAudioRecorder:: onStream ignored`);
+            return;
+          }
 
-        mediaStreamSourceRef.current = mediaStreamSource;
-        audioAnalyzerRef.current = audioAnalyzer;
+          const { mediaStreamSource, audioAnalyzer } = setupStreamWithAnalyzer(
+            audioContext,
+            stream
+          );
 
-        tearDownRefs.current["mediaStreamSource"] = () => {
-          killMediaAudioStream(mediaStreamSourceRef.current);
-          mediaStreamSourceRef.current = undefined;
-        };
+          mediaStreamSourceRef.current = mediaStreamSource;
+          audioAnalyzerRef.current = audioAnalyzer;
 
-        dispatch((state) => {
-          state.isListening = true;
-          state.error = undefined;
+          tearDownRefs.current["mediaStreamSource"] = () => {
+            killMediaAudioStream(mediaStreamSourceRef.current);
+            mediaStreamSourceRef.current = undefined;
+          };
+
+          dispatch((state) => {
+            state.isListening = true;
+            state.error = undefined;
+          });
+          resolve();
+        })
+        .catch((error) => {
+          console.error(error);
+          dispatch((state) => {
+            state.isListening = false;
+            state.error = error;
+            resolve();
+          });
         });
-      })
-      .catch((error) => {
-        console.error(error);
-        dispatch((state) => {
-          state.isListening = false;
-          state.error = error;
-        });
-      });
+    });
   };
 
   const __handleDataAvailable = (event: Event, timeSlice?: number) => {
@@ -139,6 +144,7 @@ const useAudioRecorder = () => {
 
       // Update hasData state
       dispatch((state) => {
+        state.dataBlobs = blobsRef.current;
         state.dataSize = state.dataSize + data.size;
         state.dataType = data.type as ImmerState["dataType"];
       });
@@ -154,9 +160,20 @@ const useAudioRecorder = () => {
     }
   };
 
-  const startRecording = (timeSlice?: number) => {
-    if (state.isRecording || !mediaStreamSourceRef.current) {
-      return;
+  const startRecording = async (timeSlice?: number) => {
+    if (state.isRecording) {
+      return console.debug(
+        `useAudioRecorder:: startRecording ignored: already recording`
+      );
+    }
+    if (!state.isListening) {
+      console.debug(`useAudioRecorder:: startRecording: start listening first`);
+      await startListening();
+    }
+    if (!mediaStreamSourceRef.current) {
+      return console.debug(
+        `useAudioRecorder:: startRecording ignored: no mediaStream`
+      );
     }
 
     // instantiate new MediaRecorder based on current stream
@@ -200,6 +217,7 @@ const useAudioRecorder = () => {
 
     // Transition into isRecording
     dispatch((state) => {
+      state.isListening = true;
       state.isRecording = true;
       state.error = undefined;
     });
@@ -297,6 +315,7 @@ const useAudioRecorder = () => {
   const clearData = async () => {
     blobsRef.current = [];
     dispatch((state) => {
+      state.dataBlobs = [];
       state.dataSize = 0;
       state.dataSeconds = 0;
     });

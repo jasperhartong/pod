@@ -143,10 +143,10 @@ const EpisodeCreation = ({ room, playlist }: Props) => {
           </form>
 
           <Box mt={4} mb={2}>
-            <Typography variant="caption" color="textSecondary">
+            <Typography variant="body2" color="textPrimary">
               Tips
             </Typography>
-            <Typography variant="body2" color="textSecondary" gutterBottom>
+            <Typography variant="body2" color="textSecondary">
               <b>Plaatje</b>: Bijvoorbeeld een plaatje uit het verhaal, of
               gewoon een mooie foto
             </Typography>

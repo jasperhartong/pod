@@ -8,6 +8,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     position: "relative",
     width: 300,
     height: 300,
+    overflow: "hidden",
     backgroundSize: "cover",
     backgroundColor: theme.palette.background.paper,
     color: theme.palette.text.secondary,

@@ -68,8 +68,8 @@ const EpisodeCreation = ({ room, playlist }: Props) => {
         </Link>
       }
       firstItem={
-        <Box>
-          <div {...dropZone.getRootProps()}>
+        <Box p={2} textAlign="center">
+          <div {...dropZone.getRootProps()} style={{ display: "inline-block" }}>
             <input {...dropZone.getInputProps()} />
             <EpisodeCoverInDropZone
               imageUrl={dropZone.downloadUrl}

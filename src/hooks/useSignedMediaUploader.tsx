@@ -27,11 +27,9 @@ interface ReturnProps {
   setOnProgress: (callback: Callbacks["onProgress"]) => void;
 }
 
-const useSignedMediaUploader = ({
-  onSuccess,
-  onError,
-  onProgress,
-}: Partial<Callbacks>): ReturnProps => {
+const useSignedMediaUploader = (
+  callbacks: Partial<Callbacks> | undefined
+): ReturnProps => {
   const [file, setFile] = useState<File | undefined>();
   const [percentCompleted, setPercentCompleted] = useState<number>();
   const {
@@ -43,9 +41,15 @@ const useSignedMediaUploader = ({
     setData,
   } = useLoadingState<ResponseData>();
 
-  const onSuccessRef = useRef<Callbacks["onSuccess"] | undefined>(onSuccess);
-  const onErrorRef = useRef<Callbacks["onError"] | undefined>(onError);
-  const onProgressRef = useRef<Callbacks["onProgress"] | undefined>(onProgress);
+  const onSuccessRef = useRef<Callbacks["onSuccess"] | undefined>(
+    callbacks?.onSuccess
+  );
+  const onErrorRef = useRef<Callbacks["onError"] | undefined>(
+    callbacks?.onError
+  );
+  const onProgressRef = useRef<Callbacks["onProgress"] | undefined>(
+    callbacks?.onProgress
+  );
 
   const performUpload = async () => {
     if (!file) {

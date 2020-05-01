@@ -19,7 +19,7 @@ const AdminEpisodeCreationPage = ({ roomResponse, playlistId }: Props) => {
     );
   }
   const room = roomResponse.data;
-  const playlist = room.playlists.find((p) => p.id);
+  const playlist = room.playlists.find((p) => p.id === playlistId);
 
   if (!playlist) {
     return <ErrorPage error="No playlist found" />;

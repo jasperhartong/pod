@@ -9,7 +9,6 @@ import {
   FormGroup,
   IconButton,
 } from "@material-ui/core";
-import IconNext from "@material-ui/icons/ChevronRight";
 import { useForm, Controller, ErrorMessage } from "react-hook-form";
 import CloseIcon from "@material-ui/icons/Close";
 import { IRoom } from "../../../app-schema/IRoom";
@@ -68,7 +67,7 @@ const EpisodeCreation = ({ room, playlist }: Props) => {
         </Link>
       }
       firstItem={
-        <Box p={2} textAlign="center">
+        <Box p={2} pb={0} textAlign="center">
           <div {...dropZone.getRootProps()} style={{ display: "inline-block" }}>
             <input {...dropZone.getInputProps()} />
             <EpisodeCoverInDropZone
@@ -82,53 +81,62 @@ const EpisodeCreation = ({ room, playlist }: Props) => {
         </Box>
       }
       secondItem={
-        <>
-          <Typography variant="h6">Hoe heet de aflevering vandaag?</Typography>
-          <Typography variant="body1" color="textSecondary">
-            Bijvoorbeeld de title van een hoofdstuk of een nummer dat aangeeft
-            hoeveelste deel het is.
-          </Typography>
-
+        <Box pt={2}>
           <form onSubmit={formContext.handleSubmit(handleSubmit)}>
-            <Box pt={2} pb={2}>
-              <FormGroup>
-                {/* Title */}
-                <Controller
-                  // set default value at least to a string to counter "uncontrolled to controlled error"
-                  // https://github.com/react-hook-form/react-hook-form-website/issues/133
-                  defaultValue={defaultTitle}
-                  control={formContext.control}
-                  rules={{ required: true }}
-                  as={TextField}
-                  label="Titel"
-                  placeholder="Titel aflevering"
-                  name="title"
-                  disabled={formContext.formState.isSubmitting}
-                />
-              </FormGroup>
-              <ErrorMessage
-                errors={formContext.errors}
+            <FormGroup>
+              {/* Title */}
+              <Controller
+                // set default value at least to a string to counter "uncontrolled to controlled error"
+                // https://github.com/react-hook-form/react-hook-form-website/issues/133
+                defaultValue={defaultTitle}
+                control={formContext.control}
+                rules={{ required: true }}
+                as={TextField}
+                label="Titel"
+                placeholder="Titel aflevering"
                 name="title"
-                as={<ErrorMessageTypography />}
-                message="Vul een titel in"
+                disabled={formContext.formState.isSubmitting}
               />
-            </Box>
+            </FormGroup>
+            <ErrorMessage
+              errors={formContext.errors}
+              name="title"
+              as={<ErrorMessageTypography />}
+              message="Vul een titel in"
+            />
+
             <input
               type="hidden"
               ref={formContext.register({ required: true })}
               name="cover_file_url"
             />
             {/* submit */}
-            <Button
-              disabled={SubmitDisabled}
-              type="submit"
-              variant="contained"
-              fullWidth
-            >
-              Neem intro op <IconNext />
-            </Button>
+            <Box mt={2}>
+              <Button
+                disabled={SubmitDisabled}
+                type="submit"
+                variant="contained"
+                fullWidth
+              >
+                Ga naar opnemen
+              </Button>
+            </Box>
           </form>
-        </>
+
+          <Box mt={4} mb={2}>
+            <Typography variant="caption" color="textSecondary">
+              Tips
+            </Typography>
+            <Typography variant="body2" color="textSecondary" gutterBottom>
+              <b>Plaatje</b>: Bijvoorbeeld een plaatje uit het verhaal, of
+              gewoon een mooie foto
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              <b>Titel</b>: Bijvoorbeeld de titel van een hoofdstuk, of de titel
+              van het korte verhaal
+            </Typography>
+          </Box>
+        </Box>
       }
     />
   );

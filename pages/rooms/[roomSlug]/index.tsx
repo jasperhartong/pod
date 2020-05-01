@@ -27,6 +27,7 @@ import RoomMenu from "../../../src/components/room-menu";
 import { makeStyles } from "@material-ui/styles";
 import AppContainer from "../../../src/components/app-container";
 import ErrorPage from "../../../src/components/error-page";
+import PageFooter from "../../../src/components/page-footer";
 
 // Dynamic imports (load on user interaction)
 const SnackbarPlayer = dynamic(() =>
@@ -125,19 +126,7 @@ const RoomPage = () => {
         </Box>
       ))}
 
-      <Box p={4} textAlign="center">
-        <SurroundSound fontSize="large" color="disabled" />
-        <Typography
-          component="div"
-          variant="overline"
-          style={{ lineHeight: "110%" }}
-        >
-          Tapes.me ©2020
-        </Typography>
-        <Typography component="div" variant="overline" color="textSecondary">
-          {room.data.slug || ""}
-        </Typography>
-      </Box>
+      <PageFooter secondaryText={room.data.slug} />
 
       <SnackbarPlayer
         playingItem={playingItem}

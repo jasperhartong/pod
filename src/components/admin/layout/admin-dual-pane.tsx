@@ -9,6 +9,7 @@ import {
 } from "@material-ui/core";
 import AdminHeader, { AdminHeaderProps } from "./admin-header";
 import AppContainer from "../../app-container";
+import PageFooter from "../../page-footer";
 
 interface Props extends AdminHeaderProps {
   firstItem: ReactNode;
@@ -28,6 +29,7 @@ const AdminDualPaneLayout = (props: Props) => {
           subtitle={props.subtitle}
           action={props.action}
         />
+
         <Paper square={true}>
           <Box p={2}>
             <Grid container spacing={2}>
@@ -40,6 +42,8 @@ const AdminDualPaneLayout = (props: Props) => {
             </Grid>
           </Box>
         </Paper>
+
+        <PageFooter secondaryText="admin" />
       </Container>
     </AppContainer>
   );

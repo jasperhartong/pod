@@ -1,23 +1,28 @@
 import Link from "next/link";
-import { ReactNode } from "react";
-import AdminDualPaneLayout from "../layout/admin-dual-pane";
+import { ReactNode, MouseEvent } from "react";
+import { useRouter } from "next/dist/client/router";
+import { useForm, Controller, ErrorMessage } from "react-hook-form";
 import {
   Box,
-  Typography,
   TextField,
   Button,
   FormGroup,
   IconButton,
+  Typography,
+  Grow,
+  CircularProgress,
+  useTheme,
 } from "@material-ui/core";
-import { useForm, Controller, ErrorMessage } from "react-hook-form";
+import ImageIcon from "@material-ui/icons/Image";
+import IconDelete from "@material-ui/icons/DeleteOutline";
 import CloseIcon from "@material-ui/icons/Close";
-import { IRoom } from "../../../app-schema/IRoom";
-import { IPlaylist } from "../../../app-schema/IPlaylist";
-import useSignedMediaUploadDropZone from "../../../hooks/useSignedMediaUploadDropZone";
-import { EpisodeCoverInDropZone } from "./episode-creation-cover-file";
-import { RPCClientFactory } from "../../../api/rpc/rpc-client";
-import episodeCreateMeta from "../../../api/rpc/commands/episode.create.meta";
-import { useRouter } from "next/dist/client/router";
+import { IRoom } from "../../app-schema/IRoom";
+import { IPlaylist } from "../../app-schema/IPlaylist";
+import useSignedMediaUploadDropZone from "../../hooks/useSignedMediaUploadDropZone";
+import { RPCClientFactory } from "../../api/rpc/rpc-client";
+import episodeCreateMeta from "../../api/rpc/commands/episode.create.meta";
+import AdminDualPaneLayout from "./layout/admin-dual-pane";
+import { EpisodeCoverLayout } from "./layout/episode-cover-layout";
 
 interface Props {
   room: IRoom;
@@ -163,3 +168,74 @@ const ErrorMessageTypography = ({ children }: { children?: ReactNode }) => (
     {children}
   </Typography>
 );
+
+const EpisodeCoverInDropZone = ({
+  imageUrl,
+  isUploading,
+  uploadPercentCompleted,
+  onDelete,
+  uploadError,
+}: {
+  imageUrl?: string;
+  uploadError?: boolean;
+  isUploading: boolean;
+  uploadPercentCompleted?: number;
+  onDelete: () => void;
+}) => {
+  const theme = useTheme();
+
+  return (
+    <EpisodeCoverLayout
+      style={{ width: 240, height: 240 }}
+      imageUrl={imageUrl}
+      centeredChildren={
+        <Grow in={!imageUrl}>
+          <Box>
+            {!imageUrl && !isUploading && (
+              <Box pb={1}>
+                <ImageIcon fontSize="large" />
+                <Typography variant="subtitle2">Selecteer plaatje</Typography>
+              </Box>
+            )}
+            {isUploading && (
+              <CircularProgress
+                value={uploadPercentCompleted}
+                variant={
+                  [undefined, 0, 100].includes(uploadPercentCompleted)
+                    ? "indeterminate"
+                    : "determinate"
+                }
+              />
+            )}
+            {uploadError && (
+              <Box pb={1}>
+                <Typography variant="subtitle2" color="error">
+                  Er ging iets mis bij het uploaden, probeer het nogmaals
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </Grow>
+      }
+      bottomRightAction={
+        <Grow in={!!imageUrl}>
+          <IconButton
+            style={{
+              background: theme.palette.action.selected,
+              color: theme.palette.getContrastText(
+                theme.palette.action.selected
+              ),
+            }}
+            onClick={(event: MouseEvent<HTMLElement>) => {
+              event.preventDefault();
+              event.stopPropagation();
+              onDelete();
+            }}
+          >
+            <IconDelete fontSize="small" />
+          </IconButton>
+        </Grow>
+      }
+    />
+  );
+};

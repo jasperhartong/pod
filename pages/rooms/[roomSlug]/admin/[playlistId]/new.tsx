@@ -4,7 +4,7 @@ import roomFetch from "../../../../../src/api/rpc/commands/room.fetch";
 import { IResponse } from "../../../../../src/api/IResponse";
 import { IRoom } from "../../../../../src/app-schema/IRoom";
 import { IPlaylist } from "../../../../../src/app-schema/IPlaylist";
-import EpisodeCreation from "../../../../../src/components/admin/episode-creation/episode-creation";
+import EpisodeCreation from "../../../../../src/components/admin/episode-creation";
 import ErrorPage from "../../../../../src/components/error-page";
 
 interface Props {

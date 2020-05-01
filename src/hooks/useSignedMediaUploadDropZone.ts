@@ -34,8 +34,10 @@ const useSignedMediaUploadDropZone = ({
     getRootProps,
     getInputProps,
     uploading: uploader.isValidating,
+    uploadPercentCompleted: uploader.percentCompleted,
     uploadError: uploader.error,
     downloadUrl: uploader.data?.downloadUrl,
+    reset: uploader.reset,
   };
 };
 

@@ -17,6 +17,7 @@ interface Callbacks {
 
 interface ReturnProps {
   uploadFile: (file: File) => void;
+  reset: () => void;
   isValidating: boolean;
   error?: string;
   data?: ResponseData;
@@ -31,7 +32,7 @@ const useSignedMediaUploader = ({
   onError,
   onProgress,
 }: Partial<Callbacks>): ReturnProps => {
-  const [file, uploadFile] = useState<File>();
+  const [file, setFile] = useState<File | undefined>();
   const [percentCompleted, setPercentCompleted] = useState<number>();
   const {
     isValidating,
@@ -41,6 +42,7 @@ const useSignedMediaUploader = ({
     data,
     setData,
   } = useLoadingState<ResponseData>();
+
   const onSuccessRef = useRef<Callbacks["onSuccess"] | undefined>(onSuccess);
   const onErrorRef = useRef<Callbacks["onError"] | undefined>(onError);
   const onProgressRef = useRef<Callbacks["onProgress"] | undefined>(onProgress);
@@ -96,6 +98,13 @@ const useSignedMediaUploader = ({
     performUpload();
   }, [file]);
 
+  const reset = () => {
+    setFile(undefined);
+    setPercentCompleted(0);
+    setError(undefined);
+    setData(undefined);
+  };
+
   // Allow to also set callbacks AFTER initiating hook
   const setOnProgress = (callback: (percentCompleted: number) => void) => {
     onProgressRef.current = callback;
@@ -108,7 +117,8 @@ const useSignedMediaUploader = ({
   };
 
   return {
-    uploadFile,
+    uploadFile: setFile,
+    reset,
     isValidating,
     error,
     data,

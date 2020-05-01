@@ -15,6 +15,7 @@ import CloseIcon from "@material-ui/icons/Close";
 import { IRoom } from "../../../app-schema/IRoom";
 import { IPlaylist } from "../../../app-schema/IPlaylist";
 import useSignedMediaUploadDropZone from "../../../hooks/useSignedMediaUploadDropZone";
+import { EpisodeCoverInDropZone } from "./episode-creation-cover-file";
 
 interface Props {
   room: IRoom;
@@ -34,6 +35,7 @@ const EpisodeCreation = ({ room, playlist }: Props) => {
 
   const dropZone = useSignedMediaUploadDropZone({
     onSuccess: (downloadUrl) => {
+      // Sync dropzone state to formState
       formContext.setValue("cover_file_url", downloadUrl, true);
     },
     acceptedMimeTypes: ["image/jpg", "image/jpeg"],
@@ -44,8 +46,13 @@ const EpisodeCreation = ({ room, playlist }: Props) => {
   const SubmitDisabled =
     formContext.formState.isSubmitting || !formContext.formState.isValid;
 
-  const onSubmit = (formData: FormValues) => {
+  const handleSubmit = (formData: FormValues) => {
     console.warn(formData);
+  };
+  const handleCoverDelete = () => {
+    // Sync dropzone state to formState
+    formContext.setValue("cover_file_url", undefined, true);
+    dropZone.reset();
   };
 
   return (
@@ -61,22 +68,17 @@ const EpisodeCreation = ({ room, playlist }: Props) => {
         </Link>
       }
       firstItem={
-        <div {...dropZone.getRootProps()}>
-          <input {...dropZone.getInputProps()} />
-          <Box
-            width="100%"
-            height="100%"
-            minHeight={200}
-            style={{
-              backgroundImage: `url("${
-                dropZone.downloadUrl || "/background.png"
-              }")`,
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-              backgroundRepeat: "no-repeat",
-            }}
-          />
-        </div>
+        <Box>
+          <div {...dropZone.getRootProps()}>
+            <input {...dropZone.getInputProps()} />
+            <EpisodeCoverInDropZone
+              imageUrl={dropZone.downloadUrl}
+              isUploading={dropZone.uploading}
+              uploadPercentCompleted={dropZone.uploadPercentCompleted}
+              onDelete={handleCoverDelete}
+            />
+          </div>
+        </Box>
       }
       secondItem={
         <>
@@ -86,7 +88,7 @@ const EpisodeCreation = ({ room, playlist }: Props) => {
             hoeveelste deel het is.
           </Typography>
 
-          <form onSubmit={formContext.handleSubmit(onSubmit)}>
+          <form onSubmit={formContext.handleSubmit(handleSubmit)}>
             <Box pt={2} pb={2}>
               <FormGroup>
                 {/* Title */}

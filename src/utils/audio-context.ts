@@ -42,15 +42,19 @@ export const setupStreamWithAnalyzer = (
   return { mediaStreamSource, audioAnalyzer };
 };
 
-export const killMediaAudioStream = (
+export const killMediaStreamAudioSourceNode = (
   mediaStreamSource?: IMediaStreamAudioSourceNode<IAudioContext>
 ) => {
   if (mediaStreamSource) {
-    // removes red icon
-    return mediaStreamSource.mediaStream
-      .getTracks()
-      .forEach((track) => track.stop());
+    return killMediaStream(mediaStreamSource.mediaStream);
   }
+};
+
+export const killMediaStream = (
+  mediaStream: IMediaStreamAudioSourceNode<IAudioContext>["mediaStream"]
+) => {
+  // removes red icon
+  return mediaStream.getTracks().forEach((track) => track.stop());
 };
 
 export const bufferFromBlob = async (

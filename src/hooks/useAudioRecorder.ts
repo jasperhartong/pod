@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useImmer } from "use-immer";
+import { killMediaStream } from "../utils/audio-context";
 import {
   IAudioContext,
   IAnalyserNode,
@@ -8,7 +9,7 @@ import {
 import {
   getAudioContext,
   setupStreamWithAnalyzer,
-  killMediaAudioStream,
+  killMediaStreamAudioSourceNode,
 } from "../utils/audio-context";
 
 interface TearDowns {
@@ -111,7 +112,7 @@ const useAudioRecorder = () => {
           audioAnalyzerRef.current = audioAnalyzer;
 
           tearDownRefs.current["mediaStreamSource"] = () => {
-            killMediaAudioStream(mediaStreamSourceRef.current);
+            killMediaStreamAudioSourceNode(mediaStreamSourceRef.current);
             mediaStreamSourceRef.current = undefined;
           };
 
@@ -184,9 +185,8 @@ const useAudioRecorder = () => {
     }
 
     // instantiate new MediaRecorder based on current stream
-    mediaRecorderRef.current = new MediaRecorder(
-      mediaStreamSourceRef.current.mediaStream.clone()
-    );
+    const mediaRecorderMediaStream = mediaStreamSourceRef.current.mediaStream.clone();
+    mediaRecorderRef.current = new MediaRecorder(mediaRecorderMediaStream);
 
     // Setup event listener before starting to capture also data when stopped before end of timeSlice
     const handleData = (event: Event) =>
@@ -204,6 +204,7 @@ const useAudioRecorder = () => {
       );
       mediaRecorderRef.current?.stop();
       mediaRecorderRef.current = undefined;
+      killMediaStream(mediaRecorderMediaStream);
     };
 
     // Set up interval to track recording time
@@ -212,6 +213,7 @@ const useAudioRecorder = () => {
         state.dataSeconds = state.dataSeconds + 1;
       });
     }, 1000);
+
     // Register related teardown
     tearDownRefs.current["recordingInterval"] = () => {
       clearInterval(recordingIntervalRef.current!);
@@ -267,7 +269,7 @@ const useAudioRecorder = () => {
         `useAudioRecorder:: stopListening ignoring: not listening`
       );
     }
-    killMediaAudioStream(mediaStreamSourceRef.current);
+    killMediaStreamAudioSourceNode(mediaStreamSourceRef.current);
 
     dispatch((state) => {
       state.isListening = false;

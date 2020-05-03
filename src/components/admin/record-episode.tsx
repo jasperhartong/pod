@@ -108,7 +108,21 @@ const RecordEpisode = ({ room, playlist, episode }: Props) => {
               },
             }}
           />
-          <Box mt={4} mb={2}>
+          {!mp3Recording && !recorder.isRecording && (
+            <Box mt={2}>
+              <Button
+                fullWidth
+                onClick={() => {
+                  dispatch((state) => {
+                    state.didTestMicrophone = true;
+                  });
+                }}
+              >
+                Sla microfoon testen over
+              </Button>
+            </Box>
+          )}
+          <Box mt={2} mb={2}>
             <Typography variant="body2" color="textSecondary" gutterBottom>
               Voordat we beginnen met voorlezen, is het goed om even de
               microfoon te testen.
@@ -126,16 +140,6 @@ const RecordEpisode = ({ room, playlist, episode }: Props) => {
               </li>
             </Typography>
           </Box>
-          <Button
-            fullWidth
-            onClick={() => {
-              dispatch((state) => {
-                state.didTestMicrophone = true;
-              });
-            }}
-          >
-            Sla microfoon testen over
-          </Button>
         </>
       );
     }
@@ -199,18 +203,6 @@ const RecordEpisode = ({ room, playlist, episode }: Props) => {
               <li>Verzin een openingstune</li>
             </Typography>
           </Box>
-          {!recorder.dataBlobs && !recorder.isRecording && (
-            <Button
-              fullWidth
-              onClick={() => {
-                dispatch((state) => {
-                  state.didTestMicrophone = true;
-                });
-              }}
-            >
-              Sla microfoon testen over
-            </Button>
-          )}
         </>
       );
     }
@@ -295,32 +287,43 @@ const RecordingButtonGroup = ({
   buttonConfig,
 }: RecordingButtonGroupProps) => {
   return (
-    <Box pt={2}>
-      <Button
-        variant="contained"
-        fullWidth
-        onClick={
-          recording
-            ? buttonConfig.approve.action
-            : isRecording
-            ? buttonConfig.stop.action
-            : buttonConfig.start.action
-        }
-      >
-        {recording
-          ? buttonConfig.approve.label
-          : isRecording
-          ? buttonConfig.stop.label
-          : buttonConfig.start.label}
-      </Button>
-
+    <>
       {recording && (
-        <Box mt={2}>
-          <Button fullWidth onClick={buttonConfig.reject.action}>
-            {buttonConfig.reject.label}
-          </Button>
+        <Box pt={2}>
+          <audio
+            style={{ width: "100%" }}
+            src={URL.createObjectURL(recording)}
+            controls
+          />
         </Box>
       )}
-    </Box>
+      <Box pt={2}>
+        <Button
+          variant="contained"
+          fullWidth
+          onClick={
+            recording
+              ? buttonConfig.approve.action
+              : isRecording
+              ? buttonConfig.stop.action
+              : buttonConfig.start.action
+          }
+        >
+          {recording
+            ? buttonConfig.approve.label
+            : isRecording
+            ? buttonConfig.stop.label
+            : buttonConfig.start.label}
+        </Button>
+
+        {recording && (
+          <Box mt={2}>
+            <Button fullWidth onClick={buttonConfig.reject.action}>
+              {buttonConfig.reject.label}
+            </Button>
+          </Box>
+        )}
+      </Box>
+    </>
   );
 };

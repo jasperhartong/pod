@@ -76,7 +76,7 @@ const NewEpisode = ({ room, playlist }: Props) => {
   return (
     <AdminDualPaneLayout
       image={playlist.cover_file.data.full_url}
-      title={playlist.title}
+      title={"Nieuwe aflevering"}
       subtitle={watchedTitle || defaultTitle}
       action={
         <Link href={`/rooms/[roomSlug]/admin`} as={`/rooms/${room.slug}/admin`}>

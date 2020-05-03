@@ -219,8 +219,8 @@ const RecordEpisode = ({ room, playlist, episode }: Props) => {
   return (
     <AdminDualPaneLayout
       image={playlist.cover_file.data.full_url}
-      title={playlist.title}
-      subtitle={episode.title}
+      title={"Opnemen"}
+      subtitle={playlist.title + "•" + episode.title}
       action={
         <Link href={`/rooms/[roomSlug]/admin`} as={`/rooms/${room.slug}/admin`}>
           <IconButton>

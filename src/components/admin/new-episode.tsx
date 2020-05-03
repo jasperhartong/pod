@@ -75,7 +75,7 @@ const NewEpisode = ({ room, playlist }: Props) => {
 
   return (
     <AdminDualPaneLayout
-      image={playlist.cover_file.data.full_url}
+      // image={playlist.cover_file.data.full_url}
       title={"Nieuwe aflevering"}
       subtitle={watchedTitle || defaultTitle}
       action={

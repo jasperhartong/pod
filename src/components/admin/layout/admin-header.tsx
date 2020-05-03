@@ -4,16 +4,16 @@ import { makeStyles } from "@material-ui/styles";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
 
 export interface AdminHeaderProps {
-  image: string;
   title: string;
   subtitle: string;
+  image?: string;
   action?: ReactNode;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
   root: {
     position: "relative",
-    height: 220,
+    height: 160,
   },
   image: {
     height: "100%",
@@ -45,12 +45,14 @@ const AdminHeader = (props: AdminHeaderProps) => {
 
   return (
     <Box className={classes.root}>
-      <Avatar
-        className={classes.image}
-        variant="square"
-        alt={props.title}
-        src={props.image}
-      />
+      {props.image && (
+        <Avatar
+          className={classes.image}
+          variant="square"
+          alt={props.title}
+          src={props.image}
+        />
+      )}
       <Box className={classes.text}>
         <Typography component="div" variant="h6">
           {props.title}

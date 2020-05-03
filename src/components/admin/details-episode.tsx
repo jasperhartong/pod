@@ -16,9 +16,9 @@ interface Props {
 const DetailsEpisode = ({ room, playlist, episode }: Props) => {
   return (
     <AdminDualPaneLayout
-      image={playlist.cover_file.data.full_url}
-      title={playlist.title}
-      subtitle={episode.title}
+      // image={playlist.cover_file.data.full_url}
+      title={episode.title}
+      subtitle={"in " + playlist.title}
       action={
         <Link href={`/rooms/[roomSlug]/admin`} as={`/rooms/${room.slug}/admin`}>
           <IconButton>
@@ -41,13 +41,15 @@ const DetailsEpisode = ({ room, playlist, episode }: Props) => {
       }
       secondItem={
         <>
-          {episode.audio_file}
-          <Link
-            href={`/rooms/[roomSlug]/admin/[playListId]/record-episode/[episodeId]`}
-            as={`/rooms/${room.slug}/admin/${playlist.id}/record-episode/${episode.id}`}
-          >
-            <Button fullWidth>Neem opnieuw op</Button>
-          </Link>
+          <audio src={episode.audio_file} controls />
+          <Box mt={2}>
+            <Link
+              href={`/rooms/[roomSlug]/admin/[playListId]/record-episode/[episodeId]`}
+              as={`/rooms/${room.slug}/admin/${playlist.id}/record-episode/${episode.id}`}
+            >
+              <Button fullWidth>Neem opnieuw op</Button>
+            </Link>
+          </Box>
         </>
       }
     />

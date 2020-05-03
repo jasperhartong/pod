@@ -188,8 +188,8 @@ const EpisodeCoverInDropZone = ({
       style={{
         width: 240,
         height: 240,
-        transition: "transform 300ms",
-        transform: isUploading ? "scale(0.9)" : "",
+        transition: "opacity 300ms",
+        opacity: isUploading ? 0.7 : 1.0,
       }}
       imageUrl={imageUrl}
       centeredChildren={

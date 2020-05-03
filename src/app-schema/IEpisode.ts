@@ -33,4 +33,4 @@ export type IEpisode = t.TypeOf<typeof TEpisode>;
 
 export const episodeHasAudio = (episode: IEpisode) =>
   // Bit hacky for now due to stupid `""` default value
-  !episode.audio_file || episode.audio_file.length < 4;
+  !episode.audio_file || episode.audio_file.length > 4;

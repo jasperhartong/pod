@@ -2,9 +2,27 @@ import { useState } from "react";
 import useAudioRecorder from "../src/hooks/useAudioRecorder";
 import { Button, Container, Box } from "@material-ui/core";
 import { AudioRecorderVisualizer } from "../src/components/audio-recorder-hook/audio-recorder-visualizer";
-import FilePlayer from "react-player/lib/players/FilePlayer";
 import { formatBytes } from "../src/utils/audio-context";
 import { Duration } from "luxon";
+
+const RecorderWrapper = () => {
+  const [mounted, setMounted] = useState<boolean>(true);
+  const remount = () => {
+    setMounted(false);
+    setTimeout(() => {
+      setMounted(true);
+    }, 1000);
+  };
+
+  return (
+    <>
+      <Box p={4}>
+        <Button onClick={remount}>Remount</Button>
+      </Box>
+      {mounted ? <Recorder /> : <>Remounting</>}
+    </>
+  );
+};
 
 const Recorder = () => {
   const {
@@ -14,8 +32,8 @@ const Recorder = () => {
     stopListening,
     startRecording,
     stopRecording,
-    extractBlobs,
     getFrequencyData,
+    dataBlobs,
     dataType,
     dataSize,
     dataSeconds,
@@ -25,14 +43,6 @@ const Recorder = () => {
   const [blob, setBlob] = useState<Blob>();
   const [playing, setPlaying] = useState<boolean>(false);
 
-  const showMp3 = async () => {
-    const b = await extractBlobs();
-    console.debug(`showMp3:: ${b}`);
-    if (b) {
-      setBlob(b[0]);
-    }
-  };
-
   return (
     <Container>
       {[
@@ -41,7 +51,6 @@ const Recorder = () => {
         startRecording,
         stopRecording,
         clearData,
-        showMp3,
       ].map((method) => (
         <li key={method.name}>
           <Button key={method.name} onClick={() => method()} variant="outlined">
@@ -59,14 +68,16 @@ const Recorder = () => {
         </div>
       </Box>
 
-      {isRecording && (
+      {isListening && (
         <AudioRecorderVisualizer
           uniqueId="test"
           getFrequencyData={getFrequencyData}
         />
       )}
 
-      {blob && <audio src={URL.createObjectURL(blob)} controls></audio>}
+      {dataBlobs.length === 1 && (
+        <audio src={URL.createObjectURL(dataBlobs[0])} controls></audio>
+      )}
 
       {/* {blob && (
         <>
@@ -80,4 +91,4 @@ const Recorder = () => {
   );
 };
 
-export default Recorder;
+export default RecorderWrapper;

@@ -65,11 +65,11 @@ const useAudioRecorder = () => {
   }, []);
 
   const __tearDown = async () => {
-    Object.values(tearDownRefs.current).forEach((method) => {
+    Object.values(tearDownRefs.current).forEach(async (method) => {
       if (method) {
         try {
           console.debug(`useAudioRecorder:: cleanup ${method.toString()}`);
-          (method as () => void)();
+          await (method as () => void)();
         } catch (error) {
           console.debug(`useAudioRecorder:: cleanup failed`);
           console.debug(error);
@@ -189,14 +189,19 @@ const useAudioRecorder = () => {
     );
 
     // Setup event listener before starting to capture also data when stopped before end of timeSlice
-    mediaRecorderRef.current.addEventListener("dataavailable", (event: Event) =>
-      __handleDataAvailable(event, timeSlice)
-    );
+    const handleData = (event: Event) =>
+      __handleDataAvailable(event, timeSlice);
+    mediaRecorderRef.current.addEventListener("dataavailable", handleData);
 
     // Actually start recording
     mediaRecorderRef.current.start(/* timeSlice does not work well in all browsers, mocked with timeout */);
+
     // Register mediaRecorder related teardown
     tearDownRefs.current["mediaRecorder"] = () => {
+      mediaRecorderRef.current?.removeEventListener(
+        "dataavailable",
+        handleData
+      );
       mediaRecorderRef.current?.stop();
       mediaRecorderRef.current = undefined;
     };

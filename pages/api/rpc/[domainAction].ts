@@ -3,10 +3,12 @@ import { IResponse, ERR } from "../../../src/api/IResponse";
 import HttpStatus from "http-status-codes";
 import signedUrlCreate from "../../../src/api/rpc/commands/signedurl.create";
 import episodeCreate from "../../../src/api/rpc/commands/episode.create";
+import episodeUpdate from "../../../src/api/rpc/commands/episode.update";
 import roomFetch from "../../../src/api/rpc/commands/room.fetch";
 
 const handlers = {
   [episodeCreate.commandId]: episodeCreate,
+  [episodeUpdate.commandId]: episodeUpdate,
   [signedUrlCreate.commandId]: signedUrlCreate,
   [roomFetch.commandId]: roomFetch,
 };

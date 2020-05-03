@@ -83,8 +83,8 @@ export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
                     playlist={p}
                     secondaryAction={
                       <NextLink
-                        href="/rooms/[roomSlug]/admin/[playlistId]/new"
-                        as={`/rooms/${slug}/admin/${p.id}/new`}
+                        href="/rooms/[roomSlug]/admin/[playlistId]/new-episode"
+                        as={`/rooms/${slug}/admin/${p.id}/new-episode`}
                       >
                         <Fab size="small">
                           <IconAdd />
@@ -178,8 +178,8 @@ const AdminEpisodeList = ({
           key={episode.id}
           onClick={() =>
             router.push(
-              "/rooms/[roomSlug]/admin/[playlistId]/[episodeId]",
-              `/rooms/${roomSlug}/admin/${playlistId}/${episode.id}`
+              "/rooms/[roomSlug]/admin/[playlistId]/episode/[episodeId]",
+              `/rooms/${roomSlug}/admin/${playlistId}/episode/${episode.id}`
             )
           }
           button

@@ -34,7 +34,7 @@ interface FormValues {
   coverFileUrl: string;
 }
 
-const EpisodeCreation = ({ room, playlist }: Props) => {
+const NewEpisode = ({ room, playlist }: Props) => {
   const router = useRouter();
   const form = useForm<FormValues>({
     mode: "onChange",
@@ -61,8 +61,8 @@ const EpisodeCreation = ({ room, playlist }: Props) => {
     });
     if (response.ok) {
       router.push(
-        `/rooms/[roomSlug]/admin/[playListId]/[episodeId]`,
-        `/rooms/${room.slug}/admin/${playlist.id}/${response.data.id}`
+        `/rooms/[roomSlug]/admin/[playListId]/record-episode/[episodeId]`,
+        `/rooms/${room.slug}/admin/${playlist.id}/record-episode/${response.data.id}`
       );
     }
     // TODO: Handle !ok
@@ -161,7 +161,7 @@ const EpisodeCreation = ({ room, playlist }: Props) => {
   );
 };
 
-export default EpisodeCreation;
+export default NewEpisode;
 
 const ErrorMessageTypography = ({ children }: { children?: ReactNode }) => (
   <Typography variant="subtitle2" color="error">
@@ -201,7 +201,7 @@ const EpisodeCoverInDropZone = ({
               <CircularProgress
                 value={uploadPercentCompleted}
                 variant={
-                  [undefined, 0, 100].includes(uploadPercentCompleted)
+                  uploadPercentCompleted === 100
                     ? "indeterminate"
                     : "determinate"
                 }

@@ -22,6 +22,11 @@ export const TEpisodeOptional = t.partial({
   audio_file: t.string,
 });
 
+export const TEpisodePartial = t.partial({
+  // for updating
+  ...TEpisodeRequired.props,
+  ...TEpisodeOptional.props,
+});
 export const TEpisode = t.intersection([TEpisodeRequired, TEpisodeOptional]);
 
 export type IEpisode = t.TypeOf<typeof TEpisode>;

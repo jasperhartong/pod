@@ -1,5 +1,11 @@
 import Link from "next/link";
-import { Box, Button, IconButton, Typography } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  IconButton,
+  Typography,
+  CircularProgress,
+} from "@material-ui/core";
 import CloseIcon from "@material-ui/icons/Close";
 import { IRoom } from "../../app-schema/IRoom";
 import { IPlaylist } from "../../app-schema/IPlaylist";
@@ -8,8 +14,13 @@ import { EpisodeCoverLayout } from "./layout/episode-cover-layout";
 import { IEpisode } from "../../app-schema/IEpisode";
 import { useImmer } from "use-immer";
 import useAudioRecorder from "../../hooks/useAudioRecorder";
-import { useEffect, ReactNode } from "react";
 import { AudioRecorderVisualizer } from "../audio-recorder-hook/audio-recorder-visualizer";
+import { RPCClientFactory } from "../../api/rpc/rpc-client";
+import episodeUpdateMeta from "../../api/rpc/commands/episode.update.meta";
+import useSignedMediaUploader from "../../hooks/useSignedMediaUploader";
+import { blobToFile } from "../../utils/audio-context";
+import ErrorPage from "../error-page";
+import { useRouter } from "next/dist/client/router";
 
 interface Props {
   room: IRoom;
@@ -19,28 +30,58 @@ interface Props {
 
 interface State {
   didTestMicrophone: boolean;
+  updateError?: string;
+  isSaving: boolean;
 }
 
 const initialState: State = {
   didTestMicrophone: false,
+  isSaving: false,
 };
 
-const EpisodeEdit = ({ room, playlist, episode }: Props) => {
-  const [state, dispatch] = useImmer<State>(initialState);
+const RecordEpisode = ({ room, playlist, episode }: Props) => {
+  const [localState, dispatch] = useImmer<State>(initialState);
+  const router = useRouter();
   const recorder = useAudioRecorder();
+  const uploader = useSignedMediaUploader({
+    onError: (message) => {
+      dispatch((state) => {
+        state.updateError = message;
+      });
+    },
+    onSuccess: async ({ downloadUrl }) => {
+      const updatedEpisode = await RPCClientFactory(episodeUpdateMeta).call({
+        id: episode.id,
+        data: { audio_file: downloadUrl },
+      });
+      if (!updatedEpisode.ok) {
+        dispatch((state) => {
+          state.updateError = updatedEpisode.error;
+        });
+      }
+      router.push(
+        "/rooms/[roomSlug]/admin/[playlistId]/episode/[episodeId]",
+        `/rooms/${room.slug}/admin/${playlist.id}/episode/${episode.id}`
+      );
+    },
+  });
+
+  const mp3Recording =
+    recorder.dataBlobs.length > 0 ? recorder.dataBlobs[0] : undefined;
 
   let main = <>Unsupported state</>;
 
-  // TODO" .. this default value of """is madness
-  if (!episode.audio_file || episode.audio_file === '""') {
-    if (!state.didTestMicrophone) {
+  if (localState.updateError) {
+    main = <ErrorPage error={localState.updateError} />;
+  } else if (localState.isSaving) {
+    main = <ErrorPage error="updating!!!" />;
+  } else {
+    if (!localState.didTestMicrophone) {
       main = (
         <>
           <RecordingButtonGroup
             isRecording={recorder.isRecording}
-            recording={
-              recorder.dataBlobs.length > 0 ? recorder.dataBlobs[0] : undefined
-            }
+            recording={mp3Recording}
             buttonConfig={{
               start: {
                 label: "Test Microfoon",
@@ -97,15 +138,14 @@ const EpisodeEdit = ({ room, playlist, episode }: Props) => {
           </Button>
         </>
       );
-    } else {
+    }
+    if (localState.didTestMicrophone) {
       // RECORDING: REAL DEAL
       main = (
         <>
           <RecordingButtonGroup
             isRecording={recorder.isRecording}
-            recording={
-              recorder.dataBlobs.length > 0 ? recorder.dataBlobs[0] : undefined
-            }
+            recording={mp3Recording}
             buttonConfig={{
               start: {
                 label: "Start met voorlezen",
@@ -116,9 +156,16 @@ const EpisodeEdit = ({ room, playlist, episode }: Props) => {
                 action: () => recorder.stopRecording(),
               },
               approve: {
-                label: "Klinkt goed!",
+                label: "Bewaar opname",
                 action: () => {
-                  alert("perform upload");
+                  if (mp3Recording) {
+                    dispatch((state) => {
+                      state.isSaving = true;
+                    });
+                    uploader.uploadFile(
+                      blobToFile(mp3Recording, episode.title)
+                    );
+                  }
                 },
               },
               reject: {
@@ -167,9 +214,6 @@ const EpisodeEdit = ({ room, playlist, episode }: Props) => {
         </>
       );
     }
-  } else {
-    // HAS RECORDING
-    main = <>Should render state to publish</>;
   }
 
   return (
@@ -194,14 +238,26 @@ const EpisodeEdit = ({ room, playlist, episode }: Props) => {
               }
               style={{ width: 240, height: 240 }}
               centeredChildren={
-                recorder.isRecording && (
-                  <Box zIndex={2}>
-                    <AudioRecorderVisualizer
-                      uniqueId={episode.id.toString()}
-                      getFrequencyData={recorder.getFrequencyData}
+                <>
+                  {recorder.isRecording && (
+                    <Box zIndex={2}>
+                      <AudioRecorderVisualizer
+                        uniqueId={episode.id.toString()}
+                        getFrequencyData={recorder.getFrequencyData}
+                      />
+                    </Box>
+                  )}
+                  {localState.isSaving && (
+                    <CircularProgress
+                      value={uploader.percentCompleted}
+                      variant={
+                        uploader.percentCompleted === 100
+                          ? "indeterminate"
+                          : "determinate"
+                      }
                     />
-                  </Box>
-                )
+                  )}
+                </>
               }
             />
           </Box>
@@ -212,7 +268,7 @@ const EpisodeEdit = ({ room, playlist, episode }: Props) => {
   );
 };
 
-export default EpisodeEdit;
+export default RecordEpisode;
 
 interface ButtonState {
   label: string;

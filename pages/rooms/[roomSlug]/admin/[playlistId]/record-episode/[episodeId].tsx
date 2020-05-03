@@ -1,13 +1,12 @@
 import { NextPageContext } from "next";
 
-import roomFetch from "../../../../../src/api/rpc/commands/room.fetch";
-import { IResponse } from "../../../../../src/api/IResponse";
-import { IRoom } from "../../../../../src/app-schema/IRoom";
-import { IPlaylist } from "../../../../../src/app-schema/IPlaylist";
-import ErrorPage from "../../../../../src/components/error-page";
-import { IEpisode } from "../../../../../src/app-schema/IEpisode";
-import { Box } from "@material-ui/core";
-import EpisodeEdit from "../../../../../src/components/admin/episode-edit";
+import roomFetch from "../../../../../../src/api/rpc/commands/room.fetch";
+import { IResponse } from "../../../../../../src/api/IResponse";
+import { IRoom } from "../../../../../../src/app-schema/IRoom";
+import { IPlaylist } from "../../../../../../src/app-schema/IPlaylist";
+import ErrorPage from "../../../../../../src/components/error-page";
+import { IEpisode } from "../../../../../../src/app-schema/IEpisode";
+import RecordEpisode from "../../../../../../src/components/admin/record-episode";
 
 interface Props {
   roomResponse: IResponse<IRoom>;
@@ -15,11 +14,7 @@ interface Props {
   episodeId: IEpisode["id"] | null;
 }
 
-const AdminEpisodeEditPage = ({
-  roomResponse,
-  playlistId,
-  episodeId,
-}: Props) => {
+const AdminRecordEpisode = ({ roomResponse, playlistId, episodeId }: Props) => {
   if (!roomResponse.ok || !playlistId) {
     return (
       <ErrorPage error={!roomResponse.ok ? roomResponse.error : undefined} />
@@ -38,10 +33,10 @@ const AdminEpisodeEditPage = ({
     return <ErrorPage error="Episode not found in room" />;
   }
 
-  return <EpisodeEdit room={room} playlist={playlist} episode={episode} />;
+  return <RecordEpisode room={room} playlist={playlist} episode={episode} />;
 };
 
-export default AdminEpisodeEditPage;
+export default AdminRecordEpisode;
 
 export async function getServerSideProps(
   context: NextPageContext

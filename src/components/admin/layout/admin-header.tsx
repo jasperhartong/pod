@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Typography, Box, Avatar } from "@material-ui/core";
+import { Typography, Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
 
@@ -7,6 +7,7 @@ export interface AdminHeaderProps {
   title: string;
   subtitle: string;
   image?: string;
+  blur?: number;
   action?: ReactNode;
 }
 
@@ -19,6 +20,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: "100%",
     width: "100%",
     position: "absolute",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
     top: 0,
     left: 0,
     right: 0,
@@ -46,11 +49,12 @@ const AdminHeader = (props: AdminHeaderProps) => {
   return (
     <Box className={classes.root}>
       {props.image && (
-        <Avatar
+        <div
           className={classes.image}
-          variant="square"
-          alt={props.title}
-          src={props.image}
+          style={{
+            backgroundImage: `url(${props.image})`,
+            filter: props.blur ? `blur(${props.blur}px)` : "",
+          }}
         />
       )}
       <Box className={classes.text}>

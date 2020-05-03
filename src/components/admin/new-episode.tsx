@@ -75,7 +75,6 @@ const NewEpisode = ({ room, playlist }: Props) => {
 
   return (
     <AdminDualPaneLayout
-      // image={playlist.cover_file.data.full_url}
       title={"Nieuwe aflevering"}
       subtitle={watchedTitle || defaultTitle}
       action={
@@ -186,7 +185,12 @@ const EpisodeCoverInDropZone = ({
 
   return (
     <EpisodeCoverLayout
-      style={{ width: 240, height: 240 }}
+      style={{
+        width: 240,
+        height: 240,
+        transition: "transform 300ms",
+        transform: isUploading ? "scale(0.9)" : "",
+      }}
       imageUrl={imageUrl}
       centeredChildren={
         <Grow in={!imageUrl}>

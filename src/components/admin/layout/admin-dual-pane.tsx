@@ -25,6 +25,7 @@ const AdminDualPaneLayout = (props: Props) => {
       <Container maxWidth="sm" style={{ padding: 0 }}>
         <AdminHeader
           image={props.image}
+          blur={props.blur}
           title={props.title}
           subtitle={props.subtitle}
           action={props.action}

@@ -218,7 +218,8 @@ const RecordEpisode = ({ room, playlist, episode }: Props) => {
 
   return (
     <AdminDualPaneLayout
-      // image={playlist.cover_file.data.full_url}
+      image={episode.image_file.data.thumbnails.find((e) => e.width > 100)?.url}
+      blur={40}
       title={"Opnemen"}
       subtitle={playlist.title + " • " + episode.title}
       action={

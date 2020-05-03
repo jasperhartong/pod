@@ -1,3 +1,4 @@
+import { MouseEvent } from "react";
 import NextLink from "next/link";
 import {
   Link,
@@ -31,17 +32,9 @@ import { useRouter } from "next/dist/client/router";
 
 const panelIdFromPlaylistId = (id: IPlaylist["id"]) => `panel-playlist-${id}`;
 
-const defaultPlaylistPanelId = (room: IResponse<IRoom>) => {
-  if (room.ok && room.data.playlists.length > 0) {
-    return panelIdFromPlaylistId(room.data.playlists[0].id);
-  }
-  return false;
-};
-
 export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
-  const [expanded, setExpanded] = useState<string | false>(
-    defaultPlaylistPanelId(room)
-  );
+  const router = useRouter();
+  const [expanded, setExpanded] = useState<string | false>(false);
 
   const handleChange = (panel: string) => (
     _: ChangeEvent<{}>,
@@ -65,7 +58,7 @@ export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
         />
 
         <Box>
-          {room.data.playlists.map((p) => (
+          {room.data.playlists.map((p, index) => (
             <ExpansionPanel
               square={true}
               key={p.id}
@@ -77,22 +70,34 @@ export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
                 aria-controls={`playlist-content-${p.id}`}
                 id={`playlist-header-${p.id}`}
               >
-                <List style={{ padding: 0, width: "100%" }}>
-                  <PlaylistHeader
-                    key={p.id}
-                    playlist={p}
-                    secondaryAction={
-                      <NextLink
-                        href="/rooms/[roomSlug]/admin/[playlistId]/new-episode"
-                        as={`/rooms/${slug}/admin/${p.id}/new-episode`}
-                      >
-                        <Fab size="small">
+                <Box style={{ width: "100%" }}>
+                  {index === 0 && (
+                    <Box pl={2} pr={2}>
+                      <Typography variant="overline">Collecties</Typography>
+                    </Box>
+                  )}
+                  <List style={{ padding: 0, width: "100%" }}>
+                    <PlaylistHeader
+                      key={p.id}
+                      playlist={p}
+                      secondaryAction={
+                        <Fab
+                          size="small"
+                          onClick={(event: MouseEvent<HTMLElement>) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            router.push(
+                              "/rooms/[roomSlug]/admin/[playlistId]/new-episode",
+                              `/rooms/${slug}/admin/${p.id}/new-episode`
+                            );
+                          }}
+                        >
                           <IconAdd />
                         </Fab>
-                      </NextLink>
-                    }
-                  />
-                </List>
+                      }
+                    />
+                  </List>
+                </Box>
               </ExpansionPanelSummary>
               <ExpansionPanelDetails
                 id={`playlist-content-${p.id}`}
@@ -106,18 +111,10 @@ export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
               </ExpansionPanelDetails>
             </ExpansionPanel>
           ))}
-          <ExpansionPanel
-            square={true}
-            key={"new"}
-            // expanded={expanded === panelIdFromPlaylistId(p.id)}
-            // onChange={handleChange(panelIdFromPlaylistId(p.id))}
-          >
+          <ExpansionPanel square={true} key={"new"} expanded={false}>
             <ExpansionPanelSummary>
               {/* <Box textAlign="center" p={2}> */}
-              <Button
-                variant="outlined"
-                onClick={() => alert("😅 Coming soon!")}
-              >
+              <Button fullWidth onClick={() => alert("😅 Coming soon!")}>
                 Nieuwe collectie beginnen
               </Button>
               {/* </Box> */}
@@ -130,9 +127,7 @@ export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
         </Box>
         <Box pt={4}>
           <NextLink href="/rooms/[roomSlug]" as={`/rooms/${slug}`}>
-            <Button fullWidth variant="outlined">
-              Open Luisterkamer
-            </Button>
+            <Button fullWidth>Open Luisterkamer</Button>
           </NextLink>
         </Box>
         <Box p={4} textAlign="center">

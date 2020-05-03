@@ -23,7 +23,7 @@ const SubscribePanel = ({ slug }: { slug: string }) => {
   }, []);
 
   return (
-    <ExpansionPanel>
+    <ExpansionPanel square>
       <ExpansionPanelSummary
         expandIcon={<ExpandMoreIcon />}
         aria-controls="subscribe-content"

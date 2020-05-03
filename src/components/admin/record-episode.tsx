@@ -21,6 +21,7 @@ import useSignedMediaUploader from "../../hooks/useSignedMediaUploader";
 import { blobToFile } from "../../utils/audio-context";
 import ErrorPage from "../error-page";
 import { useRouter } from "next/dist/client/router";
+import { boolean } from "io-ts";
 
 interface Props {
   room: IRoom;
@@ -81,6 +82,7 @@ const RecordEpisode = ({ room, playlist, episode }: Props) => {
         <>
           <RecordingButtonGroup
             isRecording={recorder.isRecording}
+            isRequestingAccess={recorder.isRequestingAccess}
             recording={mp3Recording}
             buttonConfig={{
               start: {
@@ -149,6 +151,7 @@ const RecordEpisode = ({ room, playlist, episode }: Props) => {
         <>
           <RecordingButtonGroup
             isRecording={recorder.isRecording}
+            isRequestingAccess={recorder.isRequestingAccess}
             recording={mp3Recording}
             buttonConfig={{
               start: {
@@ -278,6 +281,7 @@ interface ButtonConfig {
 interface RecordingButtonGroupProps {
   recording?: Blob;
   isRecording: boolean;
+  isRequestingAccess: boolean;
   buttonConfig: ButtonConfig;
 }
 
@@ -285,6 +289,7 @@ const RecordingButtonGroup = ({
   recording,
   isRecording,
   buttonConfig,
+  isRequestingAccess,
 }: RecordingButtonGroupProps) => {
   return (
     <>
@@ -297,8 +302,10 @@ const RecordingButtonGroup = ({
           />
         </Box>
       )}
+
       <Box pt={2}>
         <Button
+          disabled={isRequestingAccess}
           variant="contained"
           fullWidth
           onClick={

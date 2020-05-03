@@ -18,6 +18,7 @@ interface TearDowns {
 }
 
 interface ImmerState {
+  isRequestingAccess: boolean;
   isListening: boolean;
   isRecording: boolean;
   dataSeconds: number;
@@ -31,6 +32,7 @@ interface ImmerState {
 }
 
 const ImmerStartState: ImmerState = {
+  isRequestingAccess: false,
   isListening: false,
   isRecording: false,
   dataBlobs: [],
@@ -82,6 +84,9 @@ const useAudioRecorder = () => {
     if (state.isListening) {
       return;
     }
+    dispatch((state) => {
+      state.isRequestingAccess = true;
+    });
 
     // Reuse audioContext if used before
     const audioContext = await getAudioContext();
@@ -111,6 +116,7 @@ const useAudioRecorder = () => {
           };
 
           dispatch((state) => {
+            state.isRequestingAccess = false;
             state.isListening = true;
             state.error = undefined;
           });
@@ -119,10 +125,11 @@ const useAudioRecorder = () => {
         .catch((error) => {
           console.error(error);
           dispatch((state) => {
+            state.isRequestingAccess = false;
             state.isListening = false;
             state.error = error;
-            resolve();
           });
+          resolve();
         });
     });
   };

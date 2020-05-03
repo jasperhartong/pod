@@ -12,9 +12,11 @@ import {
   ListItem,
   ListItemAvatar,
   Avatar,
+  Chip,
   ListItemText,
   Container,
   Typography,
+  ListItemSecondaryAction,
 } from "@material-ui/core";
 import PlaylistHeader from "../playlist-header";
 import SubscribePanel from "../subscribe-panel";
@@ -23,7 +25,7 @@ import AdminHeader from "./layout/admin-header";
 import IconAdd from "@material-ui/icons/Add";
 import { IPlaylist } from "../../app-schema/IPlaylist";
 import { parseDbDate } from "../../api/collection-storage/backends/directus-utils";
-import { IEpisode } from "../../app-schema/IEpisode";
+import { IEpisode, episodeHasAudio } from "../../app-schema/IEpisode";
 import SurroundSound from "@material-ui/icons/SurroundSound";
 import { IResponse } from "../../api/IResponse";
 import { IRoom } from "../../app-schema/IRoom";
@@ -161,7 +163,6 @@ const AdminEpisodeList = ({
   const [maxLength, setMaxLength] = useState<number | undefined>(
     initialMaxLength
   );
-  const router = useRouter();
 
   const limitedEpisodes =
     maxLength === undefined ? episodes : episodes.slice(0, maxLength);
@@ -169,31 +170,11 @@ const AdminEpisodeList = ({
   return (
     <List style={{ width: "100%", padding: 0 }}>
       {limitedEpisodes.map((episode) => (
-        <ListItem
-          key={episode.id}
-          onClick={() =>
-            router.push(
-              "/rooms/[roomSlug]/admin/[playlistId]/episode/[episodeId]",
-              `/rooms/${roomSlug}/admin/${playlistId}/episode/${episode.id}`
-            )
-          }
-          button
-        >
-          <ListItemAvatar>
-            <Avatar
-              variant="square"
-              alt={episode.title}
-              src={
-                episode.image_file.data.thumbnails.find((t) => t.width > 100)
-                  ?.url
-              }
-            />
-          </ListItemAvatar>
-          <ListItemText
-            primary={episode.title}
-            secondary={parseDbDate(episode.created_on).toRelative()}
-          />
-        </ListItem>
+        <AdminEpisodeListItem
+          roomSlug={roomSlug}
+          playlistId={playlistId}
+          episode={episode}
+        />
       ))}
 
       <Box p={2} pt={1}>
@@ -220,5 +201,70 @@ const AdminEpisodeList = ({
         )}
       </Box>
     </List>
+  );
+};
+
+const AdminEpisodeListItem = ({
+  roomSlug,
+  playlistId,
+  episode,
+}: {
+  roomSlug: IRoom["slug"];
+  playlistId: IPlaylist["id"];
+  episode: IEpisode;
+}) => {
+  const router = useRouter();
+  const hasAudio = episodeHasAudio(episode);
+  const recordLink = {
+    url: "/rooms/[roomSlug]/admin/[playlistId]/record-episode/[episodeId]",
+    as: `/rooms/${roomSlug}/admin/${playlistId}/record-episode/${episode.id}`,
+  };
+  const detailsLink = {
+    url: "/rooms/[roomSlug]/admin/[playlistId]/episode/[episodeId]",
+    as: `/rooms/${roomSlug}/admin/${playlistId}/episode/${episode.id}`,
+  };
+
+  return (
+    <ListItem
+      key={episode.id}
+      onClick={() =>
+        hasAudio
+          ? router.push(detailsLink.url, detailsLink.as)
+          : router.push(recordLink.url, recordLink.as)
+      }
+      button
+    >
+      <ListItemAvatar>
+        <Avatar
+          variant="square"
+          alt={episode.title}
+          src={
+            episode.image_file.data.thumbnails.find((t) => t.width > 100)?.url
+          }
+        />
+      </ListItemAvatar>
+      <ListItemText
+        primary={episode.title}
+        secondary={
+          <>
+            {episode.status === "draft" ? (
+              <Chip
+                style={{ padding: 0 }}
+                size="small"
+                color={hasAudio ? "secondary" : "primary"}
+                label={hasAudio ? "Niet gepubliceerd" : "Geen opname"}
+              />
+            ) : (
+              parseDbDate(episode.created_on).toRelative()
+            )}
+          </>
+        }
+      />
+      <ListItemSecondaryAction>
+        <Typography variant="button">
+          {hasAudio ? "open" : "neem op"}
+        </Typography>
+      </ListItemSecondaryAction>
+    </ListItem>
   );
 };

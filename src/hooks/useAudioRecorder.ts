@@ -13,9 +13,8 @@ import {
 } from "../utils/audio-context";
 
 interface TearDowns {
-  mediaStreamSource?: () => void;
-  mediaRecorder?: () => void;
-  recordingInterval?: () => void;
+  listening?: () => Promise<void>;
+  recording?: () => Promise<void>;
 }
 
 interface ImmerState {
@@ -61,23 +60,26 @@ const useAudioRecorder = () => {
     isMountedRef.current = true;
     return () => {
       isMountedRef.current = false;
-      __tearDown();
+      tearDown("recording");
+      tearDown("listening");
     };
   }, []);
 
-  const __tearDown = async () => {
-    Object.values(tearDownRefs.current).forEach(async (method) => {
-      if (method) {
-        try {
-          console.debug(`useAudioRecorder:: cleanup ${method.toString()}`);
-          await (method as () => void)();
-        } catch (error) {
-          console.debug(`useAudioRecorder:: cleanup failed`);
-          console.debug(error);
-        }
+  const tearDown = async (key: keyof TearDowns) => {
+    try {
+      const teardownMethod = tearDownRefs.current[key];
+      if (teardownMethod !== undefined) {
+        console.debug(
+          `useAudioRecorder:: tearDown ${teardownMethod.toString()}`
+        );
+        await teardownMethod();
       }
-    });
-    tearDownRefs.current = {};
+    } catch (error) {
+      console.debug(`useAudioRecorder:: teardown failed`);
+      console.debug(error);
+    }
+
+    tearDownRefs.current[key] = undefined;
   };
 
   /* STATE TRANSTION ACTIONS */
@@ -111,7 +113,7 @@ const useAudioRecorder = () => {
           mediaStreamSourceRef.current = mediaStreamSource;
           audioAnalyzerRef.current = audioAnalyzer;
 
-          tearDownRefs.current["mediaStreamSource"] = () => {
+          tearDownRefs.current["listening"] = async () => {
             killMediaStreamAudioSourceNode(mediaStreamSourceRef.current);
             mediaStreamSourceRef.current = undefined;
           };
@@ -185,8 +187,9 @@ const useAudioRecorder = () => {
     }
 
     // instantiate new MediaRecorder based on current stream
-    const mediaRecorderMediaStream = mediaStreamSourceRef.current.mediaStream.clone();
-    mediaRecorderRef.current = new MediaRecorder(mediaRecorderMediaStream);
+    mediaRecorderRef.current = new MediaRecorder(
+      mediaStreamSourceRef.current.mediaStream.clone()
+    );
 
     // Setup event listener before starting to capture also data when stopped before end of timeSlice
     const handleData = (event: Event) =>
@@ -196,29 +199,12 @@ const useAudioRecorder = () => {
     // Actually start recording
     mediaRecorderRef.current.start(/* timeSlice does not work well in all browsers, mocked with timeout */);
 
-    // Register mediaRecorder related teardown
-    tearDownRefs.current["mediaRecorder"] = () => {
-      mediaRecorderRef.current?.removeEventListener(
-        "dataavailable",
-        handleData
-      );
-      mediaRecorderRef.current?.stop();
-      mediaRecorderRef.current = undefined;
-      killMediaStream(mediaRecorderMediaStream);
-    };
-
     // Set up interval to track recording time
     recordingIntervalRef.current = setInterval(() => {
       dispatch((state) => {
         state.dataSeconds = state.dataSeconds + 1;
       });
     }, 1000);
-
-    // Register related teardown
-    tearDownRefs.current["recordingInterval"] = () => {
-      clearInterval(recordingIntervalRef.current!);
-      recordingIntervalRef.current = undefined;
-    };
 
     // Start requesting data every timeSlice (otherwise __handleDataAvailable only called on stop)
     if (timeSlice && mediaRecorderRef.current?.state === "recording") {
@@ -235,6 +221,24 @@ const useAudioRecorder = () => {
       state.isRecording = true;
       state.error = undefined;
     });
+
+    // Register recording related teardown
+    tearDownRefs.current["recording"] = async () => {
+      mediaRecorderRef.current?.removeEventListener(
+        "dataavailable",
+        handleData
+      );
+
+      if (mediaRecorderRef.current?.stream) {
+        killMediaStream(mediaRecorderRef.current.stream);
+      }
+
+      mediaRecorderRef.current?.stop();
+      mediaRecorderRef.current = undefined;
+
+      clearInterval(recordingIntervalRef.current!);
+      recordingIntervalRef.current = undefined;
+    };
   };
 
   const stopRecording = () => {
@@ -250,17 +254,12 @@ const useAudioRecorder = () => {
       );
     }
 
-    mediaRecorderRef.current.stop();
-    mediaRecorderRef.current = undefined;
-    if (recordingIntervalRef.current) {
-      clearInterval(recordingIntervalRef.current);
-      recordingIntervalRef.current = undefined;
-    }
-
     dispatch((state) => {
       state.isRecording = false;
       state.error = undefined;
     });
+
+    tearDown("recording");
   };
 
   const stopListening = () => {
@@ -269,12 +268,13 @@ const useAudioRecorder = () => {
         `useAudioRecorder:: stopListening ignoring: not listening`
       );
     }
-    killMediaStreamAudioSourceNode(mediaStreamSourceRef.current);
 
     dispatch((state) => {
       state.isListening = false;
       state.error = undefined;
     });
+
+    tearDown("listening");
   };
 
   /* STATE ACTIONS (no transition) */

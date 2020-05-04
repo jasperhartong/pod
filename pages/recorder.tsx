@@ -34,7 +34,6 @@ const Recorder = () => {
     stopRecording,
     getFrequencyData,
     dataBlobs,
-    dataType,
     dataSize,
     dataSeconds,
     clearData,
@@ -59,7 +58,6 @@ const Recorder = () => {
         </li>
       ))}
       <Box p={4}>
-        {!!dataType && <div>Recording in {dataType}</div>}
         {!!dataSize && <div>Recorded {formatBytes(dataSize)}</div>}
 
         <div>

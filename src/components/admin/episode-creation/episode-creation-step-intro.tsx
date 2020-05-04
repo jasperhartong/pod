@@ -34,7 +34,6 @@ const EpisodeCreationStepIntroAudio = (props: EpisodeCreationStepProps) => {
     stopRecording,
     extractBlobs,
     getFrequencyData,
-    dataType,
     dataSize: audioRecorderHasData,
     error: audioRecorderError,
   } = useAudioRecorder();

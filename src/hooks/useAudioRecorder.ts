@@ -24,10 +24,6 @@ interface ImmerState {
   dataSeconds: number;
   dataBlobs: Blob[];
   dataSize: number;
-  dataType?:
-    | "audio/mpeg" /* polyfill (safari) */
-    | "audio/webm" /* Chrome */
-    | "audio/ogg" /* Firefox */;
   error?: Error;
 }
 
@@ -156,7 +152,6 @@ const useAudioRecorder = () => {
       dispatch((state) => {
         state.dataBlobs = blobsRef.current;
         state.dataSize = state.dataSize + data.size;
-        state.dataType = data.type as ImmerState["dataType"];
       });
     }
 
@@ -167,6 +162,11 @@ const useAudioRecorder = () => {
           mediaRecorderRef.current.requestData();
         }
       }, timeSlice);
+    } else {
+      // __handleDataAvailable is called while recording has stopped.
+      // This means we're handling the "final" data of the recording
+      // So, we should teardown the recording
+      tearDown("recording");
     }
   };
 
@@ -258,8 +258,8 @@ const useAudioRecorder = () => {
       state.isRecording = false;
       state.error = undefined;
     });
-
-    tearDown("recording");
+    // Stop, teardown will happen in final __handleDataAvailable callback
+    mediaRecorderRef.current.stop();
   };
 
   const stopListening = () => {

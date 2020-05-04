@@ -34,8 +34,10 @@ const NewEpisode = ({ room, playlist }: Props) => {
         `/rooms/[roomSlug]/admin/[playListId]/record-episode/[episodeId]`,
         `/rooms/${room.slug}/admin/${playlist.id}/record-episode/${response.data.id}`
       );
+    } else {
+      alert("De aflevering kan niet bewaard worden.");
+      episodeFormContext.clearError();
     }
-    // TODO: Handle !ok
   };
 
   const defaultTitle = `Deel ${playlist.episodes.length + 1}`;

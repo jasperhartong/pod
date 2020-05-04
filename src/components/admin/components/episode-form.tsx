@@ -13,11 +13,19 @@ import {
   Typography,
 } from "@material-ui/core";
 
+/*
+  Currently supported Episode Values of form
+*/
 export interface EpisodeFormValues {
   title: string;
   imageUrl: string;
 }
 
+/*
+  hook that could be imported into partent of EpisodeForm
+  - return value can be used to pass in as form Context
+  - not part of EpisodeForm itself in order to use formContext in parent (e.g. wit a separate dropzone)
+*/
 export const useEpisodeFormContext = () => {
   return useForm<EpisodeFormValues>({
     mode: "onChange",
@@ -25,6 +33,9 @@ export const useEpisodeFormContext = () => {
   });
 };
 
+/*
+  Form visualizing EpisodeFormValues and any validation errors
+*/
 export const EpisodeForm = ({
   formContext,
   initialValues,

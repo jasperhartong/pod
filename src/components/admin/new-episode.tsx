@@ -31,7 +31,7 @@ interface Props {
 
 interface FormValues {
   title: string;
-  coverFileUrl: string;
+  imageUrl: string;
 }
 
 const NewEpisode = ({ room, playlist }: Props) => {
@@ -39,13 +39,6 @@ const NewEpisode = ({ room, playlist }: Props) => {
   const form = useForm<FormValues>({
     mode: "onChange",
     reValidateMode: "onChange",
-  });
-  const dropZone = useSignedMediaUploadDropZone({
-    onSuccess: (downloadUrl) => {
-      // Sync dropzone state to formState
-      form.setValue("coverFileUrl", downloadUrl, true);
-    },
-    acceptedMimeTypes: ["image/jpg", "image/jpeg"],
   });
 
   const defaultTitle = `Deel ${playlist.episodes.length + 1}`;
@@ -57,7 +50,7 @@ const NewEpisode = ({ room, playlist }: Props) => {
       title: formData.title,
       status: "draft",
       playlist: playlist.id.toString(),
-      image_url: formData.coverFileUrl,
+      image_url: formData.imageUrl,
     });
     if (response.ok) {
       router.push(
@@ -66,11 +59,6 @@ const NewEpisode = ({ room, playlist }: Props) => {
       );
     }
     // TODO: Handle !ok
-  };
-  const handleCoverDelete = () => {
-    // Sync dropzone state to formState
-    form.setValue("coverFileUrl", undefined, true);
-    dropZone.reset();
   };
 
   return (
@@ -86,16 +74,12 @@ const NewEpisode = ({ room, playlist }: Props) => {
       }
       firstItem={
         <Box p={2} pb={0} textAlign="center">
-          <div {...dropZone.getRootProps()} style={{ display: "inline-block" }}>
-            <input {...dropZone.getInputProps()} />
-            <EpisodeCoverInDropZone
-              imageUrl={dropZone.downloadUrl}
-              isUploading={dropZone.uploading}
-              uploadError={!!dropZone.uploadError}
-              uploadPercentCompleted={dropZone.uploadPercentCompleted}
-              onDelete={handleCoverDelete}
-            />
-          </div>
+          <EpisodeCoverDropZone
+            onSuccess={(downloadUrl) =>
+              form.setValue("imageUrl", downloadUrl, true)
+            }
+            onDelete={() => form.setValue("imageUrl", undefined, true)}
+          />
         </Box>
       }
       secondItem={
@@ -126,7 +110,7 @@ const NewEpisode = ({ room, playlist }: Props) => {
             <input
               type="hidden"
               ref={form.register({ required: true })}
-              name="coverFileUrl"
+              name="imageUrl"
             />
             {/* submit */}
             <Box mt={2}>
@@ -168,78 +152,93 @@ const ErrorMessageTypography = ({ children }: { children?: ReactNode }) => (
   </Typography>
 );
 
-const EpisodeCoverInDropZone = ({
-  imageUrl,
-  isUploading,
-  uploadPercentCompleted,
+const EpisodeCoverDropZone = ({
+  onSuccess,
   onDelete,
-  uploadError,
 }: {
-  imageUrl?: string;
-  uploadError?: boolean;
-  isUploading: boolean;
-  uploadPercentCompleted?: number;
+  onSuccess: (downloadUrl: string) => void;
   onDelete: () => void;
 }) => {
   const theme = useTheme();
+  const dropZone = useSignedMediaUploadDropZone({
+    onSuccess,
+    acceptedMimeTypes: ["image/jpg", "image/jpeg"],
+  });
+
+  const _onDelete = () => {
+    dropZone.reset();
+    onDelete();
+  };
+
+  const hasImage = !!dropZone.downloadUrl;
 
   return (
-    <EpisodeCoverLayout
-      style={{
-        width: 240,
-        height: 240,
-        transition: "opacity 300ms",
-        opacity: isUploading ? 0.7 : 1.0,
-      }}
-      imageUrl={imageUrl}
-      centeredChildren={
-        <Grow in={!imageUrl}>
-          <Box>
-            {!imageUrl && !isUploading && (
-              <Box pb={1}>
-                <ImageIcon fontSize="large" />
-                <Typography variant="subtitle2">Selecteer plaatje</Typography>
-              </Box>
-            )}
-            {isUploading && (
-              <CircularProgress
-                value={uploadPercentCompleted}
-                variant={
-                  uploadPercentCompleted === 100
-                    ? "indeterminate"
-                    : "determinate"
-                }
-              />
-            )}
-            {uploadError && (
-              <Box pb={1}>
-                <Typography variant="subtitle2" color="error">
-                  Er ging iets mis bij het uploaden, probeer het nogmaals
-                </Typography>
-              </Box>
-            )}
-          </Box>
-        </Grow>
-      }
-      bottomRightAction={
-        <Grow in={!!imageUrl}>
-          <IconButton
-            style={{
-              background: theme.palette.action.selected,
-              color: theme.palette.getContrastText(
-                theme.palette.action.selected
-              ),
-            }}
-            onClick={(event: MouseEvent<HTMLElement>) => {
-              event.preventDefault();
-              event.stopPropagation();
-              onDelete();
-            }}
-          >
-            <IconDelete fontSize="small" />
-          </IconButton>
-        </Grow>
-      }
-    />
+    <div {...dropZone.getRootProps()} style={{ display: "inline-block" }}>
+      <input {...dropZone.getInputProps()} />
+
+      <EpisodeCoverLayout
+        style={{
+          width: 240,
+          height: 240,
+          transition: "opacity 300ms",
+          opacity: dropZone.uploading ? 0.7 : 1.0,
+        }}
+        imageUrl={dropZone.downloadUrl}
+        centeredChildren={
+          <Grow in={!hasImage}>
+            <Box>
+              {/* Idle state: show placeholder */}
+              {!hasImage && !dropZone.uploading && (
+                <Box pb={1}>
+                  <ImageIcon fontSize="large" />
+                  <Typography variant="subtitle2">Selecteer plaatje</Typography>
+                </Box>
+              )}
+
+              {/* Uploading state: show loader */}
+              {dropZone.uploading && (
+                <CircularProgress
+                  value={dropZone.uploadPercentCompleted}
+                  variant={
+                    dropZone.uploadPercentCompleted === 100
+                      ? "indeterminate"
+                      : "determinate"
+                  }
+                />
+              )}
+
+              {/* Error state: show error */}
+              {dropZone.uploadError && (
+                <Box pb={1}>
+                  <Typography variant="subtitle2" color="error">
+                    Er ging iets mis bij het uploaden, probeer het nogmaals
+                  </Typography>
+                </Box>
+              )}
+            </Box>
+          </Grow>
+        }
+        bottomRightAction={
+          <Grow in={hasImage}>
+            {/* Show delete button when there's an image */}
+            <IconButton
+              style={{
+                background: theme.palette.action.selected,
+                color: theme.palette.getContrastText(
+                  theme.palette.action.selected
+                ),
+              }}
+              onClick={(event: MouseEvent<HTMLElement>) => {
+                event.preventDefault();
+                event.stopPropagation();
+                _onDelete();
+              }}
+            >
+              <IconDelete fontSize="small" />
+            </IconButton>
+          </Grow>
+        }
+      />
+    </div>
   );
 };

@@ -163,7 +163,7 @@ const useAudioRecorder = () => {
         }
       }, timeSlice);
     } else {
-      // __handleDataAvailable is called while recording has stopped.
+      // __handleDataAvailable wass called while recording stopped.
       // This means we're handling the "final" data of the recording
       // So, we should teardown the recording
       tearDown("recording");

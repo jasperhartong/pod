@@ -1,12 +1,4 @@
-import Link from "next/link";
-import {
-  Box,
-  Button,
-  IconButton,
-  Typography,
-  CircularProgress,
-} from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+import { Box, Button, Typography, CircularProgress } from "@material-ui/core";
 import { IRoom } from "../../app-schema/IRoom";
 import { IPlaylist } from "../../app-schema/IPlaylist";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
@@ -21,7 +13,7 @@ import useSignedMediaUploader from "../../hooks/useSignedMediaUploader";
 import { blobToFile } from "../../utils/audio-context";
 import ErrorPage from "../error-page";
 import { useRouter } from "next/dist/client/router";
-import { boolean } from "io-ts";
+import AdminHeaderCloseToOverview from "./layout/admin-header-close-to-overview";
 
 interface Props {
   room: IRoom;
@@ -217,13 +209,7 @@ const RecordEpisode = ({ room, playlist, episode }: Props) => {
       blur={40}
       title={"Opnemen"}
       subtitle={playlist.title + " • " + episode.title}
-      action={
-        <Link href={`/rooms/[roomSlug]/admin`} as={`/rooms/${room.slug}/admin`}>
-          <IconButton>
-            <CloseIcon />
-          </IconButton>
-        </Link>
-      }
+      action={<AdminHeaderCloseToOverview roomSlug={room.slug} />}
       firstItem={
         <Box p={2} pb={0} textAlign="center">
           <Box style={{ display: "inline-block" }}>

@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { ReactNode, MouseEvent } from "react";
 import { useRouter } from "next/dist/client/router";
 import { useForm, Controller, ErrorMessage } from "react-hook-form";
@@ -15,7 +14,6 @@ import {
 } from "@material-ui/core";
 import ImageIcon from "@material-ui/icons/Image";
 import IconDelete from "@material-ui/icons/DeleteOutline";
-import CloseIcon from "@material-ui/icons/Close";
 import { IRoom } from "../../app-schema/IRoom";
 import { IPlaylist } from "../../app-schema/IPlaylist";
 import useSignedMediaUploadDropZone from "../../hooks/useSignedMediaUploadDropZone";
@@ -23,6 +21,7 @@ import { RPCClientFactory } from "../../api/rpc/rpc-client";
 import episodeCreateMeta from "../../api/rpc/commands/episode.create.meta";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
 import { EpisodeCoverLayout } from "./layout/episode-cover-layout";
+import AdminHeaderCloseToOverview from "./layout/admin-header-close-to-overview";
 
 interface Props {
   room: IRoom;
@@ -65,13 +64,7 @@ const NewEpisode = ({ room, playlist }: Props) => {
     <AdminDualPaneLayout
       title={"Nieuwe aflevering"}
       subtitle={watchedTitle || defaultTitle}
-      action={
-        <Link href={`/rooms/[roomSlug]/admin`} as={`/rooms/${room.slug}/admin`}>
-          <IconButton>
-            <CloseIcon />
-          </IconButton>
-        </Link>
-      }
+      action={<AdminHeaderCloseToOverview roomSlug={room.slug} />}
       firstItem={
         <Box p={2} pb={0} textAlign="center">
           <EpisodeCoverDropZone

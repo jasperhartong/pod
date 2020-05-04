@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { Box, Button, IconButton } from "@material-ui/core";
-import CloseIcon from "@material-ui/icons/Close";
+import { Box, Button } from "@material-ui/core";
 import { IRoom } from "../../app-schema/IRoom";
 import { IPlaylist } from "../../app-schema/IPlaylist";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
 import { EpisodeCoverLayout } from "./layout/episode-cover-layout";
 import { IEpisode } from "../../app-schema/IEpisode";
+import AdminHeaderCloseToOverview from "./layout/admin-header-close-to-overview";
 
 interface Props {
   room: IRoom;
@@ -20,13 +20,7 @@ const DetailsEpisode = ({ room, playlist, episode }: Props) => {
       blur={40}
       title={episode.title}
       subtitle={"in " + playlist.title}
-      action={
-        <Link href={`/rooms/[roomSlug]/admin`} as={`/rooms/${room.slug}/admin`}>
-          <IconButton>
-            <CloseIcon />
-          </IconButton>
-        </Link>
-      }
+      action={<AdminHeaderCloseToOverview roomSlug={room.slug} />}
       firstItem={
         <Box p={2} pb={0} textAlign="center">
           <Box style={{ display: "inline-block" }}>

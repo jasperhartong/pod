@@ -68,7 +68,7 @@ const NewEpisode = ({ room, playlist }: Props) => {
             onSubmit={handleSubmit}
           />
           <Box mt={4} mb={2}>
-            <Typography variant="body2" color="textPrimary">
+            <Typography variant="body2" color="textPrimary" gutterBottom>
               Tips
             </Typography>
             <Typography variant="body2" color="textSecondary">

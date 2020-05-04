@@ -123,7 +123,7 @@ const RecordEpisode = ({ room, playlist, episode }: Props) => {
             </Typography>
           </Box>
           <Box mb={2}>
-            <Typography variant="body2" color="textPrimary">
+            <Typography variant="body2" color="textPrimary" gutterBottom>
               Tips voor het opnemen
             </Typography>
             <Typography variant="body2" color="textSecondary" component="div">

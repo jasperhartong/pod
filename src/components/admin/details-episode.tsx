@@ -42,7 +42,7 @@ const DetailsEpisode = ({ room, playlist, episode }: Props) => {
       }
       secondItem={
         <>
-          <audio src={episode.audio_file} controls />
+          <audio style={{ width: "100%" }} src={episode.audio_file} controls />
           <Box mt={2}>
             <Link
               href={`/rooms/[roomSlug]/admin/[playListId]/record-episode/[episodeId]`}

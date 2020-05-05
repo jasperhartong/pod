@@ -70,6 +70,9 @@ const Recorder = () => {
         <AudioRecorderVisualizer
           uniqueId="test"
           getFrequencyData={getFrequencyData}
+          color="green"
+          width={600}
+          bandCount={8}
         />
       )}
 

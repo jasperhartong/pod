@@ -11,6 +11,7 @@ interface Props {
   getFrequencyData: (
     callback: (audioByteFrequencyData: Uint8Array) => void
   ) => void;
+  bandCount?: number;
 }
 
 const useStyles = makeStyles((theme) => ({
@@ -25,25 +26,30 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const AudioRecorderVisualizer = (props: Props) => {
-  const amplitudeValuesRef = useRef<Uint8Array | null>(null);
-  const requestRef = useRef<number>(0);
+const defaultBandCount = 32;
 
-  // TODO: How to decide on frequence bands?
-  const frequencyBandArrayRef = useRef<number[]>(Array.from(Array(25).keys()));
+export const AudioRecorderVisualizer = (props: Props) => {
+  const animationFrameRef = useRef<number>(0);
+  const domElementsRef = useRef<(HTMLElement | null)[]>([null]);
+  const frequencyBandArrayRef = useRef<number[]>(
+    Array.from(Array(props.bandCount || defaultBandCount).keys())
+  );
+
   const classes = useStyles();
 
   const animationCallback = (newAmplitudeData: Uint8Array) => {
-    amplitudeValuesRef.current = newAmplitudeData;
-    let domElements = frequencyBandArrayRef.current.map((num) =>
-      document.getElementById(`audio-visualizer-${props.uniqueId}${num}`)
-    );
-    frequencyBandArrayRef.current.forEach((num) => {
-      const element = domElements[num];
-      const amplitudeValue = amplitudeValuesRef.current
-        ? amplitudeValuesRef.current[num]
-        : null;
-      if (element && amplitudeValue) {
+    frequencyBandArrayRef.current.forEach((bandIndex) => {
+      const element = domElementsRef.current[bandIndex];
+      // Distribute the displayed bands accross the returned amplitudevalues
+      const amplitudeValue =
+        newAmplitudeData[
+          Math.floor(
+            (newAmplitudeData.length / frequencyBandArrayRef.current.length) *
+              bandIndex
+          )
+        ];
+
+      if (element && amplitudeValue !== undefined) {
         element.style.height = `${amplitudeValue}px`;
         element.style.opacity = `${(amplitudeValue / 1000) * 3}`;
       }
@@ -52,14 +58,17 @@ export const AudioRecorderVisualizer = (props: Props) => {
 
   const animateSpectrum = () => {
     props.getFrequencyData(animationCallback);
-    requestRef.current = requestAnimationFrame(animateSpectrum);
+    animationFrameRef.current = requestAnimationFrame(animateSpectrum);
   };
 
   useEffect(() => {
+    domElementsRef.current = frequencyBandArrayRef.current.map((num) =>
+      document.getElementById(`audio-visualizer-${props.uniqueId}${num}`)
+    );
     // Start animation loop on mount
-    requestRef.current = requestAnimationFrame(animateSpectrum);
+    animationFrameRef.current = requestAnimationFrame(animateSpectrum);
     // Stop animation loop on unmount
-    return () => cancelAnimationFrame(requestRef.current);
+    return () => cancelAnimationFrame(animationFrameRef.current);
   }, []);
 
   return (

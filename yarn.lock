@@ -1027,6 +1027,11 @@
   resolved "https://registry.yarnpkg.com/@next/react-refresh-utils/-/react-refresh-utils-9.3.6.tgz#a5eb91b4b8270fecb5fcf2d1319d8d04f0cf6f75"
   integrity sha512-XgxPc3WAkNpzD9xYtN4bd3wpV39WhnHYSwXGovVVcImXY6yn1as6hDgwkbuLADY/SHLIu2AI6CTVq0JDoTC/+g==
 
+"@types/dom-mediacapture-record@^1.0.5":
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/@types/dom-mediacapture-record/-/dom-mediacapture-record-1.0.5.tgz#63abc431b95e6af31d3c2c4392e1f31fd0b753c8"
+  integrity sha512-15z4KlDUIm1AZmfCw0qK5ejIRSAvRpsr27X7ybiD+6EQlBWCF7BueYI+PPwqK/1jXaNkFQoK2gTByN0V7X+FEg==
+
 "@types/luxon@^1.21.0":
   version "1.21.0"
   resolved "https://registry.yarnpkg.com/@types/luxon/-/luxon-1.21.0.tgz#db792d29f535d49522cb6d94dd9da053efc950a1"

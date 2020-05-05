@@ -41,6 +41,7 @@ const useAudioRecorder = () => {
   const isMountedRef = useRef<boolean>(false);
   const blobsRef = useRef<Blob[]>([]);
   const audioAnalyzerRef = useRef<IAnalyserNode<IAudioContext>>();
+  // MediaRecord type comes from @types/dom-mediacapture-record
   const mediaRecorderRef = useRef<MediaRecorder>();
   const mediaStreamSourceRef = useRef<
     IMediaStreamAudioSourceNode<IAudioContext>

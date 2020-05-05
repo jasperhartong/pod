@@ -1,10 +1,8 @@
-import utils from "audio-buffer-utils";
 import {
   AudioContext,
   IAudioContext,
   IMediaStreamAudioSourceNode,
 } from "standardized-audio-context";
-import toWav from "audiobuffer-to-wav";
 
 // Try to reuse the audiocontext as much as possible...
 // Safari will error out when you've start more then 4 in 1 session
@@ -55,35 +53,6 @@ export const killMediaStream = (
 ) => {
   // removes red icon
   return mediaStream.getTracks().forEach((track) => track.stop());
-};
-
-export const bufferFromBlob = async (
-  audioBlob: Blob,
-  context: IAudioContext
-): Promise<AudioBuffer> => {
-  const arrayBuffer = await new Response(audioBlob).arrayBuffer();
-  return context.decodeAudioData(arrayBuffer);
-};
-
-export const blobFromBuffer = (audioBuffer: AudioBuffer): Blob => {
-  const wavArrayBuffer = toWav(audioBuffer);
-  return new Blob([wavArrayBuffer], {
-    type: "audio/wav",
-  });
-};
-
-export const concatAudioBlobs = async (
-  audioBlobs: Blob[],
-  context: IAudioContext
-): Promise<Blob> => {
-  const audioBuffers = await Promise.all(
-    audioBlobs.map(async (a) => {
-      return await bufferFromBlob(a, context);
-    })
-  );
-  const concattedAudioBuffers = utils.concat(...audioBuffers);
-  const concattedAudioBlob = blobFromBuffer(concattedAudioBuffers);
-  return concattedAudioBlob;
 };
 
 export const blobToFile = (theBlob: Blob, fileName: string): File => {

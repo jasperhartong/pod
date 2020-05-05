@@ -37,7 +37,7 @@ const AdminDualPaneLayout = (props: Props) => {
               <Grid item sm={6} xs={12}>
                 <Box mt={onMobile ? -12 : 0}>{props.firstItem}</Box>
               </Grid>
-              <Grid item sm={6}>
+              <Grid item sm={6} xs={12}>
                 {props.secondItem}
               </Grid>
             </Grid>

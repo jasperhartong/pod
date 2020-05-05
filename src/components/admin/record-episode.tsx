@@ -218,14 +218,19 @@ const RecordEpisode = ({ room, playlist, episode }: Props) => {
                 episode.image_file.data.thumbnails.find((t) => t.width > 240)
                   ?.url
               }
-              style={{ width: 240, height: 240 }}
+              style={{
+                width: 240,
+                height: 240,
+              }}
               centeredChildren={
                 <>
                   {recorder.isRecording && (
-                    <Box zIndex={2}>
+                    <Box zIndex={2} style={{ filter: "blur(2px)" }}>
                       <AudioRecorderVisualizer
                         uniqueId={episode.id.toString()}
                         getFrequencyData={recorder.getFrequencyData}
+                        width={240}
+                        height={240}
                       />
                     </Box>
                   )}

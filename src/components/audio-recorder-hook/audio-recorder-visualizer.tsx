@@ -46,8 +46,9 @@ export const AudioRecorderVisualizer = (props: Props) => {
 
   const classes = useStyles();
 
-  const magicHeightAmplification = 1.5;
+  const magicHeightAmplification = 1.4;
   const magicOpacityAmplification = 2;
+  const magicSkipTopSpectrumPercentage = 0.35; // drops top part of amplitude spectrum (not used in voice)
   const animationCallback = (newAmplitudeData: Uint8Array) => {
     frequencyBandArrayRef.current.forEach((bandIndex) => {
       const element = domElementsRef.current[bandIndex];
@@ -56,7 +57,8 @@ export const AudioRecorderVisualizer = (props: Props) => {
       const amplitudeValue =
         newAmplitudeData[
           Math.floor(
-            (newAmplitudeData.length / frequencyBandArrayRef.current.length) *
+            ((newAmplitudeData.length * (1 - magicSkipTopSpectrumPercentage)) /
+              frequencyBandArrayRef.current.length) *
               bandIndex
           )
         ];

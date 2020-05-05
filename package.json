@@ -31,6 +31,7 @@
     "react-player": "^1.15.2",
     "smooth-scroll": "^16.1.3",
     "standardized-audio-context": "^24.1.5",
+    "swr": "^0.2.0",
     "use-debounce": "^3.4.1",
     "use-immer": "^0.3.5",
     "uuid4": "^1.1.4"

@@ -1,23 +1,17 @@
-import { NextPageContext } from "next";
-import roomFetch from "../../../../src/api/rpc/commands/room.fetch";
-import { IResponse } from "../../../../src/api/IResponse";
-import { IRoom } from "../../../../src/app-schema/IRoom";
 import { AdminOverview } from "../../../../src/components/admin/admin-overview";
+import { useRouter } from "next/dist/client/router";
+import { useSWRRoom } from "../../../../src/hooks/useSWRRoom";
+import { LoaderCentered } from "../../../../src/components/admin/loader-centered";
 
-const AdminPage = ({ room }: { room: IResponse<IRoom> }) => {
-  return <AdminOverview room={room} />;
+const AdminPage = () => {
+  const router = useRouter();
+  const { data } = useSWRRoom(router.query.roomSlug as string);
+
+  if (!data) {
+    return <LoaderCentered />;
+  }
+
+  return <AdminOverview room={data} />;
 };
 
 export default AdminPage;
-
-export async function getServerSideProps(context: NextPageContext) {
-  const roomSlug = (context.query.roomSlug as string) || null;
-  const room = await roomFetch.handle({
-    slug: roomSlug || undefined,
-  });
-  console.warn(room);
-
-  return {
-    props: { room },
-  };
-}

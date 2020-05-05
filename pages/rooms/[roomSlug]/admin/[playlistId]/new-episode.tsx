@@ -1,25 +1,23 @@
-import { NextPageContext } from "next";
-
-import roomFetch from "../../../../../src/api/rpc/commands/room.fetch";
-import { IResponse } from "../../../../../src/api/IResponse";
-import { IRoom } from "../../../../../src/app-schema/IRoom";
-import { IPlaylist } from "../../../../../src/app-schema/IPlaylist";
 import EpisodeNew from "../../../../../src/components/admin/new-episode";
 import ErrorPage from "../../../../../src/components/error-page";
+import { useRouter } from "next/dist/client/router";
+import { useSWRRoom } from "../../../../../src/hooks/useSWRRoom";
+import { LoaderCentered } from "../../../../../src/components/admin/loader-centered";
 
-interface Props {
-  roomResponse: IResponse<IRoom>;
-  playlistId: IPlaylist["id"] | null;
-}
+const AdminNewEpisodePage = () => {
+  const router = useRouter();
+  const { data } = useSWRRoom(router.query.roomSlug as string);
+  const playlistId = router.query.playlistId as string;
 
-const AdminNewEpisodePage = ({ roomResponse, playlistId }: Props) => {
-  if (!roomResponse.ok || !playlistId) {
-    return (
-      <ErrorPage error={!roomResponse.ok ? roomResponse.error : undefined} />
-    );
+  if (!data) {
+    return <LoaderCentered />;
   }
-  const room = roomResponse.data;
-  const playlist = room.playlists.find((p) => p.id === playlistId);
+
+  if (!data.ok || !playlistId) {
+    return <ErrorPage error={!data.ok ? data.error : undefined} />;
+  }
+  const room = data.data;
+  const playlist = room.playlists.find((p) => p.id.toString() === playlistId);
 
   if (!playlist) {
     return <ErrorPage error="No playlist found" />;
@@ -29,19 +27,3 @@ const AdminNewEpisodePage = ({ roomResponse, playlistId }: Props) => {
 };
 
 export default AdminNewEpisodePage;
-
-export async function getServerSideProps(
-  context: NextPageContext
-): Promise<{ props: Props }> {
-  const playlistId =
-    (parseInt(context.query.playlistId as string) as IPlaylist["id"]) ||
-    undefined;
-  const roomSlug = (context.query.roomSlug as string) || undefined;
-  const roomResponse = await roomFetch.handle({
-    slug: roomSlug,
-  });
-
-  return {
-    props: { roomResponse, playlistId: playlistId || null },
-  };
-}

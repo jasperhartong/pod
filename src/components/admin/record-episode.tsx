@@ -13,7 +13,7 @@ import useSignedMediaUploader from "../../hooks/useSignedMediaUploader";
 import { blobToFile } from "../../utils/audio-context";
 import ErrorPage from "../error-page";
 import { useRouter } from "next/dist/client/router";
-import AdminHeaderCloseToOverview from "./layout/admin-header-close-to-overview";
+import AdminHeaderClose from "./layout/admin-header-close-to-overview";
 
 interface Props {
   room: IRoom;
@@ -205,11 +205,18 @@ const RecordEpisode = ({ room, playlist, episode }: Props) => {
 
   return (
     <AdminDualPaneLayout
-      image={episode.image_file.data.thumbnails.find((e) => e.width > 100)?.url}
+      image={
+        playlist.cover_file.data.thumbnails.find((t) => t.width > 400)?.url
+      }
       blur={40}
       title={"Opnemen"}
       subtitle={playlist.title + " • " + episode.title}
-      action={<AdminHeaderCloseToOverview roomSlug={room.slug} />}
+      action={
+        <AdminHeaderClose
+          url={`/rooms/[roomSlug]/admin/[playlistId]`}
+          as={`/rooms/${room.slug}/admin/${playlist.id}`}
+        />
+      }
       firstItem={
         <Box p={2} pb={0} textAlign="center">
           <Box style={{ display: "inline-block" }}>

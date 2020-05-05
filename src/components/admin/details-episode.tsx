@@ -5,7 +5,7 @@ import { IPlaylist } from "../../app-schema/IPlaylist";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
 import { EpisodeCoverLayout } from "./layout/episode-cover-layout";
 import { IEpisode } from "../../app-schema/IEpisode";
-import AdminHeaderCloseToOverview from "./layout/admin-header-close-to-overview";
+import AdminHeaderClose from "./layout/admin-header-close-to-overview";
 import { RPCClientFactory } from "../../api/rpc/rpc-client";
 import episodeUpdateMeta from "../../api/rpc/commands/episode.update.meta";
 import { useRouter } from "next/dist/client/router";
@@ -38,11 +38,18 @@ const DetailsEpisode = ({ room, playlist, episode }: Props) => {
   };
   return (
     <AdminDualPaneLayout
-      image={episode.image_file.data.thumbnails.find((e) => e.width > 100)?.url}
+      image={
+        playlist.cover_file.data.thumbnails.find((t) => t.width > 400)?.url
+      }
       blur={40}
       title={episode.title}
       subtitle={"in " + playlist.title}
-      action={<AdminHeaderCloseToOverview roomSlug={room.slug} />}
+      action={
+        <AdminHeaderClose
+          url={`/rooms/[roomSlug]/admin/[playlistId]`}
+          as={`/rooms/${room.slug}/admin/${playlist.id}`}
+        />
+      }
       firstItem={
         <Box p={2} pb={0} textAlign="center">
           <Box style={{ display: "inline-block" }}>

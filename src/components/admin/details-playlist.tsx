@@ -21,7 +21,7 @@ import { IRoom } from "../../app-schema/IRoom";
 import AppContainer from "../app-container";
 import { useRouter } from "next/dist/client/router";
 import PageFooter from "../page-footer";
-import AdminHeaderCloseToOverview from "./layout/admin-header-close-to-overview";
+import AdminHeaderClose from "./layout/admin-header-close-to-overview";
 
 export const DetailsPlaylist = ({
   room,
@@ -39,7 +39,12 @@ export const DetailsPlaylist = ({
           }
           title={playlist.title}
           subtitle={`in ${room.title}`}
-          action={<AdminHeaderCloseToOverview roomSlug={room.slug} />}
+          action={
+            <AdminHeaderClose
+              url={`/rooms/[roomSlug]/admin`}
+              as={`/rooms/${room.slug}/admin`}
+            />
+          }
         />
 
         <AdminEpisodeList room={room} playlist={playlist} />

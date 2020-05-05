@@ -5,7 +5,7 @@ import { IPlaylist } from "../../app-schema/IPlaylist";
 import { RPCClientFactory } from "../../api/rpc/rpc-client";
 import episodeCreateMeta from "../../api/rpc/commands/episode.create.meta";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
-import AdminHeaderCloseToOverview from "./layout/admin-header-close-to-overview";
+import AdminHeaderClose from "./layout/admin-header-close-to-overview";
 import {
   useEpisodeFormContext,
   EpisodeFormValues,
@@ -47,7 +47,16 @@ const NewEpisode = ({ room, playlist }: Props) => {
     <AdminDualPaneLayout
       title={"Nieuwe aflevering"}
       subtitle={watchedTitle || defaultTitle}
-      action={<AdminHeaderCloseToOverview roomSlug={room.slug} />}
+      image={
+        playlist.cover_file.data.thumbnails.find((t) => t.width > 400)?.url
+      }
+      blur={40}
+      action={
+        <AdminHeaderClose
+          url={`/rooms/[roomSlug]/admin/[playlistId]`}
+          as={`/rooms/${room.slug}/admin/${playlist.id}`}
+        />
+      }
       firstItem={
         <Box p={2} pb={0} textAlign="center">
           <EpisodeCoverDropZone

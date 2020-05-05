@@ -4,7 +4,7 @@ import { useSWRRoom } from "../../../../../src/hooks/useSWRRoom";
 import { LoaderCentered } from "../../../../../src/components/admin/loader-centered";
 import { DetailsPlaylist } from "../../../../../src/components/admin/details-playlist";
 
-const AdminNewEpisodePage = () => {
+const AdminPlaylistPage = () => {
   const router = useRouter();
   const { data } = useSWRRoom(router.query.roomSlug as string);
   const playlistId = router.query.playlistId as string;
@@ -26,4 +26,4 @@ const AdminNewEpisodePage = () => {
   return <DetailsPlaylist room={room} playlist={playlist} />;
 };
 
-export default AdminNewEpisodePage;
+export default AdminPlaylistPage;

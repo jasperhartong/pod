@@ -225,7 +225,7 @@ const RecordEpisode = ({ room, playlist, episode }: Props) => {
               centeredChildren={
                 <>
                   {recorder.isRecording && (
-                    <Box zIndex={2} style={{ filter: "blur(2px)" }}>
+                    <Box zIndex={2}>
                       <AudioRecorderVisualizer
                         uniqueId={episode.id.toString()}
                         getFrequencyData={recorder.getFrequencyData}

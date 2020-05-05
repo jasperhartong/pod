@@ -40,7 +40,7 @@ const PlaylistHeader = ({
       </ListItemAvatar>
       <ListItemText
         primary={playlist.title}
-        secondary={playlist.description}
+        secondary={`${playlist.description} • ${playlist.episodes.length}`}
         primaryTypographyProps={{ variant: "h5" }}
         secondaryTypographyProps={{ variant: "h6" }}
       />

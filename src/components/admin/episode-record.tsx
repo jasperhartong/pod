@@ -75,7 +75,21 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
   if (localState.updateError) {
     main = <ErrorPage error={localState.updateError} />;
   } else if (localState.isSaving) {
-    main = <ErrorPage error="updating!!!" />;
+    main = (
+      <>
+        <Box mt={2} mb={2}>
+          <Typography variant="body2" color="textPrimary" gutterBottom>
+            Aan het uploaden
+          </Typography>
+        </Box>
+        <Box mb={2}>
+          <Typography variant="body2" color="textSecondary" component="div">
+            Even wachten totdat de opname klaar is met uploaden.. Sluit dit
+            scherm niet, het zou niet al te lang moeten duren!
+          </Typography>
+        </Box>
+      </>
+    );
   } else {
     if (!localState.didTestMicrophone) {
       main = (

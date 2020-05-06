@@ -5,7 +5,7 @@ import { IPlaylist } from "../../app-schema/IPlaylist";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
 import { EpisodeCoverLayout } from "./layout/episode-cover-layout";
 import { IEpisode } from "../../app-schema/IEpisode";
-import AdminHeaderClose from "./layout/admin-header-close-to-overview";
+import { AdminHeaderClose } from "./layout/admin-header-close";
 import { RPCClientFactory } from "../../api/rpc/rpc-client";
 import episodeUpdateMeta from "../../api/rpc/commands/episode.update.meta";
 import { useRouter } from "next/dist/client/router";

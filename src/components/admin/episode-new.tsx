@@ -5,7 +5,7 @@ import { IPlaylist } from "../../app-schema/IPlaylist";
 import { RPCClientFactory } from "../../api/rpc/rpc-client";
 import episodeCreateMeta from "../../api/rpc/commands/episode.create.meta";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
-import AdminHeaderClose from "./layout/admin-header-close-to-overview";
+import { AdminHeaderClose } from "./layout/admin-header-close";
 import {
   useEpisodeFormContext,
   EpisodeFormValues,

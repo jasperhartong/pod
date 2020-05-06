@@ -19,7 +19,7 @@ import { IRoom } from "../../app-schema/IRoom";
 import AppContainer from "../app-container";
 import { useRouter } from "next/dist/client/router";
 import PageFooter from "../page-footer";
-import AdminHeaderClose from "./layout/admin-header-close-to-overview";
+import { AdminHeaderClose } from "./layout/admin-header-close";
 
 export const PlaylistDetails = ({
   room,

@@ -13,7 +13,7 @@ import useSignedMediaUploader from "../../hooks/useSignedMediaUploader";
 import { blobToFile } from "../../utils/audio-context";
 import ErrorPage from "../error-page";
 import { useRouter } from "next/dist/client/router";
-import AdminHeaderClose from "./layout/admin-header-close-to-overview";
+import { AdminHeaderClose } from "./layout/admin-header-close";
 import { useSWRRoom } from "../../hooks/useSWRRoom";
 
 interface Props {

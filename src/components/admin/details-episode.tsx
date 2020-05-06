@@ -118,6 +118,29 @@ const DetailsEpisode = ({ room, playlist, episode }: Props) => {
                 </Box>
               </>
             )}
+            {episode.status === "published" && (
+              <>
+                <Box mt={2}>
+                  <Typography variant="body2" gutterBottom>
+                    Deze aflevering is gepubliceerd
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">
+                    Deze is nu zichtbaar in de
+                    <Link href="/rooms/[roomSlug]" as={`/rooms/${room.slug}`}>
+                      <Typography
+                        style={{ display: "inline" }}
+                        variant="body2"
+                        color="textPrimary"
+                      >
+                        {" "}
+                        Luisterkamer{" "}
+                      </Typography>
+                    </Link>
+                    van {playlist.title}
+                  </Typography>
+                </Box>
+              </>
+            )}
           </Box>
           {/* We can easily allow to re-record stuff :) */}
           {/* <Box mt={2}>

@@ -11,6 +11,8 @@ import episodeUpdateMeta from "../../api/rpc/commands/episode.update.meta";
 import { useRouter } from "next/dist/client/router";
 import { useState } from "react";
 import { useSWRRoom } from "../../hooks/useSWRRoom";
+import { toDbDate } from "../../api/collection-storage/backends/directus-utils";
+import { DateTime } from "luxon";
 
 interface Props {
   room: IRoom;
@@ -25,10 +27,12 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
 
   const handlePublish = async () => {
     setIsValidating(true);
+    const published_on = toDbDate(DateTime.utc());
     const updating = await RPCClientFactory(episodeUpdateMeta).call({
       id: episode.id,
       data: {
         status: "published",
+        published_on,
       },
     });
     if (updating.ok) {
@@ -38,6 +42,7 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
         {
           ...episode,
           status: "published",
+          published_on,
         },
         false
       );

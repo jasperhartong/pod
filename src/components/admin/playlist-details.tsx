@@ -155,7 +155,7 @@ const AdminEpisodeListItem = ({
                 : "Geen opname"
               : episode.published_on
               ? parseDbDate(episode.published_on).toRelative()
-              : "unknown time"}
+              : parseDbDate(episode.created_on).toRelative()}
           </>
         }
       />

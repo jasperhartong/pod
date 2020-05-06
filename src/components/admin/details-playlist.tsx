@@ -4,14 +4,12 @@ import {
   ListItem,
   ListItemAvatar,
   Avatar,
-  Chip,
   Paper,
   ListItemText,
   Container,
   Typography,
   ListItemSecondaryAction,
 } from "@material-ui/core";
-import { Key } from "react";
 import AdminHeader from "./layout/admin-header";
 import IconAdd from "@material-ui/icons/Add";
 import { IPlaylist } from "../../app-schema/IPlaylist";
@@ -111,12 +109,10 @@ const AdminEpisodeList = ({
 };
 
 const AdminEpisodeListItem = ({
-  key,
   roomSlug,
   playlistId,
   episode,
 }: {
-  key: Key;
   roomSlug: IRoom["slug"];
   playlistId: IPlaylist["id"];
   episode: IEpisode;
@@ -134,7 +130,6 @@ const AdminEpisodeListItem = ({
 
   return (
     <ListItem
-      key={key}
       onClick={() =>
         hasAudio
           ? router.push(detailsLink.url, detailsLink.as)
@@ -155,16 +150,11 @@ const AdminEpisodeListItem = ({
         primary={episode.title}
         secondary={
           <>
-            {episode.status === "draft" ? (
-              <Chip
-                style={{ padding: 0 }}
-                size="small"
-                color={hasAudio ? "secondary" : "primary"}
-                label={hasAudio ? "Niet gepubliceerd" : "Geen opname"}
-              />
-            ) : (
-              parseDbDate(episode.created_on).toRelative()
-            )}
+            {episode.status === "draft"
+              ? hasAudio
+                ? "Niet gepubliceerd"
+                : "Geen opname"
+              : parseDbDate(episode.created_on).toRelative()}
           </>
         }
       />

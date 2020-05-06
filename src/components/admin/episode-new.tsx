@@ -18,7 +18,7 @@ interface Props {
   playlist: IPlaylist;
 }
 
-const NewEpisode = ({ room, playlist }: Props) => {
+export const EpisodeNew = ({ room, playlist }: Props) => {
   const router = useRouter();
   const episodeFormContext = useEpisodeFormContext();
 
@@ -94,5 +94,3 @@ const NewEpisode = ({ room, playlist }: Props) => {
     />
   );
 };
-
-export default NewEpisode;

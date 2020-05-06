@@ -33,7 +33,7 @@ const initialState: State = {
   isSaving: false,
 };
 
-const RecordEpisode = ({ room, playlist, episode }: Props) => {
+export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
   const [localState, dispatch] = useImmer<State>(initialState);
   const router = useRouter();
   const { mutateEpisode } = useSWRRoom();
@@ -269,8 +269,6 @@ const RecordEpisode = ({ room, playlist, episode }: Props) => {
     />
   );
 };
-
-export default RecordEpisode;
 
 interface ButtonState {
   label: string;

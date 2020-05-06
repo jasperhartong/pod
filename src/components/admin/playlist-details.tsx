@@ -21,7 +21,7 @@ import { useRouter } from "next/dist/client/router";
 import PageFooter from "../page-footer";
 import AdminHeaderClose from "./layout/admin-header-close-to-overview";
 
-export const DetailsPlaylist = ({
+export const PlaylistDetails = ({
   room,
   playlist,
 }: {

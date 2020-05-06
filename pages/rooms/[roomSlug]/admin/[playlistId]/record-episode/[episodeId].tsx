@@ -1,17 +1,10 @@
-import { NextPageContext } from "next";
-
-import roomFetch from "../../../../../../src/api/rpc/commands/room.fetch";
-import { IResponse } from "../../../../../../src/api/IResponse";
-import { IRoom } from "../../../../../../src/app-schema/IRoom";
-import { IPlaylist } from "../../../../../../src/app-schema/IPlaylist";
 import ErrorPage from "../../../../../../src/components/error-page";
-import { IEpisode } from "../../../../../../src/app-schema/IEpisode";
-import RecordEpisode from "../../../../../../src/components/admin/record-episode";
+import { EpisodeRecord } from "../../../../../../src/components/admin/episode-record";
 import { useRouter } from "next/dist/client/router";
 import { useSWRRoom } from "../../../../../../src/hooks/useSWRRoom";
-import { LoaderCentered } from "../../../../../../src/components/admin/loader-centered";
+import { LoaderCentered } from "../../../../../../src/components/admin/layout/loader-centered";
 
-const AdminRecordEpisode = () => {
+const AdminEpisodeRecord = () => {
   const router = useRouter();
   const { data } = useSWRRoom(router.query.roomSlug as string);
   const playlistId = router.query.playlistId as string;
@@ -37,7 +30,7 @@ const AdminRecordEpisode = () => {
     return <ErrorPage error="Episode not found in room" />;
   }
 
-  return <RecordEpisode room={room} playlist={playlist} episode={episode} />;
+  return <EpisodeRecord room={room} playlist={playlist} episode={episode} />;
 };
 
-export default AdminRecordEpisode;
+export default AdminEpisodeRecord;

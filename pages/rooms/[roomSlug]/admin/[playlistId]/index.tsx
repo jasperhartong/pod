@@ -1,8 +1,8 @@
 import ErrorPage from "../../../../../src/components/error-page";
 import { useRouter } from "next/dist/client/router";
 import { useSWRRoom } from "../../../../../src/hooks/useSWRRoom";
-import { LoaderCentered } from "../../../../../src/components/admin/loader-centered";
-import { DetailsPlaylist } from "../../../../../src/components/admin/details-playlist";
+import { LoaderCentered } from "../../../../../src/components/admin/layout/loader-centered";
+import { PlaylistDetails } from "../../../../../src/components/admin/playlist-details";
 
 const AdminPlaylistPage = () => {
   const router = useRouter();
@@ -23,7 +23,7 @@ const AdminPlaylistPage = () => {
     return <ErrorPage error="No playlist found" />;
   }
 
-  return <DetailsPlaylist room={room} playlist={playlist} />;
+  return <PlaylistDetails room={room} playlist={playlist} />;
 };
 
 export default AdminPlaylistPage;

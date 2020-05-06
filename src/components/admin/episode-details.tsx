@@ -18,7 +18,7 @@ interface Props {
   episode: IEpisode;
 }
 
-const DetailsEpisode = ({ room, playlist, episode }: Props) => {
+export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
   const router = useRouter();
   const { mutateEpisode } = useSWRRoom(room.slug);
   const [isValidating, setIsValidating] = useState<boolean>(false);
@@ -156,5 +156,3 @@ const DetailsEpisode = ({ room, playlist, episode }: Props) => {
     />
   );
 };
-
-export default DetailsEpisode;

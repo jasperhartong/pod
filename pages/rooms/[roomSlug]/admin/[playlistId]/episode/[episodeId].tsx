@@ -1,10 +1,10 @@
 import ErrorPage from "../../../../../../src/components/error-page";
-import DetailsEpisode from "../../../../../../src/components/admin/details-episode";
+import { EpisodeDetails } from "../../../../../../src/components/admin/episode-details";
 import { useRouter } from "next/dist/client/router";
 import { useSWRRoom } from "../../../../../../src/hooks/useSWRRoom";
-import { LoaderCentered } from "../../../../../../src/components/admin/loader-centered";
+import { LoaderCentered } from "../../../../../../src/components/admin/layout/loader-centered";
 
-const AdminDetailsEpisode = () => {
+const AdminEpisodeDetails = () => {
   const router = useRouter();
   const { data } = useSWRRoom(router.query.roomSlug as string);
   const playlistId = router.query.playlistId as string;
@@ -30,7 +30,7 @@ const AdminDetailsEpisode = () => {
     return <ErrorPage error="Episode not found in room" />;
   }
 
-  return <DetailsEpisode room={room} playlist={playlist} episode={episode} />;
+  return <EpisodeDetails room={room} playlist={playlist} episode={episode} />;
 };
 
-export default AdminDetailsEpisode;
+export default AdminEpisodeDetails;

@@ -14,8 +14,12 @@ const AdminEpisodeRecord = () => {
     return <LoaderCentered />;
   }
 
-  if (!data.ok || !playlistId) {
-    return <ErrorPage error={!data.ok ? data.error : undefined} />;
+  if (!playlistId) {
+    return <ErrorPage error={`No playlist Id: ${playlistId}`} />;
+  }
+
+  if (!data.ok) {
+    return <ErrorPage error={data.error} />;
   }
   const room = data.data;
   const playlist = room.playlists.find((p) => p.id.toString() === playlistId);

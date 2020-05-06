@@ -145,7 +145,7 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
           {/* We can easily allow to re-record stuff :) */}
           {/* <Box mt={2}>
             <Link
-              href={`/rooms/[roomSlug]/admin/[playListId]/record-episode/[episodeId]`}
+              href={`/rooms/[roomSlug]/admin/[playlistId]/record-episode/[episodeId]`}
               as={`/rooms/${room.slug}/admin/${playlist.id}/record-episode/${episode.id}`}
             >
               <Button fullWidth>Neem opnieuw op</Button>

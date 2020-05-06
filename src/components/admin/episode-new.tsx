@@ -12,6 +12,7 @@ import {
   EpisodeForm,
 } from "./components/episode-form";
 import { EpisodeCoverDropZone } from "./components/episode-cover-dropzone";
+import { useSWRRoom } from "../../hooks/useSWRRoom";
 
 interface Props {
   room: IRoom;
@@ -21,6 +22,7 @@ interface Props {
 export const EpisodeNew = ({ room, playlist }: Props) => {
   const router = useRouter();
   const episodeFormContext = useEpisodeFormContext();
+  const { revalidate } = useSWRRoom();
 
   const handleSubmit = async (formData: EpisodeFormValues) => {
     const response = await RPCClientFactory(episodeCreateMeta).call({
@@ -30,8 +32,10 @@ export const EpisodeNew = ({ room, playlist }: Props) => {
       image_url: formData.imageUrl,
     });
     if (response.ok) {
+      // Make sure to update local state with API truth and then move on
+      await revalidate();
       router.push(
-        `/rooms/[roomSlug]/admin/[playListId]/record-episode/[episodeId]`,
+        `/rooms/[roomSlug]/admin/[playlistId]/record-episode/[episodeId]`,
         `/rooms/${room.slug}/admin/${playlist.id}/record-episode/${response.data.id}`
       );
     } else {

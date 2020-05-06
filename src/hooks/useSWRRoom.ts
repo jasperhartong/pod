@@ -8,8 +8,10 @@ import { IPlaylist } from "../app-schema/IPlaylist";
 import { IEpisode } from "../app-schema/IEpisode";
 
 export const useSWRRoom = (slug: string = "test") => {
-  const { data, mutate, ...rest } = useSWR(slug, (slug: IRoom["slug"]) =>
-    RPCClientFactory(roomFetchMeta).call({ slug })
+  const { data, mutate, ...rest } = useSWR(
+    slug,
+    (slug: IRoom["slug"]) => RPCClientFactory(roomFetchMeta).call({ slug }),
+    { refreshInterval: 0 }
   );
 
   const mutateEpisode = (

@@ -113,8 +113,8 @@ class DirectusTapesMeBackend implements IBackend {
     try {
       const itemResponse = await this.client.createItem<
         Partial<
-          | IEpisode
-          | { image_file: string; audio_file: string; playlist: string }
+          | Omit<IEpisode, "image_file"> /* setting image by id */
+          | { image_file: string; playlist: string }
         >
       >(this.episodeCollection, {
         ...episode,

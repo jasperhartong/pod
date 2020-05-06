@@ -6,6 +6,7 @@ import { IImageData } from "../../../app-schema/IFileData";
 import { IBackend } from "../../../app-schema/IBackend";
 import { OK, ERR } from "../../IResponse";
 import HttpStatus from "http-status-codes";
+import { IPlaylist } from "../../../app-schema/IPlaylist";
 
 const token = process.env.DIRECTUS_CLOUD_TOKEN;
 const project = "dcMJTq1b80lIY4CT";
@@ -61,6 +62,31 @@ class DirectusTapesMeBackend implements IBackend {
     }
 
     return ERR<IRoom>("Room not found", HttpStatus.NOT_FOUND);
+  };
+
+  public createPlaylist = async (
+    playlist: Partial<IPlaylist>,
+    roomId: string,
+    imageFileId: string
+  ) => {
+    try {
+      const itemResponse = await this.client.createItem<
+        Partial<IPlaylist | { cover_file: string; room: string }>
+      >(this.playlistCollection, {
+        ...playlist,
+        cover_file: imageFileId,
+        room: roomId,
+      });
+      return OK<{ id: IPlaylist["id"] }>({
+        id: (itemResponse.data as IPlaylist).id,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+    return ERR<{ id: IPlaylist["id"] }>(
+      "Playlist could not be created",
+      HttpStatus.BAD_REQUEST
+    );
   };
 
   public getEpisode = async (episodeId: string) => {

@@ -16,14 +16,39 @@ import { IRoom } from "../../app-schema/IRoom";
 import AppContainer from "../app-container";
 import { useRouter } from "next/dist/client/router";
 import PageFooter from "../page-footer";
+import { RPCClientFactory } from "../../api/rpc/rpc-client";
+import playlistCreateMeta from "../../api/rpc/commands/playlist.create.meta";
+import { useSWRRoom } from "../../hooks/useSWRRoom";
 
 export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
   const router = useRouter();
+  const { revalidate } = useSWRRoom();
 
   if (!room.ok) {
     return <>error</>;
   }
   const slug = room.data.slug;
+
+  const handlePlaylistCreation = async () => {
+    const playlistCreation = await RPCClientFactory(playlistCreateMeta).call({
+      roomId: room.data.id,
+      data: {
+        title: "💅 Nice",
+        description: "is it?",
+        image_url:
+          "https://api.directus.cloud/dcMJTq1b80lIY4CT/assets/crsl719k1m0ow04g?key=directus-medium-crop",
+      },
+    });
+    if (!playlistCreation.ok) {
+      alert(playlistCreation.error);
+    } else {
+      await revalidate();
+      router.push(
+        "/rooms/[roomSlug]/admin/[playlistId]",
+        `/rooms/${slug}/admin/${playlistCreation.data.id}`
+      );
+    }
+  };
 
   return (
     <AppContainer maxWidth="md">
@@ -63,7 +88,7 @@ export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
           </Box>
 
           <Box p={2}>
-            <Button fullWidth onClick={() => alert("😅 Coming soon!")}>
+            <Button fullWidth onClick={handlePlaylistCreation}>
               Nieuwe collectie beginnen
             </Button>
           </Box>

@@ -5,8 +5,10 @@ import signedUrlCreate from "../../../src/api/rpc/commands/signedurl.create";
 import episodeCreate from "../../../src/api/rpc/commands/episode.create";
 import episodeUpdate from "../../../src/api/rpc/commands/episode.update";
 import roomFetch from "../../../src/api/rpc/commands/room.fetch";
+import playlistCreate from "../../../src/api/rpc/commands/playlist.create";
 
 const handlers = {
+  [playlistCreate.commandId]: playlistCreate,
   [episodeCreate.commandId]: episodeCreate,
   [episodeUpdate.commandId]: episodeUpdate,
   [signedUrlCreate.commandId]: signedUrlCreate,

@@ -109,22 +109,27 @@ const RoomPage = () => {
         </Grid>
       </Box>
 
-      {room.data.playlists.map((playlist) => (
-        <Box pb={4} key={playlist.id}>
-          <List>
-            <PlaylistHeader playlist={playlist} />
-          </List>
-          <Box p={2}>
-            <PlaylistGrid
-              playlist={playlist}
-              playingId={state.playingEpisode?.episodeId}
-              setPlayingId={actions.playingEpisode.initiate}
-              isPaused={Boolean(state.playingEpisode?.isPaused)}
-              setIsPaused={actions.playingEpisode.pause}
-            />
+      {room.data.playlists
+        // Busines Logic: Only show playlists that contain published episodes
+        .filter(
+          (p) => p.episodes.filter((e) => e.status === "published").length > 0
+        )
+        .map((playlist) => (
+          <Box pb={4} key={playlist.id}>
+            <List>
+              <PlaylistHeader playlist={playlist} />
+            </List>
+            <Box p={2}>
+              <PlaylistGrid
+                playlist={playlist}
+                playingId={state.playingEpisode?.episodeId}
+                setPlayingId={actions.playingEpisode.initiate}
+                isPaused={Boolean(state.playingEpisode?.isPaused)}
+                setIsPaused={actions.playingEpisode.pause}
+              />
+            </Box>
           </Box>
-        </Box>
-      ))}
+        ))}
 
       <PageFooter secondaryText={room.data.slug} />
 

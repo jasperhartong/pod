@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   Box,
   List,
@@ -87,12 +88,35 @@ const AdminEpisodeList = ({
           </ListItemAvatar>
           <ListItemText
             primary={"Nieuwe aflevering"}
-            secondary={`In ${playlist.title}`}
+            secondary={`Neem nu op, publiceer later`}
           />
           <ListItemSecondaryAction>
             <Typography variant="button">Voeg toe</Typography>
           </ListItemSecondaryAction>
         </ListItem>
+
+        {/* // Busines Logic: Only show playlists that contain published episodes */}
+        {playlist.episodes.filter((e) => e.status === "published").length ===
+          0 && (
+          <Box p={2} mt={2}>
+            <Typography variant="body2" gutterBottom>
+              Deze collectie bevat nog geen gepubliceerde aflevering
+            </Typography>
+            <Typography variant="body2" color="textSecondary">
+              Deze collectie is dan ook nog NIET zichtbaar in de
+              <Link href="/rooms/[roomSlug]" as={`/rooms/${room.slug}`}>
+                <Typography
+                  style={{ display: "inline" }}
+                  variant="body2"
+                  color="textPrimary"
+                >
+                  {" "}
+                  Luisterkamer
+                </Typography>
+              </Link>
+            </Typography>
+          </Box>
+        )}
 
         {/* Existing episodes: drafts, published */}
         {playlist.episodes.map((episode) => (

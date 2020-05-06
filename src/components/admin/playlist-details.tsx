@@ -10,6 +10,7 @@ import {
   Container,
   Typography,
   ListItemSecondaryAction,
+  Divider,
 } from "@material-ui/core";
 import AdminHeader from "./layout/admin-header";
 import IconAdd from "@material-ui/icons/Add";
@@ -95,10 +96,24 @@ const AdminEpisodeList = ({
           </ListItemSecondaryAction>
         </ListItem>
 
+        {/* Existing episodes: drafts, published */}
+        {playlist.episodes.map((episode) => (
+          <AdminEpisodeListItem
+            key={episode.id}
+            roomSlug={room.slug}
+            playlistId={playlist.id}
+            episode={episode}
+          />
+        ))}
+
         {/* // Busines Logic: Only show playlists that contain published episodes */}
         {playlist.episodes.filter((e) => e.status === "published").length ===
           0 && (
           <Box p={2} mt={2}>
+            <Box mb={2}>
+              <Divider />
+            </Box>
+
             <Typography variant="body2" gutterBottom>
               Deze collectie bevat nog geen gepubliceerde aflevering
             </Typography>
@@ -117,16 +132,6 @@ const AdminEpisodeList = ({
             </Typography>
           </Box>
         )}
-
-        {/* Existing episodes: drafts, published */}
-        {playlist.episodes.map((episode) => (
-          <AdminEpisodeListItem
-            key={episode.id}
-            roomSlug={room.slug}
-            playlistId={playlist.id}
-            episode={episode}
-          />
-        ))}
       </List>
     </Paper>
   );

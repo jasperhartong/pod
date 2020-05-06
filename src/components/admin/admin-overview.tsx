@@ -1,3 +1,4 @@
+import { useState } from "react";
 import NextLink from "next/link";
 import {
   Button,
@@ -19,10 +20,16 @@ import PageFooter from "../page-footer";
 import { RPCClientFactory } from "../../api/rpc/rpc-client";
 import playlistCreateMeta from "../../api/rpc/commands/playlist.create.meta";
 import { useSWRRoom } from "../../hooks/useSWRRoom";
+import { LoaderCentered } from "./layout/loader-centered";
 
 export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
   const router = useRouter();
   const { revalidate } = useSWRRoom();
+  const [isCreatingEpisode, setIsCreatingEpisode] = useState<boolean>(false);
+
+  if (isCreatingEpisode) {
+    return <LoaderCentered />;
+  }
 
   if (!room.ok) {
     return <>error</>;
@@ -30,6 +37,7 @@ export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
   const slug = room.data.slug;
 
   const handlePlaylistCreation = async () => {
+    setIsCreatingEpisode(true);
     const playlistCreation = await RPCClientFactory(playlistCreateMeta).call({
       roomId: room.data.id,
       data: {
@@ -40,6 +48,7 @@ export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
       },
     });
     if (!playlistCreation.ok) {
+      setIsCreatingEpisode(false);
       alert(playlistCreation.error);
     } else {
       await revalidate();

@@ -58,7 +58,7 @@ const SnackbarPlayer = ({
           !!playingItem && (
             <Box>
               <FilePlayer
-                url={playingItem.audio_file}
+                url={playingItem.audio_file || undefined}
                 playing={!isPaused}
                 width="0px"
                 height="0px"

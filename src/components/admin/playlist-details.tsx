@@ -14,7 +14,7 @@ import AdminHeader from "./layout/admin-header";
 import IconAdd from "@material-ui/icons/Add";
 import { IPlaylist } from "../../app-schema/IPlaylist";
 import { parseDbDate } from "../../api/collection-storage/backends/directus-utils";
-import { IEpisode, episodeHasAudio } from "../../app-schema/IEpisode";
+import { IEpisode } from "../../app-schema/IEpisode";
 import { IRoom } from "../../app-schema/IRoom";
 import AppContainer from "../app-container";
 import { useRouter } from "next/dist/client/router";
@@ -118,7 +118,6 @@ const AdminEpisodeListItem = ({
   episode: IEpisode;
 }) => {
   const router = useRouter();
-  const hasAudio = episodeHasAudio(episode);
   const recordLink = {
     url: "/rooms/[roomSlug]/admin/[playlistId]/record-episode/[episodeId]",
     as: `/rooms/${roomSlug}/admin/${playlistId}/record-episode/${episode.id}`,
@@ -131,7 +130,7 @@ const AdminEpisodeListItem = ({
   return (
     <ListItem
       onClick={() =>
-        hasAudio
+        episode.audio_file
           ? router.push(detailsLink.url, detailsLink.as)
           : router.push(recordLink.url, recordLink.as)
       }
@@ -151,16 +150,18 @@ const AdminEpisodeListItem = ({
         secondary={
           <>
             {episode.status === "draft"
-              ? hasAudio
+              ? episode.audio_file
                 ? "Niet gepubliceerd"
                 : "Geen opname"
-              : parseDbDate(episode.created_on).toRelative()}
+              : episode.published_on
+              ? parseDbDate(episode.published_on).toRelative()
+              : "unknown time"}
           </>
         }
       />
       <ListItemSecondaryAction>
         <Typography variant="button">
-          {hasAudio ? "open" : "neem op"}
+          {episode.audio_file ? "open" : "neem op"}
         </Typography>
       </ListItemSecondaryAction>
     </ListItem>

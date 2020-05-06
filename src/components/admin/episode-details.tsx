@@ -83,7 +83,7 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
           <Box mt={2}>
             <audio
               style={{ width: "100%" }}
-              src={episode.audio_file}
+              src={episode.audio_file || undefined}
               controls
             />
           </Box>

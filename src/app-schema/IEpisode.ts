@@ -1,4 +1,5 @@
 import * as t from "io-ts";
+import { optional } from "../utils/io-ts";
 
 import { TDateString } from "./IDateString";
 import { TImageData } from "./IFileData";
@@ -10,27 +11,18 @@ export const TEpisodeStatus = t.keyof({
   deleted: null,
 });
 
-export const TEpisodeRequired = t.type({
+export const TEpisode = t.type({
   id: t.number,
   status: TEpisodeStatus,
   created_on: TDateString,
   title: t.string,
   image_file: t.type({ data: TImageData }),
-});
-
-export const TEpisodeOptional = t.partial({
-  audio_file: t.string,
+  audio_file: optional(t.string),
+  published_on: optional(TDateString),
 });
 
 export const TEpisodePartial = t.partial({
-  // for updating
-  ...TEpisodeRequired.props,
-  ...TEpisodeOptional.props,
+  ...TEpisode.props,
 });
-export const TEpisode = t.intersection([TEpisodeRequired, TEpisodeOptional]);
 
 export type IEpisode = t.TypeOf<typeof TEpisode>;
-
-export const episodeHasAudio = (episode: IEpisode) =>
-  // Bit hacky for now due to stupid `""` default value
-  !episode.audio_file || episode.audio_file.length > 4;

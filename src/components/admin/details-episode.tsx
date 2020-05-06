@@ -10,6 +10,7 @@ import { RPCClientFactory } from "../../api/rpc/rpc-client";
 import episodeUpdateMeta from "../../api/rpc/commands/episode.update.meta";
 import { useRouter } from "next/dist/client/router";
 import { useState } from "react";
+import { useSWRRoom } from "../../hooks/useSWRRoom";
 
 interface Props {
   room: IRoom;
@@ -19,6 +20,7 @@ interface Props {
 
 const DetailsEpisode = ({ room, playlist, episode }: Props) => {
   const router = useRouter();
+  const { mutateEpisode } = useSWRRoom(room.slug);
   const [isValidating, setIsValidating] = useState<boolean>(false);
 
   const handlePublish = async () => {
@@ -30,7 +32,20 @@ const DetailsEpisode = ({ room, playlist, episode }: Props) => {
       },
     });
     if (updating.ok) {
-      router.push(`/rooms/[roomSlug]/admin`, `/rooms/${room.slug}/admin`);
+      // Mutate local data and move on
+      mutateEpisode(
+        playlist.id,
+        {
+          ...episode,
+          status: "published",
+        },
+        false
+      );
+
+      router.push(
+        `/rooms/[roomSlug]/admin/[playlistId]`,
+        `/rooms/${room.slug}/admin/${playlist.id}`
+      );
     } else {
       alert("Publiceren mislukt, probeer nogmaals");
       setIsValidating(false);

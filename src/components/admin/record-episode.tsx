@@ -14,6 +14,7 @@ import { blobToFile } from "../../utils/audio-context";
 import ErrorPage from "../error-page";
 import { useRouter } from "next/dist/client/router";
 import AdminHeaderClose from "./layout/admin-header-close-to-overview";
+import { useSWRRoom } from "../../hooks/useSWRRoom";
 
 interface Props {
   room: IRoom;
@@ -35,6 +36,7 @@ const initialState: State = {
 const RecordEpisode = ({ room, playlist, episode }: Props) => {
   const [localState, dispatch] = useImmer<State>(initialState);
   const router = useRouter();
+  const { mutateEpisode } = useSWRRoom();
   const recorder = useAudioRecorder();
   const uploader = useSignedMediaUploader({
     onError: (message) => {
@@ -52,6 +54,12 @@ const RecordEpisode = ({ room, playlist, episode }: Props) => {
           state.updateError = updatedEpisode.error;
         });
       }
+      // Update local state, then move on
+      mutateEpisode(
+        playlist.id,
+        { ...episode, audio_file: downloadUrl },
+        false
+      );
       router.push(
         "/rooms/[roomSlug]/admin/[playlistId]/episode/[episodeId]",
         `/rooms/${room.slug}/admin/${playlist.id}/episode/${episode.id}`

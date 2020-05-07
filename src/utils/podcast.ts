@@ -31,10 +31,19 @@ export const podcastXML = (room: IRoom): string => {
 
   let xmlItems: ReturnType<typeof itemFromEpisode>[] = [];
 
-  playlistsContainingPublishedEpisodes.forEach((playlist) => {
-    playlist.episodes.forEach((episode) => {
+  playlistsContainingPublishedEpisodes.forEach((playlist, playlistIndex) => {
+    // Reverse the index count, as we go from latests to oldest
+    const seasonIndex =
+      playlistsContainingPublishedEpisodes.length - playlistIndex;
+
+    playlist.episodes.forEach((episode, index) => {
+      // Reverse the index count, as we go from latests to oldest
+      const episodeIndex = playlist.episodes.length - index;
+
       if (episode.status === "published") {
-        xmlItems.push(itemFromEpisode(episode, playlist, room));
+        xmlItems.push(
+          itemFromEpisode(episode, playlist, room, seasonIndex, episodeIndex)
+        );
       }
     });
   });
@@ -112,7 +121,9 @@ export const podcastXML = (room: IRoom): string => {
 const itemFromEpisode = (
   episode: IEpisode,
   playlist: IPlaylist,
-  room: IRoom
+  room: IRoom,
+  seasonIndex: number,
+  episodeIndex: number
 ) => ({
   item: [
     {
@@ -125,13 +136,16 @@ const itemFromEpisode = (
       "itunes:subtitle": playlist.title || "",
     },
     {
-      "itunes:summary": episode.title || "",
+      "itunes:summary": playlist.title || "",
     },
     {
       "itunes:image": episode.image_file.data.full_url || "",
     },
     {
-      "itunes:season": playlist.title || "",
+      "itunes:season": seasonIndex,
+    },
+    {
+      "itunes:episode": episodeIndex,
     },
     {
       _name: "enclosure",

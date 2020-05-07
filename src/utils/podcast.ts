@@ -133,10 +133,10 @@ const itemFromEpisode = (
       "itunes:author": playlist.description || "",
     },
     {
-      "itunes:subtitle": playlist.title || "",
+      "itunes:subtitle": `📘 ${playlist.title}`,
     },
     {
-      "itunes:summary": playlist.title || "",
+      "itunes:summary": `📘 ${playlist.title}`,
     },
     {
       "itunes:image": episode.image_file.data.full_url || "",

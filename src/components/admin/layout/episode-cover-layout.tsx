@@ -14,6 +14,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     color: theme.palette.text.secondary,
     boxShadow: theme.shadows[8],
     textAlign: "center",
+    transform: "rotate(-2deg)",
+    borderRadius: 3,
   },
   bottomRightAction: {
     position: "absolute",

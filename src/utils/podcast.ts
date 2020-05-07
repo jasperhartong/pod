@@ -159,7 +159,9 @@ const itemFromEpisode = (
       guid: futureEpisodePage(room.slug, playlist.id, episode.id),
     },
     {
-      pubDate: parseDbDate(episode.created_on).toRFC2822(),
+      pubDate: parseDbDate(
+        episode.published_on || episode.created_on
+      ).toRFC2822(),
     },
     // {
     //   "itunes:duration": "7:04"

@@ -1,5 +1,6 @@
 import { IRoom } from "./app-schema/IRoom";
 import { IEpisode } from "./app-schema/IEpisode";
+import { IPlaylist } from "./app-schema/IPlaylist";
 
 export const baseUrl =
   process.env.NODE_ENV === "development"
@@ -16,5 +17,6 @@ export const roomPageUrl = (slug: IRoom["slug"]) => `${baseUrl}/rooms/${slug}`;
 
 export const futureEpisodePage = (
   slug: IRoom["slug"],
+  playlistId: IPlaylist["id"],
   episodeId: IEpisode["id"]
-) => `${baseUrl}/pods/${slug}/${episodeId.toString()}`;
+) => `${baseUrl}/rooms/${slug}/admin/${playlistId}/${episodeId}`;

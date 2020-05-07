@@ -139,7 +139,10 @@ const itemFromEpisode = (
       "itunes:summary": `📘 ${playlist.title}`,
     },
     {
-      "itunes:image": episode.image_file.data.full_url || "",
+      _name: "itunes:image",
+      _attrs: {
+        href: episode.image_file.data.full_url || "",
+      },
     },
     {
       "itunes:season": seasonIndex,

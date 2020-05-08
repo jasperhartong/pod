@@ -411,7 +411,7 @@ interface IDokaInstance extends IDokaOptions {
   edit(
     imageSource: DokaImageSource,
     imageOptions?: DokaImageOptions
-  ): Promise<DokaOutput>;
+  ): Promise<DokaOutput | null>;
   clear(): void;
   close(): void;
   destroy(): void;

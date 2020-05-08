@@ -1,20 +1,24 @@
 import * as t from "io-ts";
 import { RPCMeta } from "../rpc-meta";
 
-import { TEpisodeStatus } from "../../../app-schema/IEpisode";
+import { TEpisodeStatus, TEpisode } from "../../../app-schema/IEpisode";
+import { TPlaylist } from "../../../app-schema/IPlaylist";
 
 const reqDataRequired = t.type({
   title: t.string,
   status: TEpisodeStatus,
-  playlist: t.string,
   image_url: t.string,
 });
 
 const reqDataOptional = t.partial({
-  audio_url: t.string,
+  audio_file: TEpisode.props.audio_file,
+  published_on: TEpisode.props.published_on,
 });
 
-const reqDataValidator = t.intersection([reqDataRequired, reqDataOptional]);
+const reqDataValidator = t.type({
+  playlistId: TPlaylist.props.id,
+  data: t.intersection([reqDataRequired, reqDataOptional]),
+});
 
 export default RPCMeta(
   "episode",

@@ -26,10 +26,12 @@ export const EpisodeNew = ({ room, playlist }: Props) => {
 
   const handleSubmit = async (formData: EpisodeFormValues) => {
     const response = await RPCClientFactory(episodeCreateMeta).call({
-      title: formData.title,
-      status: "draft",
-      playlist: playlist.id.toString(),
-      image_url: formData.imageUrl,
+      playlistId: playlist.id,
+      data: {
+        title: formData.title,
+        status: "draft",
+        image_url: formData.imageUrl,
+      },
     });
     if (response.ok) {
       // Make sure to update local state with API truth and then move on

@@ -58,7 +58,14 @@ interface DokaImageDropZoneProps {
 }
 
 const acceptedImageMimeTypes = ["image/jpg", "image/jpeg", "image/png"];
-const doka = Doka.create({ cropAspectRatio: 1 });
+const docaMaxWidth = {
+  outputWidth: 1400,
+  outputUpscale: false,
+};
+const doka = Doka.create({
+  cropAspectRatio: 1,
+  ...docaMaxWidth,
+});
 
 export const useSignedDokaImageUploadDropZone = ({
   onSuccess,

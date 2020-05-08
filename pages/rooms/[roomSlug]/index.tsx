@@ -5,12 +5,9 @@ import {
   Grid,
   CircularProgress,
   Box,
-  Divider,
   Typography,
-  Collapse,
   List,
 } from "@material-ui/core";
-import SurroundSound from "@material-ui/icons/SurroundSound";
 import { IRoom } from "../../../src/app-schema/IRoom";
 import { IEpisode } from "../../../src/app-schema/IEpisode";
 import PlaylistHeader from "../../../src/components/playlist-header";
@@ -20,11 +17,8 @@ import {
   useRoomContext,
   RoomState,
 } from "../../../src/hooks/useRoomContext";
-import BottomDrawer from "../../../src/components/bottom-drawer";
 import { IResponse } from "../../../src/api/IResponse";
 import roomFetch from "../../../src/api/rpc/commands/room.fetch";
-import RoomMenu from "../../../src/components/room-menu";
-import { makeStyles } from "@material-ui/styles";
 import AppContainer from "../../../src/components/app-container";
 import ErrorPage from "../../../src/components/error-page";
 import PageFooter from "../../../src/components/page-footer";
@@ -33,26 +27,11 @@ import PageFooter from "../../../src/components/page-footer";
 const SnackbarPlayer = dynamic(() =>
   import("../../../src/components/snackbar-player")
 );
-const EpisodeCreateForm = dynamic(
-  () => import("../../../src/components/episode-create-form"),
-  { loading: () => <div style={{ height: 230 }} /> }
-);
-
-const useStyles = makeStyles((theme) => ({
-  rootContainer: {
-    backgroundImage: "url(/background.png)",
-    backgroundRepeat: "no-repeat",
-    backgroundPositionX: "right",
-    backgroundPositionY: -400,
-  },
-}));
 
 const RoomPageContainer = ({ room }: { room: IResponse<IRoom> }) => {
   const defaultState: RoomState = {
-    mode: "listen",
     slug: room.ok ? room.data.slug : undefined,
     room,
-    recordingEpisode: undefined,
     playingEpisode: undefined,
   };
 
@@ -64,11 +43,10 @@ const RoomPageContainer = ({ room }: { room: IResponse<IRoom> }) => {
 };
 
 const RoomPage = () => {
-  const classes = useStyles();
   const { state, actions } = useRoomContext();
 
   // derived state
-  const { room, mode, slug } = state;
+  const { room, slug } = state;
 
   if (!room) {
     return (
@@ -103,9 +81,6 @@ const RoomPage = () => {
           <Grid item>
             <Typography variant="h4">{room.data.title}</Typography>
           </Grid>
-          <Grid item>
-            <RoomMenu />
-          </Grid>
         </Grid>
       </Box>
 
@@ -139,19 +114,6 @@ const RoomPage = () => {
         onPlayPause={actions.playingEpisode.pause}
         onClose={actions.playingEpisode.stop}
       />
-
-      <BottomDrawer
-        open={Boolean(state.recordingEpisode)}
-        onClose={actions.recordingEpisode.cancel}
-      >
-        <Box p={2}>
-          <EpisodeCreateForm
-            playlist={state.recordingEpisode?.playlist}
-            onFormChange={actions.recordingEpisode.updateRecording}
-            onFormSuccess={actions.recordingEpisode.finish}
-          />
-        </Box>
-      </BottomDrawer>
     </AppContainer>
   );
 };

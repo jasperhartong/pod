@@ -9,7 +9,6 @@ import {
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import { IPlaylist } from "../app-schema/IPlaylist";
-import { useRoomContext } from "../hooks/useRoomContext";
 import { IEpisode } from "../app-schema/IEpisode";
 
 const useStyles = makeStyles((theme) => ({
@@ -43,31 +42,11 @@ interface Props {
 
 const PlaylistGrid = (props: Props) => {
   const classes = useStyles();
-  const { state } = useRoomContext();
 
   const { playlist, playingId, setPlayingId, isPaused, setIsPaused } = props;
 
   return (
     <div className={classes.gridRoot}>
-      {/* Recording episode preview */}
-      {state.recordingEpisode && (
-        <div key="new" className={classes.tileRoot}>
-          <Paper elevation={8}>
-            <div
-              className={classes.imageButton}
-              style={{
-                backgroundImage: `url(${state.recordingEpisode.partialEpisode.image_url})`,
-              }}
-            ></div>
-          </Paper>
-          <EpisodeTitle
-            title={
-              state.recordingEpisode.partialEpisode.title || `Nieuwe opname`
-            }
-          />
-        </div>
-      )}
-
       {/* Current episodes */}
       {/* Busines Logic: Only show playlists that contain published episodes */}
       {playlist.episodes

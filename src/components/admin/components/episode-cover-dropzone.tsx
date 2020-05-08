@@ -10,7 +10,7 @@ import {
 import ImageIcon from "@material-ui/icons/Image";
 import IconDelete from "@material-ui/icons/DeleteOutline";
 import { EpisodeCoverLayout } from "../layout/episode-cover-layout";
-import useSignedMediaUploadDropZone from "../../../hooks/useSignedMediaUploadDropZone";
+import { useSignedDokaImageUploadDropZone } from "../../../hooks/useSignedUploadDropZone";
 import { makeStyles } from "@material-ui/styles";
 
 const useStyles = makeStyles(() => ({
@@ -33,9 +33,8 @@ export const EpisodeCoverDropZone = ({
 }) => {
   const classes = useStyles();
   const theme = useTheme();
-  const dropZone = useSignedMediaUploadDropZone({
+  const dropZone = useSignedDokaImageUploadDropZone({
     onSuccess,
-    acceptedMimeTypes: ["image/jpg", "image/jpeg"],
   });
 
   const _onDelete = () => {

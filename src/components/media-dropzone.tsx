@@ -2,7 +2,7 @@ import React from "react";
 import { CircularProgress, Button, Box, Typography } from "@material-ui/core";
 import UploadIcon from "@material-ui/icons/CloudUpload";
 import SuccessIcon from "@material-ui/icons/CloudDone";
-import useSignedMediaUploadDropZone from "../hooks/useSignedMediaUploadDropZone";
+import { useSignedMediaUploadDropZone } from "../hooks/useSignedUploadDropZone";
 
 interface Props {
   // http://www.iana.org/assignments/media-types/media-types.xhtml
@@ -22,7 +22,7 @@ const MediaDropZone = ({
     uploading,
     uploadError,
     downloadUrl,
-  } = useSignedMediaUploadDropZone({ onSuccess, acceptedMimeTypes });
+  } = useSignedMediaUploadDropZone({ acceptedMimeTypes, onSuccess });
 
   let icon = (
     <CircularProgress

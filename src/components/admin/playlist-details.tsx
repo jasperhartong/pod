@@ -18,10 +18,11 @@ import { parseDbDate } from "../../api/collection-storage/backends/directus-util
 import { IEpisode } from "../../app-schema/IEpisode";
 import { IRoom } from "../../app-schema/IRoom";
 import AppContainer from "../app-container";
-import { useRouter } from "next/dist/client/router";
+
 import PageFooter from "../page-footer";
 import { AdminHeaderClose } from "./layout/admin-header-close";
 import { AdminInstructionsLayout } from "./layout/admin-instruction-layout";
+import { useRouter } from "../../hooks/useRouter";
 
 export const PlaylistDetails = ({
   room,

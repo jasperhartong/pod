@@ -1,5 +1,5 @@
 import { useSWRRoom } from "../../../../src/hooks/useSWRRoom";
-import { useRouter } from "next/dist/client/router";
+import { useRouter } from "../../../../src/hooks/useRouter";
 import { RPCClientFactory } from "../../../../src/api/rpc/rpc-client";
 import episodeCreateMeta from "../../../../src/api/rpc/commands/episode.create.meta";
 import playlistCreateMeta from "../../../../src/api/rpc/commands/playlist.create.meta";

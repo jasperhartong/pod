@@ -1,4 +1,3 @@
-import { useRouter } from "next/dist/client/router";
 import { Box } from "@material-ui/core";
 import { IRoom } from "../../app-schema/IRoom";
 import { IPlaylist } from "../../app-schema/IPlaylist";
@@ -13,6 +12,7 @@ import {
 } from "./components/episode-form";
 import { ImageCoverDropZone } from "./components/image-cover-dropzone";
 import { useSWRRoom } from "../../hooks/useSWRRoom";
+import { useRouter } from "../../hooks/useRouter";
 import { AdminInstructionsLayout } from "./layout/admin-instruction-layout";
 
 interface Props {

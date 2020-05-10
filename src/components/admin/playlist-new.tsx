@@ -1,4 +1,3 @@
-import { useRouter } from "next/dist/client/router";
 import { Box } from "@material-ui/core";
 import { IRoom } from "../../app-schema/IRoom";
 import { RPCClientFactory } from "../../api/rpc/rpc-client";
@@ -6,6 +5,7 @@ import AdminDualPaneLayout from "./layout/admin-dual-pane";
 import { AdminHeaderClose } from "./layout/admin-header-close";
 import { ImageCoverDropZone } from "./components/image-cover-dropzone";
 import { useSWRRoom } from "../../hooks/useSWRRoom";
+import { useRouter } from "../../hooks/useRouter";
 import { PlaylistForm } from "./components/playlist-form";
 import {
   usePlaylistFormContext,

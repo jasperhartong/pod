@@ -1,6 +1,6 @@
 import { ErrorPage } from "../../../../../../src/components/error-page";
 import { EpisodeRecord } from "../../../../../../src/components/admin/episode-record";
-import { useRouter } from "next/dist/client/router";
+import { useRouter } from "../../../../../../src/hooks/useRouter";
 import { useSWRRoom } from "../../../../../../src/hooks/useSWRRoom";
 import { LoaderCentered } from "../../../../../../src/components/admin/layout/loader-centered";
 

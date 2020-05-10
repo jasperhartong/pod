@@ -7,7 +7,7 @@ import { IEpisode } from "../../app-schema/IEpisode";
 import { AdminHeaderClose } from "./layout/admin-header-close";
 import { RPCClientFactory } from "../../api/rpc/rpc-client";
 import episodeUpdateMeta from "../../api/rpc/commands/episode.update.meta";
-import { useRouter } from "next/dist/client/router";
+import { useRouter } from "../../hooks/useRouter";
 import { useState } from "react";
 import { useSWRRoom } from "../../hooks/useSWRRoom";
 import { toDbDate } from "../../api/collection-storage/backends/directus-utils";

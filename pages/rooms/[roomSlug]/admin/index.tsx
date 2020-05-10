@@ -1,5 +1,5 @@
 import { AdminOverview } from "../../../../src/components/admin/admin-overview";
-import { useRouter } from "next/dist/client/router";
+import { useRouter } from "../../../../src/hooks/useRouter";
 import { useSWRRoom } from "../../../../src/hooks/useSWRRoom";
 import { LoaderCentered } from "../../../../src/components/admin/layout/loader-centered";
 import { ErrorPage } from "../../../../src/components/error-page";

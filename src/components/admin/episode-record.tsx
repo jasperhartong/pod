@@ -1,4 +1,13 @@
-import { Box, Button, Typography, CircularProgress } from "@material-ui/core";
+import {
+  Box,
+  Button,
+  Typography,
+  CircularProgress,
+  LinearProgress,
+} from "@material-ui/core";
+import IconUpload from "@material-ui/icons/CloudUpload";
+import IconUploadError from "@material-ui/icons/Warning";
+import IconUploadSuccess from "@material-ui/icons/CloudDone";
 import { IRoom } from "../../app-schema/IRoom";
 import { IPlaylist } from "../../app-schema/IPlaylist";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
@@ -15,6 +24,7 @@ import ErrorPage from "../error-page";
 import { useRouter } from "next/dist/client/router";
 import { AdminHeaderClose } from "./layout/admin-header-close";
 import { useSWRRoom } from "../../hooks/useSWRRoom";
+import MediaDropZone from "../media-dropzone";
 
 interface Props {
   room: IRoom;
@@ -29,14 +39,14 @@ interface State {
 }
 
 const initialState: State = {
-  didTestMicrophone: false,
+  didTestMicrophone: true, // TODO: Revert me!
   isSaving: false,
 };
 
 export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
-  const [localState, dispatch] = useImmer<State>(initialState);
   const router = useRouter();
   const { mutateEpisode } = useSWRRoom();
+  const [localState, dispatch] = useImmer<State>(initialState);
   const recorder = useAudioRecorder();
   const uploader = useSignedMediaUploader({
     onError: (message) => {
@@ -45,27 +55,26 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
       });
     },
     onSuccess: async ({ downloadUrl }) => {
-      const updatedEpisode = await RPCClientFactory(episodeUpdateMeta).call({
-        id: episode.id,
-        data: { audio_file: downloadUrl },
-      });
-      if (!updatedEpisode.ok) {
-        dispatch((state) => {
-          state.updateError = updatedEpisode.error;
-        });
-      }
-      // Update local state, then move on
-      mutateEpisode(
-        playlist.id,
-        { ...episode, audio_file: downloadUrl },
-        false
-      );
-      router.push(
-        "/rooms/[roomSlug]/admin/[playlistId]/episode/[episodeId]",
-        `/rooms/${room.slug}/admin/${playlist.id}/episode/${episode.id}`
-      );
+      updateEpisodeWithAudioFile(downloadUrl);
     },
   });
+  const updateEpisodeWithAudioFile = async (downloadUrl: string) => {
+    const updatedEpisode = await RPCClientFactory(episodeUpdateMeta).call({
+      id: episode.id,
+      data: { audio_file: downloadUrl },
+    });
+    if (!updatedEpisode.ok) {
+      dispatch((state) => {
+        state.updateError = updatedEpisode.error;
+      });
+    }
+    // Update local state, then move on
+    mutateEpisode(playlist.id, { ...episode, audio_file: downloadUrl }, false);
+    router.push(
+      "/rooms/[roomSlug]/admin/[playlistId]/episode/[episodeId]",
+      `/rooms/${room.slug}/admin/${playlist.id}/episode/${episode.id}`
+    );
+  };
 
   const mp3Recording =
     recorder.dataBlobs.length > 0 ? recorder.dataBlobs[0] : undefined;
@@ -203,6 +212,7 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
               },
             }}
           />
+
           <Box mt={4} mb={2}>
             <Typography variant="body2" color="textSecondary" gutterBottom>
               Ga er even goed voor zitten, doe de deur dicht en begin rustig met
@@ -219,6 +229,47 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
               <li>Begin en eindig met wat liefs</li>
               <li>Verzin een openingstune</li>
             </Typography>
+          </Box>
+          <Box mt={4}>
+            <Typography variant="body2" color="textPrimary">
+              Of upload een bestaande opname
+            </Typography>
+            <Box mt={2} mb={2}>
+              <MediaDropZone
+                acceptedMimeTypes={["audio/mpeg", "audio/m4a", "video/mp4"]}
+                onSuccess={updateEpisodeWithAudioFile}
+                initial={
+                  <Button fullWidth variant="outlined">
+                    <IconUpload style={{ marginRight: 8 }} /> Upload opname
+                  </Button>
+                }
+                uploading={(uploadPercentCompleted) => (
+                  <Button fullWidth variant="outlined" disabled>
+                    <LinearProgress
+                      style={{ margin: 10, width: "100%" }}
+                      variant={
+                        [undefined, 0, 100].includes(uploadPercentCompleted)
+                          ? "indeterminate"
+                          : "determinate"
+                      }
+                      value={uploadPercentCompleted}
+                    />
+                  </Button>
+                )}
+                success={
+                  <Button fullWidth variant="outlined" disabled>
+                    <IconUploadSuccess style={{ marginRight: 8 }} /> Upload
+                    opname
+                  </Button>
+                }
+                error={
+                  <Button fullWidth variant="outlined">
+                    <IconUploadError style={{ marginRight: 8 }} /> Probeer
+                    nogmaals
+                  </Button>
+                }
+              />
+            </Box>
           </Box>
         </>
       );

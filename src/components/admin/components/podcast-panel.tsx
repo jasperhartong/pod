@@ -16,11 +16,11 @@ import IconNewWindow from "@material-ui/icons/OpenInNew";
 import IconShare from "@material-ui/icons/Share";
 import IconCopy from "@material-ui/icons/FileCopy";
 import IconCopySuccess from "@material-ui/icons/CheckCircle";
-import { rssUrl } from "../urls";
-import { IRoom } from "../app-schema/IRoom";
-import useSharing from "../hooks/useSharing";
+import { rssUrl } from "../../../urls";
+import { IRoom } from "../../../app-schema/IRoom";
+import useSharing from "../../../hooks/useSharing";
 import { useClipboard } from "use-clipboard-copy";
-import { AdminInstructionsLayout } from "./admin/layout/admin-instruction-layout";
+import { AdminInstructionsLayout } from "../layout/admin-instruction-layout";
 
 type SubscribeLink = { url: string; label: string };
 

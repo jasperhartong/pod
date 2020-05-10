@@ -9,7 +9,7 @@ import {
   Divider,
 } from "@material-ui/core";
 import PlaylistHeader from "../playlist-header";
-import { PodcastPanel } from "../podcast-panel";
+import { PodcastPanel } from "./components/podcast-panel";
 import AdminHeader from "./layout/admin-header";
 import { IRoom } from "../../app-schema/IRoom";
 import AppContainer from "../app-container";

@@ -20,7 +20,7 @@ import { RPCClientFactory } from "../../api/rpc/rpc-client";
 import episodeUpdateMeta from "../../api/rpc/commands/episode.update.meta";
 import useSignedMediaUploader from "../../hooks/useSignedMediaUploader";
 import { blobToFile } from "../../utils/audio-context";
-import ErrorPage from "../error-page";
+import { ErrorPage } from "../error-page";
 import { useRouter } from "next/dist/client/router";
 import { AdminHeaderClose } from "./layout/admin-header-close";
 import { useSWRRoom } from "../../hooks/useSWRRoom";

@@ -12,7 +12,6 @@ import {
 import PlaylistHeader from "../playlist-header";
 import SubscribePanel from "../subscribe-panel";
 import AdminHeader from "./layout/admin-header";
-import { IResponse } from "../../api/IResponse";
 import { IRoom } from "../../app-schema/IRoom";
 import AppContainer from "../app-container";
 import { useRouter } from "next/dist/client/router";
@@ -22,24 +21,21 @@ import playlistCreateMeta from "../../api/rpc/commands/playlist.create.meta";
 import { useSWRRoom } from "../../hooks/useSWRRoom";
 import { LoaderCentered } from "./layout/loader-centered";
 
-export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
+export const AdminOverview = ({ room }: { room: IRoom }) => {
   const router = useRouter();
-  const { revalidate } = useSWRRoom(room.ok ? room.data.slug : "test");
+  const { revalidate } = useSWRRoom(room.slug);
   const [isCreatingEpisode, setIsCreatingEpisode] = useState<boolean>(false);
 
   if (isCreatingEpisode) {
     return <LoaderCentered />;
   }
 
-  if (!room.ok) {
-    return <>error</>;
-  }
-  const slug = room.data.slug;
+  const slug = room.slug;
 
   const handlePlaylistCreation = async () => {
     setIsCreatingEpisode(true);
     const playlistCreation = await RPCClientFactory(playlistCreateMeta).call({
-      roomId: room.data.id,
+      roomId: room.id,
       data: {
         title: "💅 Nice",
         description: "is it?",
@@ -63,8 +59,8 @@ export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
     <AppContainer maxWidth="md">
       <Container maxWidth="sm" style={{ padding: 0 }}>
         <AdminHeader
-          image={room.data.cover_file.data.full_url}
-          title={room.data.title}
+          image={room.cover_file.data.full_url}
+          title={room.title}
           subtitle="tapes.me"
         />
 
@@ -72,7 +68,7 @@ export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
           <Box pl={2} pr={2} pt={2}>
             <Typography variant="overline">Collecties</Typography>
           </Box>
-          {room.data.playlists.map((p) => (
+          {room.playlists.map((p) => (
             <Box style={{ width: "100%" }} key={p.id}>
               <List style={{ padding: 0, width: "100%" }}>
                 <PlaylistHeader
@@ -104,7 +100,7 @@ export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
         </Paper>
 
         <Box pt={4}>
-          <SubscribePanel slug={room.data.slug} />
+          <SubscribePanel slug={room.slug} />
         </Box>
         <Box pt={4}>
           <NextLink href="/rooms/[roomSlug]" as={`/rooms/${slug}`}>

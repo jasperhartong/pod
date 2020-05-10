@@ -1,4 +1,4 @@
-import ErrorPage from "../../../../../../src/components/error-page";
+import { ErrorPage } from "../../../../../../src/components/error-page";
 import { EpisodeRecord } from "../../../../../../src/components/admin/episode-record";
 import { useRouter } from "next/dist/client/router";
 import { useSWRRoom } from "../../../../../../src/hooks/useSWRRoom";

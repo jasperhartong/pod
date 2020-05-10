@@ -20,7 +20,7 @@ import {
 import { IResponse } from "../../../src/api/IResponse";
 import roomFetch from "../../../src/api/rpc/commands/room.fetch";
 import AppContainer from "../../../src/components/app-container";
-import ErrorPage from "../../../src/components/error-page";
+import { ErrorPage } from "../../../src/components/error-page";
 import PageFooter from "../../../src/components/page-footer";
 
 // Dynamic imports (load on user interaction)

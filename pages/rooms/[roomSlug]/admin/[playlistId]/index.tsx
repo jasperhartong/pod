@@ -1,4 +1,4 @@
-import ErrorPage from "../../../../../src/components/error-page";
+import { ErrorPage } from "../../../../../src/components/error-page";
 import { useRouter } from "next/dist/client/router";
 import { useSWRRoom } from "../../../../../src/hooks/useSWRRoom";
 import { LoaderCentered } from "../../../../../src/components/admin/layout/loader-centered";

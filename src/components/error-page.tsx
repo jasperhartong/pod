@@ -1,7 +1,7 @@
 import { Typography, Box, Divider } from "@material-ui/core";
 import AppContainer from "./app-container";
 
-const ErrorPage = ({ error }: { error?: string }) => (
+export const ErrorPage = ({ error }: { error?: string }) => (
   <AppContainer>
     <Box textAlign="center" pt={8}>
       <Typography variant="overline" color="textSecondary">
@@ -18,5 +18,3 @@ const ErrorPage = ({ error }: { error?: string }) => (
     </Box>
   </AppContainer>
 );
-
-export default ErrorPage;

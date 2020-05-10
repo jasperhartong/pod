@@ -1,17 +1,11 @@
-import { ReactNode } from "react";
+import { Box, TextField, Button, FormGroup } from "@material-ui/core";
 import {
   useForm,
   Controller,
   ErrorMessage,
   FormContextValues,
 } from "react-hook-form";
-import {
-  Box,
-  TextField,
-  Button,
-  FormGroup,
-  Typography,
-} from "@material-ui/core";
+import { FormErrorMessageTypography } from "./form-error-message";
 
 /*
   Currently supported Episode Values of form
@@ -21,9 +15,10 @@ export interface EpisodeFormValues {
   imageUrl: string;
 }
 
-type EpisodeFormKey = keyof EpisodeFormValues;
-
-const episodeFormKeys: Record<EpisodeFormKey, EpisodeFormKey> = {
+export const episodeFormKeys: Record<
+  keyof EpisodeFormValues,
+  keyof EpisodeFormValues
+> = {
   title: "title",
   imageUrl: "imageUrl",
 };
@@ -34,10 +29,13 @@ const episodeFormKeys: Record<EpisodeFormKey, EpisodeFormKey> = {
   - not part of EpisodeForm itself in order to use formContext in parent (e.g. wit a separate dropzone)
 */
 export const useEpisodeFormContext = () => {
-  return useForm<EpisodeFormValues>({
-    mode: "onChange",
-    reValidateMode: "onChange",
-  });
+  return {
+    ...useForm<EpisodeFormValues>({
+      mode: "onChange",
+      reValidateMode: "onChange",
+    }),
+    formKeys: episodeFormKeys,
+  };
 };
 
 /*
@@ -75,7 +73,7 @@ export const EpisodeForm = ({
       <ErrorMessage
         errors={formContext.errors}
         name={episodeFormKeys.title}
-        as={<ErrorMessageTypography />}
+        as={<FormErrorMessageTypography />}
         message="Vul een titel in"
       />
 
@@ -98,9 +96,3 @@ export const EpisodeForm = ({
     </form>
   );
 };
-
-const ErrorMessageTypography = ({ children }: { children?: ReactNode }) => (
-  <Typography variant="subtitle2" color="error">
-    {children}
-  </Typography>
-);

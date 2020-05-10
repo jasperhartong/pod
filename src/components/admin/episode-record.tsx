@@ -11,7 +11,7 @@ import IconUploadSuccess from "@material-ui/icons/CloudDone";
 import { IRoom } from "../../app-schema/IRoom";
 import { IPlaylist } from "../../app-schema/IPlaylist";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
-import { EpisodeCoverLayout } from "./layout/episode-cover-layout";
+import { ImageCoverLayout } from "./layout/image-cover-layout";
 import { IEpisode } from "../../app-schema/IEpisode";
 import { useImmer } from "use-immer";
 import useAudioRecorder from "../../hooks/useAudioRecorder";
@@ -295,7 +295,7 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
       firstItem={
         <Box p={2} pb={0} textAlign="center">
           <Box style={{ display: "inline-block" }}>
-            <EpisodeCoverLayout
+            <ImageCoverLayout
               imageUrl={
                 episode.image_file.data.thumbnails.find((t) => t.width > 240)
                   ?.url

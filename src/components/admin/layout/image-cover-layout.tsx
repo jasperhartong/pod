@@ -24,19 +24,19 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-interface EpisodeCoverLayoutProps {
+interface ImageCoverLayoutProps {
   style?: CSSProperties;
   imageUrl?: string;
   centeredChildren?: ReactNode;
   bottomRightAction?: ReactNode;
 }
 
-export const EpisodeCoverLayout = ({
+export const ImageCoverLayout = ({
   style,
   imageUrl,
   centeredChildren,
   bottomRightAction,
-}: EpisodeCoverLayoutProps) => {
+}: ImageCoverLayoutProps) => {
   const classes = useStyles();
   const rootStyle = {
     ...(style || {}),

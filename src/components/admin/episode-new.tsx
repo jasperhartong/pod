@@ -11,7 +11,7 @@ import {
   EpisodeFormValues,
   EpisodeForm,
 } from "./components/episode-form";
-import { EpisodeCoverDropZone } from "./components/episode-cover-dropzone";
+import { ImageCoverDropZone } from "./components/image-cover-dropzone";
 import { useSWRRoom } from "../../hooks/useSWRRoom";
 
 interface Props {
@@ -29,12 +29,12 @@ export const EpisodeNew = ({ room, playlist }: Props) => {
       playlistId: playlist.id,
       data: {
         title: formData.title,
-        status: "draft",
         image_url: formData.imageUrl,
+        status: "draft",
       },
     });
     if (response.ok) {
-      // Make sure to update local state with API truth and then move on.. Current back end needs some breathing before it returns the new episode
+      // Make sure to update local state with API truth and then move on..
       await revalidate();
       router.push(
         `/rooms/[roomSlug]/admin/[playlistId]/record-episode/[episodeId]`,
@@ -47,7 +47,9 @@ export const EpisodeNew = ({ room, playlist }: Props) => {
   };
 
   const defaultTitle = `Deel ${playlist.episodes.length + 1}`;
-  const watchedTitle = episodeFormContext.watch("title");
+  const watchedTitle = episodeFormContext.watch(
+    episodeFormContext.formKeys.title
+  );
 
   return (
     <AdminDualPaneLayout
@@ -65,12 +67,20 @@ export const EpisodeNew = ({ room, playlist }: Props) => {
       }
       firstItem={
         <Box p={2} pb={0} textAlign="center">
-          <EpisodeCoverDropZone
+          <ImageCoverDropZone
             onSuccess={(downloadUrl) =>
-              episodeFormContext.setValue("imageUrl", downloadUrl, true)
+              episodeFormContext.setValue(
+                episodeFormContext.formKeys.imageUrl,
+                downloadUrl,
+                true
+              )
             }
             onDelete={() =>
-              episodeFormContext.setValue("imageUrl", undefined, true)
+              episodeFormContext.setValue(
+                episodeFormContext.formKeys.imageUrl,
+                undefined,
+                true
+              )
             }
           />
         </Box>

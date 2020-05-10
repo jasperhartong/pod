@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core";
 import ImageIcon from "@material-ui/icons/Image";
 import IconDelete from "@material-ui/icons/DeleteOutline";
-import { EpisodeCoverLayout } from "../layout/episode-cover-layout";
+import { ImageCoverLayout } from "../layout/image-cover-layout";
 import { useSignedDokaImageUploadDropZone } from "../../../hooks/useSignedUploadDropZone";
 import { makeStyles } from "@material-ui/styles";
 
@@ -24,7 +24,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export const EpisodeCoverDropZone = ({
+export const ImageCoverDropZone = ({
   onSuccess,
   onDelete,
 }: {
@@ -48,7 +48,7 @@ export const EpisodeCoverDropZone = ({
     <div {...dropZone.getRootProps()} className={classes.dropZoneRoot}>
       <input {...dropZone.getInputProps()} />
 
-      <EpisodeCoverLayout
+      <ImageCoverLayout
         style={{
           width: 240,
           height: 240,

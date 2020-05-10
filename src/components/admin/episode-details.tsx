@@ -3,7 +3,7 @@ import { Box, Button, Typography } from "@material-ui/core";
 import { IRoom } from "../../app-schema/IRoom";
 import { IPlaylist } from "../../app-schema/IPlaylist";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
-import { EpisodeCoverLayout } from "./layout/episode-cover-layout";
+import { ImageCoverLayout } from "./layout/image-cover-layout";
 import { IEpisode } from "../../app-schema/IEpisode";
 import { AdminHeaderClose } from "./layout/admin-header-close";
 import { RPCClientFactory } from "../../api/rpc/rpc-client";
@@ -73,7 +73,7 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
       firstItem={
         <Box p={2} pb={0} textAlign="center">
           <Box style={{ display: "inline-block" }}>
-            <EpisodeCoverLayout
+            <ImageCoverLayout
               imageUrl={
                 episode.image_file.data.thumbnails.find((t) => t.width > 240)
                   ?.url

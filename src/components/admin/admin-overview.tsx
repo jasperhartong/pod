@@ -9,7 +9,7 @@ import {
   Divider,
 } from "@material-ui/core";
 import PlaylistHeader from "../playlist-header";
-import SubscribePanel from "../subscribe-panel";
+import { PodcastPanel } from "../podcast-panel";
 import AdminHeader from "./layout/admin-header";
 import { IRoom } from "../../app-schema/IRoom";
 import AppContainer from "../app-container";
@@ -72,7 +72,7 @@ export const AdminOverview = ({ room }: { room: IRoom }) => {
         </Paper>
 
         <Box pt={4}>
-          <SubscribePanel slug={room.slug} />
+          <PodcastPanel slug={room.slug} />
         </Box>
         <Box pt={4}>
           <NextLink href="/rooms/[roomSlug]" as={`/rooms/${room.slug}`}>

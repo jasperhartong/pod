@@ -1,5 +1,4 @@
-import Link from "next/link";
-import { Box, Button, Typography } from "@material-ui/core";
+import { Box, Button } from "@material-ui/core";
 import { IRoom } from "../../app-schema/IRoom";
 import { IPlaylist } from "../../app-schema/IPlaylist";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
@@ -13,6 +12,7 @@ import { useState } from "react";
 import { useSWRRoom } from "../../hooks/useSWRRoom";
 import { toDbDate } from "../../api/collection-storage/backends/directus-utils";
 import { DateTime } from "luxon";
+import { AdminInstructionsLayout } from "./layout/admin-instruction-layout";
 
 interface Props {
   room: IRoom;
@@ -103,48 +103,26 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
                 >
                   Publiceer nu
                 </Button>
-                <Box mt={2}>
-                  <Typography variant="body2" gutterBottom>
-                    Deze aflevering is nog niet gepubliceerd
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Pas na publiceren wordt deze zichtbaar in de
-                    <Link href="/rooms/[roomSlug]" as={`/rooms/${room.slug}`}>
-                      <Typography
-                        style={{ display: "inline" }}
-                        variant="body2"
-                        color="textPrimary"
-                      >
-                        {" "}
-                        Luisterkamer
-                      </Typography>
-                    </Link>
-                  </Typography>
-                </Box>
+                <AdminInstructionsLayout
+                  items={[
+                    {
+                      title: "Deze aflevering is nog niet gepubliceerd",
+                      text:
+                        "Pas na publiceren wordt deze zichtbaar in de luisterkamer en Podcast.",
+                    },
+                  ]}
+                />
               </>
             )}
             {episode.status === "published" && (
-              <>
-                <Box mt={2}>
-                  <Typography variant="body2" gutterBottom>
-                    Deze aflevering is gepubliceerd
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Deze is nu zichtbaar in de
-                    <Link href="/rooms/[roomSlug]" as={`/rooms/${room.slug}`}>
-                      <Typography
-                        style={{ display: "inline" }}
-                        variant="body2"
-                        color="textPrimary"
-                      >
-                        {" "}
-                        Luisterkamer{" "}
-                      </Typography>
-                    </Link>
-                    van {playlist.title}
-                  </Typography>
-                </Box>
-              </>
+              <AdminInstructionsLayout
+                items={[
+                  {
+                    title: "Deze aflevering is gepubliceerd",
+                    text: "Deze is nu zichtbaar in de luisterkamer en Podcast.",
+                  },
+                ]}
+              />
             )}
           </Box>
           {/* We can easily allow to re-record stuff :) */}

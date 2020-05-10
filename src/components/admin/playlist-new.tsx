@@ -1,84 +1,78 @@
 import { useRouter } from "next/dist/client/router";
 import { Box } from "@material-ui/core";
 import { IRoom } from "../../app-schema/IRoom";
-import { IPlaylist } from "../../app-schema/IPlaylist";
 import { RPCClientFactory } from "../../api/rpc/rpc-client";
-import episodeCreateMeta from "../../api/rpc/commands/episode.create.meta";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
 import { AdminHeaderClose } from "./layout/admin-header-close";
-import {
-  useEpisodeFormContext,
-  EpisodeFormValues,
-  EpisodeForm,
-} from "./components/episode-form";
 import { ImageCoverDropZone } from "./components/image-cover-dropzone";
 import { useSWRRoom } from "../../hooks/useSWRRoom";
+import { PlaylistForm } from "./components/playlist-form";
+import {
+  usePlaylistFormContext,
+  PlaylistFormValues,
+} from "./components/playlist-form";
+import playlistCreateMeta from "../../api/rpc/commands/playlist.create.meta";
 import { AdminInstructionsLayout } from "./layout/admin-instruction-layout";
 
 interface Props {
   room: IRoom;
-  playlist: IPlaylist;
 }
 
-export const EpisodeNew = ({ room, playlist }: Props) => {
+export const PlaylistNew = ({ room }: Props) => {
   const router = useRouter();
-  const episodeFormContext = useEpisodeFormContext();
+  const formContext = usePlaylistFormContext();
   const { revalidate } = useSWRRoom(room.slug);
 
-  const handleSubmit = async (formData: EpisodeFormValues) => {
-    const response = await RPCClientFactory(episodeCreateMeta).call({
-      playlistId: playlist.id,
+  const handleSubmit = async (formData: PlaylistFormValues) => {
+    const playlistCreation = await RPCClientFactory(playlistCreateMeta).call({
+      roomId: room.id,
       data: {
         title: formData.title,
+        description: formData.description || "",
         image_url: formData.imageUrl,
-        status: "draft",
       },
     });
-    if (response.ok) {
+    if (playlistCreation.ok) {
       // Make sure to update local state with API truth and then move on..
       await revalidate();
       router.push(
-        `/rooms/[roomSlug]/admin/[playlistId]/record-episode/[episodeId]`,
-        `/rooms/${room.slug}/admin/${playlist.id}/record-episode/${response.data.id}`
+        `/rooms/[roomSlug]/admin/[playlistId]`,
+        `/rooms/${room.slug}/admin/${playlistCreation.data.id}`
       );
     } else {
-      alert("De aflevering kan niet bewaard worden.");
-      episodeFormContext.clearError();
+      alert("De collectie kon niet worden aangemaakt, probeer opnieuw.");
+      formContext.clearError();
     }
   };
 
-  const defaultTitle = `Deel ${playlist.episodes.length + 1}`;
-  const watchedTitle = episodeFormContext.watch(
-    episodeFormContext.formKeys.title
-  );
+  const defaultTitle = `Naamloze collectie`;
+  const watchedTitle = formContext.watch(formContext.formKeys.title);
 
   return (
     <AdminDualPaneLayout
-      title={"Nieuwe aflevering"}
+      title={"Nieuwe collectie"}
       subtitle={watchedTitle || defaultTitle}
-      image={
-        playlist.cover_file.data.thumbnails.find((t) => t.width > 400)?.url
-      }
+      image={room.cover_file.data.thumbnails.find((t) => t.width > 400)?.url}
       blur={40}
       action={
         <AdminHeaderClose
-          url={`/rooms/[roomSlug]/admin/[playlistId]`}
-          as={`/rooms/${room.slug}/admin/${playlist.id}`}
+          url={`/rooms/[roomSlug]/admin`}
+          as={`/rooms/${room.slug}/admin`}
         />
       }
       firstItem={
         <Box p={2} pb={0} textAlign="center">
           <ImageCoverDropZone
             onSuccess={(downloadUrl) =>
-              episodeFormContext.setValue(
-                episodeFormContext.formKeys.imageUrl,
+              formContext.setValue(
+                formContext.formKeys.imageUrl,
                 downloadUrl,
                 true
               )
             }
             onDelete={() =>
-              episodeFormContext.setValue(
-                episodeFormContext.formKeys.imageUrl,
+              formContext.setValue(
+                formContext.formKeys.imageUrl,
                 undefined,
                 true
               )
@@ -88,8 +82,8 @@ export const EpisodeNew = ({ room, playlist }: Props) => {
       }
       secondItem={
         <Box pt={2}>
-          <EpisodeForm
-            formContext={episodeFormContext}
+          <PlaylistForm
+            formContext={formContext}
             initialValues={{ title: defaultTitle }}
             onSubmit={handleSubmit}
           />
@@ -98,12 +92,16 @@ export const EpisodeNew = ({ room, playlist }: Props) => {
               {
                 title: "Plaatje",
                 text:
-                  "Bijvoorbeeld een plaatje uit het verhaal, of gewoon een mooie foto",
+                  "Bijvoorbeeld een leuke foto van degene die voorleest, of van het boek dat wordt voorgelezen.",
               },
               {
                 title: "Titel",
                 text:
-                  "Bijvoorbeeld de titel van een hoofdstuk, of de titel van het korte verhaal",
+                  "Bijvoorbeeld de titel van een boek, of de naam van een eigen bedachte held (jippie-jippie-cowboy?) of de naam van een auteur.",
+              },
+              {
+                title: "Korte omschrijving",
+                text: "Bijvoorbeeld de gene die het voorleest 'Van Oma Els'.",
               },
             ]}
           />

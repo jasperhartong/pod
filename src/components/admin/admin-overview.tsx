@@ -1,4 +1,3 @@
-import { useState } from "react";
 import NextLink from "next/link";
 import {
   Button,
@@ -16,44 +15,9 @@ import { IRoom } from "../../app-schema/IRoom";
 import AppContainer from "../app-container";
 import { useRouter } from "next/dist/client/router";
 import PageFooter from "../page-footer";
-import { RPCClientFactory } from "../../api/rpc/rpc-client";
-import playlistCreateMeta from "../../api/rpc/commands/playlist.create.meta";
-import { useSWRRoom } from "../../hooks/useSWRRoom";
-import { LoaderCentered } from "./layout/loader-centered";
 
 export const AdminOverview = ({ room }: { room: IRoom }) => {
   const router = useRouter();
-  const { revalidate } = useSWRRoom(room.slug);
-  const [isCreatingEpisode, setIsCreatingEpisode] = useState<boolean>(false);
-
-  if (isCreatingEpisode) {
-    return <LoaderCentered />;
-  }
-
-  const slug = room.slug;
-
-  const handlePlaylistCreation = async () => {
-    setIsCreatingEpisode(true);
-    const playlistCreation = await RPCClientFactory(playlistCreateMeta).call({
-      roomId: room.id,
-      data: {
-        title: "💅 Nice",
-        description: "is it?",
-        image_url:
-          "https://api.directus.cloud/dcMJTq1b80lIY4CT/assets/crsl719k1m0ow04g?key=directus-medium-crop",
-      },
-    });
-    if (!playlistCreation.ok) {
-      setIsCreatingEpisode(false);
-      alert(playlistCreation.error);
-    } else {
-      await revalidate();
-      router.push(
-        "/rooms/[roomSlug]/admin/[playlistId]",
-        `/rooms/${slug}/admin/${playlistCreation.data.id}`
-      );
-    }
-  };
 
   return (
     <AppContainer maxWidth="md">
@@ -77,7 +41,7 @@ export const AdminOverview = ({ room }: { room: IRoom }) => {
                   onClick={() => {
                     router.push(
                       "/rooms/[roomSlug]/admin/[playlistId]",
-                      `/rooms/${slug}/admin/${p.id}`
+                      `/rooms/${room.slug}/admin/${p.id}`
                     );
                   }}
                   secondaryAction={
@@ -93,7 +57,15 @@ export const AdminOverview = ({ room }: { room: IRoom }) => {
           </Box>
 
           <Box p={2}>
-            <Button fullWidth onClick={handlePlaylistCreation}>
+            <Button
+              fullWidth
+              onClick={() => {
+                router.push(
+                  "/rooms/[roomSlug]/admin/new-playlist",
+                  `/rooms/${room.slug}/admin/new-playlist`
+                );
+              }}
+            >
               Nieuwe collectie beginnen
             </Button>
           </Box>
@@ -103,7 +75,7 @@ export const AdminOverview = ({ room }: { room: IRoom }) => {
           <SubscribePanel slug={room.slug} />
         </Box>
         <Box pt={4}>
-          <NextLink href="/rooms/[roomSlug]" as={`/rooms/${slug}`}>
+          <NextLink href="/rooms/[roomSlug]" as={`/rooms/${room.slug}`}>
             <Button fullWidth>Open Luisterkamer</Button>
           </NextLink>
         </Box>

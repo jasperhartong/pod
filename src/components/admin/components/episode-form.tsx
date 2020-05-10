@@ -90,7 +90,7 @@ export const EpisodeForm = ({
           variant="contained"
           fullWidth
         >
-          Ga naar opnemen
+          Naar opnemen
         </Button>
       </Box>
     </form>

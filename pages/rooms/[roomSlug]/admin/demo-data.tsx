@@ -36,16 +36,13 @@ const copyPlaylist = async (playlist: IPlaylist, room: IRoom) => {
     },
   });
   if (playlistCreation.ok) {
-    try {
-      playlist.episodes.forEach(async (episode) => {
-        const creation = await copyEpisode(episode, playlistCreation.data.id);
-        if (!creation.ok) {
-          throw Error("episode failed to copy");
-        }
-      });
-    } catch (error) {
-      console.error(error);
-    }
+    // episodes are ordered from new to old. We want to copy them old to new.
+    playlist.episodes.reverse().forEach(async (episode, index) => {
+      const creation = await copyEpisode(episode, playlistCreation.data.id);
+      if (!creation.ok) {
+        console.error(`"${episode.title}" failed to copy. Index: ${index}`);
+      }
+    });
   }
 };
 

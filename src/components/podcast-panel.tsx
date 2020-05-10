@@ -24,14 +24,14 @@ import { AdminInstructionsLayout } from "./admin/layout/admin-instruction-layout
 
 type SubscribeLink = { url: string; label: string };
 
-export const PodcastPanel = ({ slug }: { slug: string }) => {
+export const PodcastPanel = ({ room }: { room: IRoom }) => {
   const [didCopy, setDidCopy] = useState<string | undefined>(undefined);
   const [subscribeLinks, setSubscribeLinks] = useState<SubscribeLink[]>([]);
   const clipboard = useClipboard();
   const { hasNativeShare, nativeShare } = useSharing();
 
   useEffect(() => {
-    setSubscribeLinks(subscribeLinksForCurrentHost(slug));
+    setSubscribeLinks(subscribeLinksForCurrentHost(room.slug));
   }, []);
 
   const handleCopy = (url: string) => {
@@ -61,7 +61,11 @@ export const PodcastPanel = ({ slug }: { slug: string }) => {
                 {hasNativeShare && (
                   <Button
                     onClick={() =>
-                      nativeShare("Podcast: ", "descrpt", link.url)
+                      nativeShare(
+                        `Podcast: ${room.title}`,
+                        `${link.label} – powered by Tapes.me`,
+                        link.url
+                      )
                     }
                   >
                     <IconShare fontSize="small" style={{ marginRight: 8 }} />{" "}

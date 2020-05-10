@@ -72,7 +72,7 @@ export const AdminOverview = ({ room }: { room: IRoom }) => {
         </Paper>
 
         <Box pt={4}>
-          <PodcastPanel slug={room.slug} />
+          <PodcastPanel room={room} />
         </Box>
         <Box pt={4}>
           <NextLink href="/rooms/[roomSlug]" as={`/rooms/${room.slug}`}>

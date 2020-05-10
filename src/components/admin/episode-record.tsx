@@ -39,7 +39,7 @@ interface State {
 }
 
 const initialState: State = {
-  didTestMicrophone: true, // TODO: Revert me!
+  didTestMicrophone: false,
   isSaving: false,
 };
 

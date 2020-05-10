@@ -21,6 +21,13 @@ export interface EpisodeFormValues {
   imageUrl: string;
 }
 
+type EpisodeFormKey = keyof EpisodeFormValues;
+
+const episodeFormKeys: Record<EpisodeFormKey, EpisodeFormKey> = {
+  title: "title",
+  imageUrl: "imageUrl",
+};
+
 /*
   hook that could be imported into partent of EpisodeForm
   - return value can be used to pass in as form Context
@@ -61,13 +68,13 @@ export const EpisodeForm = ({
           as={TextField}
           label="Titel"
           placeholder="Titel aflevering"
-          name="title"
+          name={episodeFormKeys.title}
           disabled={formContext.formState.isSubmitting}
         />
       </FormGroup>
       <ErrorMessage
         errors={formContext.errors}
-        name="title"
+        name={episodeFormKeys.title}
         as={<ErrorMessageTypography />}
         message="Vul een titel in"
       />
@@ -75,7 +82,7 @@ export const EpisodeForm = ({
       <input
         type="hidden"
         ref={formContext.register({ required: true })}
-        name="imageUrl"
+        name={episodeFormKeys.imageUrl}
       />
       {/* submit */}
       <Box mt={2}>

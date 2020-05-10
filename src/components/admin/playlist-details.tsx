@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   Box,
   List,
@@ -22,6 +21,7 @@ import AppContainer from "../app-container";
 import { useRouter } from "next/dist/client/router";
 import PageFooter from "../page-footer";
 import { AdminHeaderClose } from "./layout/admin-header-close";
+import { AdminInstructionsLayout } from "./layout/admin-instruction-layout";
 
 export const PlaylistDetails = ({
   room,
@@ -113,23 +113,16 @@ const AdminEpisodeList = ({
             <Box mb={2}>
               <Divider />
             </Box>
-
-            <Typography variant="body2" gutterBottom>
-              Deze collectie bevat nog geen gepubliceerde aflevering
-            </Typography>
-            <Typography variant="body2" color="textSecondary">
-              Deze collectie is dan ook nog NIET zichtbaar in de
-              <Link href="/rooms/[roomSlug]" as={`/rooms/${room.slug}`}>
-                <Typography
-                  style={{ display: "inline" }}
-                  variant="body2"
-                  color="textPrimary"
-                >
-                  {" "}
-                  Luisterkamer
-                </Typography>
-              </Link>
-            </Typography>
+            <AdminInstructionsLayout
+              items={[
+                {
+                  title:
+                    "Deze collectie bevat nog geen gepubliceerde aflevering",
+                  text:
+                    "Deze collectie is dan ook nog NIET zichtbaar in de luisterkamer en Podcast.",
+                },
+              ]}
+            />
           </Box>
         )}
       </List>

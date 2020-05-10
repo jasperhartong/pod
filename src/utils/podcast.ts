@@ -25,6 +25,7 @@ export const podcastXML = (room: IRoom): string => {
     },
   };
 
+  /* // Busines Logic: Only show playlists that contain published episodes */
   const playlistsContainingPublishedEpisodes = room.playlists.filter(
     (p) => p.episodes.filter((e) => e.status === "published").length > 0
   );

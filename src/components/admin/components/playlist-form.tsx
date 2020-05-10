@@ -78,7 +78,7 @@ export const PlaylistForm = ({
         as={<FormErrorMessageTypography />}
         message="Vul een titel in"
       />
-
+      <Box pt={2} />
       <FormGroup>
         {/* Description */}
         <Controller

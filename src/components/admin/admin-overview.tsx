@@ -24,7 +24,7 @@ import { LoaderCentered } from "./layout/loader-centered";
 
 export const AdminOverview = ({ room }: { room: IResponse<IRoom> }) => {
   const router = useRouter();
-  const { revalidate } = useSWRRoom();
+  const { revalidate } = useSWRRoom(room.ok ? room.data.slug : "test");
   const [isCreatingEpisode, setIsCreatingEpisode] = useState<boolean>(false);
 
   if (isCreatingEpisode) {

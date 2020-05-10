@@ -22,7 +22,7 @@ interface Props {
 export const EpisodeNew = ({ room, playlist }: Props) => {
   const router = useRouter();
   const episodeFormContext = useEpisodeFormContext();
-  const { revalidate } = useSWRRoom();
+  const { revalidate } = useSWRRoom(room.slug);
 
   const handleSubmit = async (formData: EpisodeFormValues) => {
     const response = await RPCClientFactory(episodeCreateMeta).call({
@@ -34,7 +34,7 @@ export const EpisodeNew = ({ room, playlist }: Props) => {
       },
     });
     if (response.ok) {
-      // Make sure to update local state with API truth and then move on
+      // Make sure to update local state with API truth and then move on.. Current back end needs some breathing before it returns the new episode
       await revalidate();
       router.push(
         `/rooms/[roomSlug]/admin/[playlistId]/record-episode/[episodeId]`,

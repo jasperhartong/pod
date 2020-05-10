@@ -45,7 +45,7 @@ const initialState: State = {
 
 export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
   const router = useRouter();
-  const { mutateEpisode } = useSWRRoom();
+  const { mutateEpisode } = useSWRRoom(room.slug);
   const [localState, dispatch] = useImmer<State>(initialState);
   const recorder = useAudioRecorder();
   const uploader = useSignedMediaUploader({

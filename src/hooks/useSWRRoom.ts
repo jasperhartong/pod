@@ -7,7 +7,7 @@ import { IResponse } from "../api/IResponse";
 import { IPlaylist } from "../app-schema/IPlaylist";
 import { IEpisode } from "../app-schema/IEpisode";
 
-export const useSWRRoom = (slug: string = "test") => {
+export const useSWRRoom = (slug: string) => {
   const { data, mutate, ...rest } = useSWR(
     slug,
     (slug: IRoom["slug"]) => RPCClientFactory(roomFetchMeta).call({ slug }),

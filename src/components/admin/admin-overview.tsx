@@ -1,4 +1,3 @@
-import NextLink from "next/link";
 import {
   Button,
   List,
@@ -15,6 +14,7 @@ import { IRoom } from "../../app-schema/IRoom";
 import AppContainer from "../app-container";
 import { useRouter } from "next/dist/client/router";
 import PageFooter from "../page-footer";
+import { ListenRoomPanel } from "./components/listen-room-panel";
 
 export const AdminOverview = ({ room }: { room: IRoom }) => {
   const router = useRouter();
@@ -72,12 +72,13 @@ export const AdminOverview = ({ room }: { room: IRoom }) => {
         </Paper>
 
         <Box pt={4}>
+          <Paper>
+            <Box pl={2} pr={2} pt={1} pb={1}>
+              <Typography variant="overline">Delen</Typography>
+            </Box>
+          </Paper>
+          <ListenRoomPanel room={room} />
           <PodcastPanel room={room} />
-        </Box>
-        <Box pt={4}>
-          <NextLink href="/rooms/[roomSlug]" as={`/rooms/${room.slug}`}>
-            <Button fullWidth>Open Luisterkamer</Button>
-          </NextLink>
         </Box>
 
         <PageFooter />

@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import {
   Grid,
-  List,
-  ListItem,
   ExpansionPanel,
   ExpansionPanelSummary,
   Typography,
@@ -16,6 +14,7 @@ import IconNewWindow from "@material-ui/icons/OpenInNew";
 import IconShare from "@material-ui/icons/Share";
 import IconCopy from "@material-ui/icons/FileCopy";
 import IconCopySuccess from "@material-ui/icons/CheckCircle";
+import IconMusic from "@material-ui/icons/MusicNote";
 import { rssUrl } from "../../../urls";
 import { IRoom } from "../../../app-schema/IRoom";
 import useSharing from "../../../hooks/useSharing";
@@ -46,7 +45,10 @@ export const PodcastPanel = ({ room }: { room: IRoom }) => {
         aria-controls="subscribe-content"
         id="subscribe-header"
       >
-        <Typography>Luisteren via een Podcast app</Typography>
+        <Grid container alignContent="center">
+          <IconMusic fontSize="small" style={{ marginRight: 8 }} />
+          <Typography>Deel via een Podcast app</Typography>
+        </Grid>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails id="subscribe-content">
         <Box width="100%">

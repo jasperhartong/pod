@@ -25,6 +25,8 @@ import { useRouter } from "next/dist/client/router";
 import { AdminHeaderClose } from "./layout/admin-header-close";
 import { useSWRRoom } from "../../hooks/useSWRRoom";
 import MediaDropZone from "../media-dropzone";
+import { Duration } from "luxon";
+import { AppColors } from "../../theme";
 
 interface Props {
   room: IRoom;
@@ -305,14 +307,30 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
               centeredChildren={
                 <>
                   {recorder.isRecording && (
-                    <Box zIndex={2}>
-                      <AudioRecorderVisualizer
-                        uniqueId={episode.id.toString()}
-                        getFrequencyData={recorder.getFrequencyData}
-                        width={240}
-                        height={240}
-                      />
-                    </Box>
+                    <>
+                      <Box zIndex={2} style={{ background: "rgba(0,0,0,0.4)" }}>
+                        <AudioRecorderVisualizer
+                          uniqueId={episode.id.toString()}
+                          getFrequencyData={recorder.getFrequencyData}
+                          width={240}
+                          height={240}
+                        />
+                      </Box>
+                      <Box
+                        position="absolute"
+                        zIndex={3}
+                        bottom={8}
+                        left={0}
+                        right={0}
+                        textAlign="center"
+                      >
+                        <Typography variant="h4" color="textPrimary">
+                          {Duration.fromObject({
+                            seconds: recorder.dataSeconds,
+                          }).toFormat("mm:ss")}
+                        </Typography>
+                      </Box>
+                    </>
                   )}
                   {localState.isSaving && (
                     <CircularProgress

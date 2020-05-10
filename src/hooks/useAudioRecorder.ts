@@ -21,8 +21,8 @@ interface ImmerState {
   isRequestingAccess: boolean;
   isListening: boolean;
   isRecording: boolean;
-  dataSeconds: number;
   dataBlobs: Blob[];
+  dataSeconds: number;
   dataSize: number;
   error?: Error;
 }

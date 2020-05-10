@@ -9,7 +9,7 @@ export const AdminInstructionsLayout = ({
   <Box mt={4} mb={2}>
     {items.map((item) => (
       <Box mb={2}>
-        <Grid container alignItems="center" alignContent="center">
+        <Grid container alignItems="center" alignContent="center" wrap="nowrap">
           <IconInfo fontSize="inherit" style={{ marginRight: 4 }} />
           <Typography variant="body2" color="textPrimary">
             {item.title}

@@ -1,4 +1,10 @@
-import { Box, TextField, Button, FormGroup } from "@material-ui/core";
+import {
+  Box,
+  TextField,
+  Button,
+  FormGroup,
+  LinearProgress,
+} from "@material-ui/core";
 import {
   useForm,
   Controller,
@@ -117,7 +123,14 @@ export const PlaylistForm = ({
           variant="contained"
           fullWidth
         >
-          Bewaar nieuwe collectie
+          {formContext.formState.isSubmitting ? (
+            <LinearProgress
+              style={{ margin: 10, width: "100%" }}
+              variant="indeterminate"
+            />
+          ) : (
+            "Bewaar nieuwe collectie"
+          )}
         </Button>
       </Box>
     </form>

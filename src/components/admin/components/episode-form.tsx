@@ -1,4 +1,10 @@
-import { Box, TextField, Button, FormGroup } from "@material-ui/core";
+import {
+  Box,
+  TextField,
+  Button,
+  FormGroup,
+  LinearProgress,
+} from "@material-ui/core";
 import {
   useForm,
   Controller,
@@ -90,7 +96,14 @@ export const EpisodeForm = ({
           variant="contained"
           fullWidth
         >
-          Naar opnemen
+          {formContext.formState.isSubmitting ? (
+            <LinearProgress
+              style={{ margin: 10, width: "100%" }}
+              variant="indeterminate"
+            />
+          ) : (
+            "Naar opnemen"
+          )}
         </Button>
       </Box>
     </form>

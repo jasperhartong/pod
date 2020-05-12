@@ -6,7 +6,7 @@ export const AdminInstructionsLayout = ({
 }: {
   items: { title: string; text: string }[];
 }) => (
-  <Box mt={4} mb={2}>
+  <Box mt={2} mb={2}>
     {items.map((item, index) => (
       <Box mb={2} key={`${item.title}-${index}`}>
         <Grid container alignItems="center" alignContent="center" wrap="nowrap">

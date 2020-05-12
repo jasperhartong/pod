@@ -1,20 +1,20 @@
 import { IResponse } from "@/api/IResponse";
 import roomFetch from "@/api/rpc/commands/room.fetch";
 import { IRoom } from "@/app-schema/IRoom";
+import { AdminWelcome } from "@/components/admin/admin-welcome";
 import { LoaderCentered } from "@/components/admin/layout/loader-centered";
 import { ErrorPage } from "@/components/error-page";
-import { ListenRoom } from "@/components/listen-room";
 import { useRouter } from "@/hooks/useRouter";
 import { useSWRRoom } from "@/hooks/useSWRRoom";
 import { GetStaticPaths, GetStaticProps } from "next";
 
-const revalidationInterval = 1; // 1 second
+const revalidationInterval = 60 * 60 * 24; // 24 hour
 
 interface PageProps {
   preFetchedRoomResponse?: IResponse<IRoom>;
 }
 
-const ListenRoomPage = ({ preFetchedRoomResponse }: PageProps) => {
+const WelcomePage = ({ preFetchedRoomResponse }: PageProps) => {
   const router = useRouter();
   const { data } = useSWRRoom(
     router.isFallback ? null : (router.query.roomSlug as string),
@@ -29,10 +29,10 @@ const ListenRoomPage = ({ preFetchedRoomResponse }: PageProps) => {
     return <ErrorPage error={data.error} />;
   }
 
-  return <ListenRoom room={data.data} />;
+  return <AdminWelcome room={data.data} />;
 };
 
-export default ListenRoomPage;
+export default WelcomePage;
 
 export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
   return {

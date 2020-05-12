@@ -7,12 +7,14 @@ import { IRoom } from "@/app-schema/IRoom";
 import produce from "immer";
 import useSWR from "swr";
 
-export const useSWRRoom = (slug: string) => {
-  const { data, mutate, ...rest } = useSWR(
-    slug,
-    (slug: IRoom["slug"]) => RPCClientFactory(roomFetchMeta).call({ slug }),
-    { refreshInterval: 0 }
-  );
+const fetcher = async (slug: IRoom["slug"]) =>
+  RPCClientFactory(roomFetchMeta).call({ slug });
+
+export const useSWRRoom = (slug: string, initialData?: IResponse<IRoom>) => {
+  const { data, mutate, ...rest } = useSWR(slug, fetcher, {
+    refreshInterval: 0,
+    initialData,
+  });
 
   const mutateEpisode = (
     playlistId: IPlaylist["id"],

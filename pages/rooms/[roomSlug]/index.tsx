@@ -1,3 +1,4 @@
+import roomFetchMeta from "@/api/rpc/commands/room.fetch.meta";
 import { IEpisode } from "@/app-schema/IEpisode";
 import { IRoom } from "@/app-schema/IRoom";
 import { LoaderCentered } from "@/components/admin/layout/loader-centered";
@@ -10,11 +11,18 @@ import SnackbarPlayer from "@/components/snackbar-player";
 import { useRouter } from "@/hooks/useRouter";
 import { useSWRRoom } from "@/hooks/useSWRRoom";
 import { Box, Grid, List, Typography } from "@material-ui/core";
+import { NextPageContext } from "next";
 import { useImmer } from "use-immer";
+import { IResponse } from "../../../src/api/IResponse";
+import { RPCClientFactory } from "../../../src/api/rpc/rpc-client";
 
-const ListenRoomPage = () => {
+interface PageProps {
+  roomResponse: IResponse<IRoom>;
+}
+
+const ListenRoomPage = ({ roomResponse }: PageProps) => {
   const router = useRouter();
-  const { data } = useSWRRoom(router.query.roomSlug as string);
+  const { data } = useSWRRoom(router.query.roomSlug as string, roomResponse);
   const { playerState, start, stop, pause } = usePlayerState();
 
   if (!data) {
@@ -83,6 +91,22 @@ const ListenRoomPage = () => {
 };
 
 export default ListenRoomPage;
+
+export async function getStaticProps(
+  context: NextPageContext
+): Promise<{ props: PageProps; unstable_revalidate: number }> {
+  return {
+    props: {
+      roomResponse: await RPCClientFactory(roomFetchMeta).call({
+        slug: context.query.roomSlug as string,
+      }),
+    },
+    // we will attempt to re-generate the page:
+    // - when a request comes in
+    // - at most once every second
+    unstable_revalidate: 1,
+  };
+}
 
 const findEpisodeById = (room: IRoom, episodeId?: number) => {
   return ([] as IEpisode[])

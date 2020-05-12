@@ -7,8 +7,8 @@ export const AdminInstructionsLayout = ({
   items: { title: string; text: string }[];
 }) => (
   <Box mt={4} mb={2}>
-    {items.map((item) => (
-      <Box mb={2}>
+    {items.map((item, index) => (
+      <Box mb={2} key={`${item.title}-${index}`}>
         <Grid container alignItems="center" alignContent="center" wrap="nowrap">
           <IconInfo fontSize="inherit" style={{ marginRight: 4 }} />
           <Typography variant="body2" color="textPrimary">

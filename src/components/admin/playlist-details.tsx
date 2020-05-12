@@ -116,8 +116,7 @@ const AdminEpisodeList = ({
             <AdminInstructionsLayout
               items={[
                 {
-                  title:
-                    "Deze collectie bevat nog geen gepubliceerde aflevering",
+                  title: "Binnen deze collectie is niets gepubliceerd",
                   text:
                     "Deze collectie is dan ook nog NIET zichtbaar in de luisterkamer en Podcast.",
                 },

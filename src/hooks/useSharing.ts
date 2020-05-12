@@ -20,16 +20,20 @@ const nativeShare = (
   title: string,
   text: string,
   url: string
-): Promise<true> => {
+): Promise<boolean> => {
   let _navigator = window.navigator as any;
   if (_navigator.share) {
     return new Promise((resolve, reject) => {
       _navigator
         .share({ title, text, url })
         .then(() => resolve(true))
-        .catch((err: Error) => reject(err));
+        .catch((err: Error) => {
+          console.error(err);
+          resolve(false);
+        });
     });
   } else {
-    return Promise.reject(Error("Not supported"));
+    console.error("Not supported");
+    return Promise.resolve(false);
   }
 };

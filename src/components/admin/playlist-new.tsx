@@ -1,17 +1,17 @@
-import { Box } from "@material-ui/core";
-import { IRoom } from "@/app-schema/IRoom";
+import playlistCreateMeta from "@/api/rpc/commands/playlist.create.meta";
 import { RPCClientFactory } from "@/api/rpc/rpc-client";
+import { IRoom } from "@/app-schema/IRoom";
+import { useRouter } from "@/hooks/useRouter";
+import { useSWRRoom } from "@/hooks/useSWRRoom";
+import { Box } from "@material-ui/core";
+import { ImageCoverDropZone } from "./components/image-cover-dropzone";
+import {
+  PlaylistForm,
+  PlaylistFormValues,
+  usePlaylistFormContext,
+} from "./components/playlist-form";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
 import { AdminHeaderClose } from "./layout/admin-header-close";
-import { ImageCoverDropZone } from "./components/image-cover-dropzone";
-import { useSWRRoom } from "@/hooks/useSWRRoom";
-import { useRouter } from "@/hooks/useRouter";
-import { PlaylistForm } from "./components/playlist-form";
-import {
-  usePlaylistFormContext,
-  PlaylistFormValues,
-} from "./components/playlist-form";
-import playlistCreateMeta from "@/api/rpc/commands/playlist.create.meta";
 import { AdminInstructionsLayout } from "./layout/admin-instruction-layout";
 
 interface Props {

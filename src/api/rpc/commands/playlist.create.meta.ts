@@ -1,6 +1,6 @@
+import { TRoom } from "@/app-schema/IRoom";
 import * as t from "io-ts";
 import { RPCMeta } from "../rpc-meta";
-import { TRoom } from "@/app-schema/IRoom";
 
 const reqDataValidator = t.type({
   roomId: TRoom.props.id,

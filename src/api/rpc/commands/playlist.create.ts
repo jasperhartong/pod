@@ -1,7 +1,7 @@
-import { RPCHandlerFactory } from "../rpc-server-handler";
-import meta from "./playlist.create.meta";
 import { collectionsBackend } from "@/api/collection-storage";
 import { OK } from "@/api/IResponse";
+import { RPCHandlerFactory } from "../rpc-server-handler";
+import meta from "./playlist.create.meta";
 
 export default RPCHandlerFactory(meta, async (reqData) => {
   const imageUpload = await collectionsBackend.addExternalImage(

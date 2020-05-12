@@ -1,6 +1,5 @@
-import * as t from "io-ts";
 import { optional } from "@/utils/io-ts";
-
+import * as t from "io-ts";
 import { TDateString } from "./IDateString";
 import { TImageData } from "./IFileData";
 

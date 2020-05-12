@@ -1,5 +1,5 @@
-import React, { ReactNode } from "react";
 import { useSignedMediaUploadDropZone } from "@/hooks/useSignedUploadDropZone";
+import React, { ReactNode } from "react";
 
 interface Props {
   // http://www.iana.org/assignments/media-types/media-types.xhtml

@@ -1,4 +1,4 @@
-import { Typography, Box, Divider } from "@material-ui/core";
+import { Box, Divider, Typography } from "@material-ui/core";
 import AppContainer from "./app-container";
 
 export const ErrorPage = ({ error }: { error?: string }) => (

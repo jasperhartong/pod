@@ -1,7 +1,7 @@
-import { useRef, useEffect } from "react";
 import { makeStyles } from "@material-ui/core";
-import { AppColors } from "../../theme";
 import { CSSProperties } from "@material-ui/styles";
+import { useEffect, useRef } from "react";
+import { AppColors } from "../../theme";
 
 /* 
   For usage with useAudioRecorder

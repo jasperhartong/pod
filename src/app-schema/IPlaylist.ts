@@ -1,7 +1,6 @@
 import * as t from "io-ts";
-
-import { TEpisode } from "./IEpisode";
 import { TDateString } from "./IDateString";
+import { TEpisode } from "./IEpisode";
 import { TImageData } from "./IFileData";
 
 export const TPlaylist = t.type({

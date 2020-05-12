@@ -1,6 +1,6 @@
-import { IRoom } from "./app-schema/IRoom";
 import { IEpisode } from "./app-schema/IEpisode";
 import { IPlaylist } from "./app-schema/IPlaylist";
+import { IRoom } from "./app-schema/IRoom";
 
 export const baseUrl =
   process.env.NODE_ENV === "development"

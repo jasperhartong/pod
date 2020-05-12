@@ -1,22 +1,21 @@
-import { useState, useEffect } from "react";
-
+import { IEpisode } from "@/app-schema/IEpisode";
 import {
-  IconButton,
-  Box,
   Avatar,
+  Box,
+  Fab,
+  Grid,
+  IconButton,
+  LinearProgress,
   Snackbar,
   SnackbarContent,
-  LinearProgress,
-  Grid,
   Typography,
-  Fab,
 } from "@material-ui/core";
-import FilePlayer from "react-player/lib/players/FilePlayer";
-import PlayIcon from "@material-ui/icons/PlayArrow";
-import PauseIcon from "@material-ui/icons/Pause";
 import CloseIcon from "@material-ui/icons/Close";
-import { IEpisode } from "@/app-schema/IEpisode";
+import PauseIcon from "@material-ui/icons/Pause";
+import PlayIcon from "@material-ui/icons/PlayArrow";
 import { makeStyles } from "@material-ui/styles";
+import { useEffect, useState } from "react";
+import FilePlayer from "react-player/lib/players/FilePlayer";
 
 const useStyles = makeStyles((theme) => ({
   snackbarMessage: {

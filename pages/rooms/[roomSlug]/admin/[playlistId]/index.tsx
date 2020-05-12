@@ -1,8 +1,8 @@
+import { LoaderCentered } from "@/components/admin/layout/loader-centered";
+import { PlaylistDetails } from "@/components/admin/playlist-details";
 import { ErrorPage } from "@/components/error-page";
 import { useRouter } from "@/hooks/useRouter";
 import { useSWRRoom } from "@/hooks/useSWRRoom";
-import { LoaderCentered } from "@/components/admin/layout/loader-centered";
-import { PlaylistDetails } from "@/components/admin/playlist-details";
 
 const AdminPlaylistPage = () => {
   const router = useRouter();

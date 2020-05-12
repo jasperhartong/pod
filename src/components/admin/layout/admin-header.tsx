@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
-import { Typography, Box } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
+import { Box, Typography } from "@material-ui/core";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
+import { makeStyles } from "@material-ui/styles";
+import { ReactNode } from "react";
 
 export interface AdminHeaderProps {
   title: string;

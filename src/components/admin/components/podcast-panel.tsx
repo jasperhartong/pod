@@ -1,24 +1,24 @@
-import { useEffect, useState } from "react";
-import {
-  Grid,
-  ExpansionPanel,
-  ExpansionPanelSummary,
-  Typography,
-  ExpansionPanelDetails,
-  Button,
-  Box,
-  Divider,
-} from "@material-ui/core";
-import IconExpandMore from "@material-ui/icons/ExpandMore";
-import IconNewWindow from "@material-ui/icons/OpenInNew";
-import IconShare from "@material-ui/icons/Share";
-import IconCopy from "@material-ui/icons/FileCopy";
-import IconCopySuccess from "@material-ui/icons/CheckCircle";
-import IconMusic from "@material-ui/icons/MusicNote";
-import { rssUrl } from "../../../urls";
 import { IRoom } from "@/app-schema/IRoom";
 import useSharing from "@/hooks/useSharing";
+import {
+  Box,
+  Button,
+  Divider,
+  ExpansionPanel,
+  ExpansionPanelDetails,
+  ExpansionPanelSummary,
+  Grid,
+  Typography,
+} from "@material-ui/core";
+import IconCopySuccess from "@material-ui/icons/CheckCircle";
+import IconExpandMore from "@material-ui/icons/ExpandMore";
+import IconCopy from "@material-ui/icons/FileCopy";
+import IconMusic from "@material-ui/icons/MusicNote";
+import IconNewWindow from "@material-ui/icons/OpenInNew";
+import IconShare from "@material-ui/icons/Share";
+import { useEffect, useState } from "react";
 import { useClipboard } from "use-clipboard-copy";
+import { rssUrl } from "../../../urls";
 import { AdminInstructionsLayout } from "../layout/admin-instruction-layout";
 
 type SubscribeLink = { url: string; label: string };

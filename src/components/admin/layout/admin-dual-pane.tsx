@@ -1,15 +1,15 @@
-import { ReactNode } from "react";
-import {
-  Container,
-  Paper,
-  Box,
-  Grid,
-  useTheme,
-  useMediaQuery,
-} from "@material-ui/core";
-import AdminHeader, { AdminHeaderProps } from "./admin-header";
 import AppContainer from "@/components/app-container";
 import PageFooter from "@/components/page-footer";
+import {
+  Box,
+  Container,
+  Grid,
+  Paper,
+  useMediaQuery,
+  useTheme,
+} from "@material-ui/core";
+import { ReactNode } from "react";
+import AdminHeader, { AdminHeaderProps } from "./admin-header";
 
 interface Props extends AdminHeaderProps {
   firstItem: ReactNode;

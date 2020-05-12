@@ -1,17 +1,17 @@
-import { MouseEvent } from "react";
+import { useSignedDokaImageUploadDropZone } from "@/hooks/useSignedUploadDropZone";
 import {
   Box,
+  CircularProgress,
+  Grow,
   IconButton,
   Typography,
-  Grow,
-  CircularProgress,
   useTheme,
 } from "@material-ui/core";
-import ImageIcon from "@material-ui/icons/Image";
 import IconDelete from "@material-ui/icons/DeleteOutline";
-import { ImageCoverLayout } from "../layout/image-cover-layout";
-import { useSignedDokaImageUploadDropZone } from "@/hooks/useSignedUploadDropZone";
+import ImageIcon from "@material-ui/icons/Image";
 import { makeStyles } from "@material-ui/styles";
+import { MouseEvent } from "react";
+import { ImageCoverLayout } from "../layout/image-cover-layout";
 
 const useStyles = makeStyles(() => ({
   dropZoneRoot: {

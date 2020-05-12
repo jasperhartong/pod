@@ -1,5 +1,5 @@
 import { createMuiTheme } from "@material-ui/core/styles";
-import { ThemeOptions, Theme } from "@material-ui/core/styles/createMuiTheme";
+import { Theme, ThemeOptions } from "@material-ui/core/styles/createMuiTheme";
 
 // Imported in CSS in _app.tsx
 const font = "'Questrial', sans-serif";

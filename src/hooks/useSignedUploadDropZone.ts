@@ -1,6 +1,6 @@
+import * as Doka from "@/lib/doka/doka.esm.min";
 import { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
-import * as Doka from "@/lib/doka/doka.esm.min";
 import useSignedMediaUploader from "./useSignedMediaUploader";
 
 interface MediaDropZoneProps {

@@ -1,7 +1,7 @@
+import { ERR, OK } from "@/api/IResponse";
 import aws from "aws-sdk";
 import { IFileStorage } from "../interfaces/IFileStorage";
 import { ISignedUrl } from "../interfaces/ISignedUrl";
-import { OK, ERR } from "@/api/IResponse";
 
 const AWSvars = [
   process.env.MY_AWS_ACCESS_BUCKET,

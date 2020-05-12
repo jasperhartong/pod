@@ -1,6 +1,6 @@
 import { SwipeableDrawer } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
+import { makeStyles } from "@material-ui/styles";
 import { ReactNode } from "react";
 
 const useStyles = makeStyles((theme: Theme) => ({

@@ -1,14 +1,13 @@
-import { useState, useEffect, useRef } from "react";
-import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
+import { useRouter } from "@/hooks/useRouter";
 import {
-  Fade,
   Box,
   Container,
-  makeStyles,
+  Fade,
   LinearProgress,
+  makeStyles,
 } from "@material-ui/core";
-import { ReactNode } from "react";
-import { useRouter } from "@/hooks/useRouter";
+import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
+import { ReactNode, useEffect, useRef, useState } from "react";
 
 const useRouterTransition = () => {
   const router = useRouter();

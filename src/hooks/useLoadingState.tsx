@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const useLoadingState = <T extends object>() => {
   const [isValidating, setIsvalidating] = useState<boolean>(false);

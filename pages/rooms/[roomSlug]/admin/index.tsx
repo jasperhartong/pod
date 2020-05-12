@@ -1,8 +1,8 @@
 import { AdminOverview } from "@/components/admin/admin-overview";
-import { useRouter } from "@/hooks/useRouter";
-import { useSWRRoom } from "@/hooks/useSWRRoom";
 import { LoaderCentered } from "@/components/admin/layout/loader-centered";
 import { ErrorPage } from "@/components/error-page";
+import { useRouter } from "@/hooks/useRouter";
+import { useSWRRoom } from "@/hooks/useSWRRoom";
 
 const AdminPage = () => {
   const router = useRouter();

@@ -1,12 +1,12 @@
-import { ReactNode } from "react";
+import { IPlaylist } from "@/app-schema/IPlaylist";
 import {
+  Avatar,
   ListItem,
   ListItemAvatar,
-  Avatar,
-  ListItemText,
   ListItemSecondaryAction,
+  ListItemText,
 } from "@material-ui/core";
-import { IPlaylist } from "@/app-schema/IPlaylist";
+import { ReactNode } from "react";
 
 const PlaylistHeader = ({
   playlist,

@@ -1,5 +1,5 @@
-import { ReactNode } from "react";
 import { Typography } from "@material-ui/core";
+import { ReactNode } from "react";
 
 export const FormErrorMessageTypography = ({
   children,

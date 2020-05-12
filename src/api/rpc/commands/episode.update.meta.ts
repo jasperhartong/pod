@@ -1,7 +1,6 @@
+import { TEpisodePartial } from "@/app-schema/IEpisode";
 import * as t from "io-ts";
 import { RPCMeta } from "../rpc-meta";
-
-import { TEpisodePartial } from "@/app-schema/IEpisode";
 
 const reqDataValidator = t.type({
   id: TEpisodePartial.props.id,

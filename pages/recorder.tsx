@@ -1,9 +1,9 @@
-import { useState } from "react";
-import useAudioRecorder from "@/hooks/useAudioRecorder";
-import { Button, Container, Box } from "@material-ui/core";
 import { AudioRecorderVisualizer } from "@/components/audio-recorder-hook/audio-recorder-visualizer";
+import useAudioRecorder from "@/hooks/useAudioRecorder";
 import { formatBytes } from "@/utils/audio-context";
+import { Box, Button, Container } from "@material-ui/core";
 import { Duration } from "luxon";
+import { useState } from "react";
 
 const RecorderWrapper = () => {
   const [mounted, setMounted] = useState<boolean>(true);

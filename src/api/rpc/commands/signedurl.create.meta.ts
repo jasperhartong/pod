@@ -1,6 +1,6 @@
+import { TSignedUrl } from "@/api/file-storage/interfaces/ISignedUrl";
 import * as t from "io-ts";
 import { RPCMeta } from "../rpc-meta";
-import { TSignedUrl } from "@/api/file-storage/interfaces/ISignedUrl";
 
 export default RPCMeta(
   "signedurl",

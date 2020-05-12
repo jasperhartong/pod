@@ -1,7 +1,7 @@
 import { isLeft } from "fp-ts/lib/Either";
-import { IRPCMeta } from "./rpc-meta";
-import { IResponse, ERR, OK } from "../IResponse";
 import HttpStatus from "http-status-codes";
+import { ERR, IResponse, OK } from "../IResponse";
+import { IRPCMeta } from "./rpc-meta";
 
 export const RPCHandlerFactory = <Tq, Oq, Iq, Ts, Os, Is>(
   meta: IRPCMeta<Tq, Oq, Iq, Ts, Os, Is>,

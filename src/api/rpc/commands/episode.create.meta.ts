@@ -1,8 +1,7 @@
+import { TEpisode, TEpisodeStatus } from "@/app-schema/IEpisode";
+import { TPlaylist } from "@/app-schema/IPlaylist";
 import * as t from "io-ts";
 import { RPCMeta } from "../rpc-meta";
-
-import { TEpisodeStatus, TEpisode } from "@/app-schema/IEpisode";
-import { TPlaylist } from "@/app-schema/IPlaylist";
 
 const reqDataRequired = t.type({
   title: t.string,

@@ -1,28 +1,27 @@
+import { parseDbDate } from "@/api/collection-storage/backends/directus-utils";
+import { IEpisode } from "@/app-schema/IEpisode";
+import { IPlaylist } from "@/app-schema/IPlaylist";
+import { IRoom } from "@/app-schema/IRoom";
+import { useRouter } from "@/hooks/useRouter";
 import {
+  Avatar,
   Box,
+  Container,
+  Divider,
   List,
   ListItem,
   ListItemAvatar,
-  Avatar,
-  Paper,
-  ListItemText,
-  Container,
-  Typography,
   ListItemSecondaryAction,
-  Divider,
+  ListItemText,
+  Paper,
+  Typography,
 } from "@material-ui/core";
-import AdminHeader from "./layout/admin-header";
 import IconAdd from "@material-ui/icons/Add";
-import { IPlaylist } from "@/app-schema/IPlaylist";
-import { parseDbDate } from "@/api/collection-storage/backends/directus-utils";
-import { IEpisode } from "@/app-schema/IEpisode";
-import { IRoom } from "@/app-schema/IRoom";
 import AppContainer from "../app-container";
-
 import PageFooter from "../page-footer";
+import AdminHeader from "./layout/admin-header";
 import { AdminHeaderClose } from "./layout/admin-header-close";
 import { AdminInstructionsLayout } from "./layout/admin-instruction-layout";
-import { useRouter } from "@/hooks/useRouter";
 
 export const PlaylistDetails = ({
   room,

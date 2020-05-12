@@ -1,7 +1,6 @@
 import * as t from "io-ts";
-
-import { TPlaylist } from "./IPlaylist";
 import { TImageData } from "./IFileData";
+import { TPlaylist } from "./IPlaylist";
 
 export const TRoom = t.type({
   id: t.number,

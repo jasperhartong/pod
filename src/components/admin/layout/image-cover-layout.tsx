@@ -1,7 +1,7 @@
-import { ReactNode } from "react";
-import { Box, makeStyles, Grid } from "@material-ui/core";
+import { Box, Grid, makeStyles } from "@material-ui/core";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
 import { CSSProperties } from "@material-ui/styles";
+import { ReactNode } from "react";
 
 const useStyles = makeStyles((theme: Theme) => ({
   image: {

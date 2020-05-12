@@ -1,11 +1,11 @@
-import useSWR from "swr";
-import produce from "immer";
-import { RPCClientFactory } from "@/api/rpc/rpc-client";
-import roomFetchMeta from "@/api/rpc/commands/room.fetch.meta";
-import { IRoom } from "@/app-schema/IRoom";
 import { IResponse } from "@/api/IResponse";
-import { IPlaylist } from "@/app-schema/IPlaylist";
+import roomFetchMeta from "@/api/rpc/commands/room.fetch.meta";
+import { RPCClientFactory } from "@/api/rpc/rpc-client";
 import { IEpisode } from "@/app-schema/IEpisode";
+import { IPlaylist } from "@/app-schema/IPlaylist";
+import { IRoom } from "@/app-schema/IRoom";
+import produce from "immer";
+import useSWR from "swr";
 
 export const useSWRRoom = (slug: string) => {
   const { data, mutate, ...rest } = useSWR(

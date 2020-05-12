@@ -16,12 +16,14 @@ import { useImmer } from "use-immer";
 import { IResponse } from "../../../src/api/IResponse";
 
 interface PageProps {
-  roomResponse?: IResponse<IRoom>;
+  preFetchedRoomResponse?: IResponse<IRoom>;
 }
 
-const ListenRoomPage = ({ roomResponse }: PageProps) => {
+const ListenRoomPage = ({ preFetchedRoomResponse }: PageProps) => {
   const router = useRouter();
-  const initialData = roomResponse?.ok ? roomResponse : undefined;
+  const initialData = preFetchedRoomResponse?.ok
+    ? preFetchedRoomResponse
+    : undefined;
   const { data } = useSWRRoom(router.query.roomSlug as string, initialData);
   const { playerState, start, stop, pause } = usePlayerState();
 
@@ -95,7 +97,7 @@ export default ListenRoomPage;
 export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
   return {
     props: {
-      roomResponse: await roomFetch.handle({
+      preFetchedRoomResponse: await roomFetch.handle({
         slug: params?.roomSlug as string,
       }),
     },

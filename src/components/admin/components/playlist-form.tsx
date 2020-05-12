@@ -92,7 +92,7 @@ export const PlaylistForm = ({
           // https://github.com/react-hook-form/react-hook-form-website/issues/133
           defaultValue={initialValues.description || ""}
           control={formContext.control}
-          rules={{ required: false }}
+          rules={{ required: true }}
           as={TextField}
           multiline={true}
           rows={2}

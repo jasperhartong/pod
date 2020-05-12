@@ -16,12 +16,12 @@ import { useImmer } from "use-immer";
 import { IResponse } from "../../../src/api/IResponse";
 
 interface PageProps {
-  roomResponse: IResponse<IRoom>;
+  roomResponse?: IResponse<IRoom>;
 }
 
 const ListenRoomPage = ({ roomResponse }: PageProps) => {
   const router = useRouter();
-  const initialData = roomResponse.ok ? roomResponse : undefined;
+  const initialData = roomResponse?.ok ? roomResponse : undefined;
   const { data } = useSWRRoom(router.query.roomSlug as string, initialData);
   const { playerState, start, stop, pause } = usePlayerState();
 

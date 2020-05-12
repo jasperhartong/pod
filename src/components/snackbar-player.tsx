@@ -57,16 +57,23 @@ const SnackbarPlayer = ({
           !!playingItem && (
             <Box>
               <FilePlayer
-                url={playingItem.audio_file || undefined}
-                playing={!isPaused}
-                width="0px"
-                height="0px"
+                /* Show controls, but hide them, possible fix for Safari not releasing audio context on unmount */
+                width={0}
+                height={0}
+                controls={true}
+                style={{ display: "none" }}
                 config={{
                   file: { forceAudio: true },
                 }}
+                /* State */
+                playing={!isPaused}
+                url={playingItem.audio_file || undefined}
                 onProgress={({ played, loaded }) => {
                   setProgress(played * 100);
                   setDidLoad(loaded === 1);
+                }}
+                onEnded={() => {
+                  onPlayPause(true);
                 }}
               />
               <Grid container direction="column">

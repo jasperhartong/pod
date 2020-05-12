@@ -1,10 +1,10 @@
 import React, { useMemo } from "react";
 import { useImmer } from "use-immer";
-import { IRoom } from "../app-schema/IRoom";
-import { IEpisode } from "../app-schema/IEpisode";
-import roomFetchMeta from "../api/rpc/commands/room.fetch.meta";
-import { RPCClientFactory } from "../api/rpc/rpc-client";
-import { IResponse } from "../api/IResponse";
+import { IRoom } from "@/app-schema/IRoom";
+import { IEpisode } from "@/app-schema/IEpisode";
+import roomFetchMeta from "@/api/rpc/commands/room.fetch.meta";
+import { RPCClientFactory } from "@/api/rpc/rpc-client";
+import { IResponse } from "@/api/IResponse";
 
 export interface RoomState {
   slug?: IRoom["slug"];

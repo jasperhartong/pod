@@ -1,7 +1,7 @@
 import { IRoom } from "./IRoom";
 import { IEpisode } from "./IEpisode";
 import { IImageData } from "./IFileData";
-import { IResponse } from "../api/IResponse";
+import { IResponse } from "@/api/IResponse";
 import { IPlaylist } from "./IPlaylist";
 
 export interface IBackend {

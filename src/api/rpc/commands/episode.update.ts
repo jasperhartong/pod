@@ -1,7 +1,7 @@
 import { RPCHandlerFactory } from "../rpc-server-handler";
 import meta from "./episode.update.meta";
-import { collectionsBackend } from "../../collection-storage";
-import { OK } from "../../IResponse";
+import { collectionsBackend } from "@/api/collection-storage";
+import { OK } from "@/api/IResponse";
 
 export default RPCHandlerFactory(meta, async (reqData) => {
   const episodeCreation = await collectionsBackend.updateEpisode(

@@ -1,16 +1,16 @@
 import { Box, Button } from "@material-ui/core";
-import { IRoom } from "../../app-schema/IRoom";
-import { IPlaylist } from "../../app-schema/IPlaylist";
+import { IRoom } from "@/app-schema/IRoom";
+import { IPlaylist } from "@/app-schema/IPlaylist";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
 import { ImageCoverLayout } from "./layout/image-cover-layout";
-import { IEpisode } from "../../app-schema/IEpisode";
+import { IEpisode } from "@/app-schema/IEpisode";
 import { AdminHeaderClose } from "./layout/admin-header-close";
-import { RPCClientFactory } from "../../api/rpc/rpc-client";
-import episodeUpdateMeta from "../../api/rpc/commands/episode.update.meta";
-import { useRouter } from "../../hooks/useRouter";
+import { RPCClientFactory } from "@/api/rpc/rpc-client";
+import episodeUpdateMeta from "@/api/rpc/commands/episode.update.meta";
+import { useRouter } from "@/hooks/useRouter";
 import { useState } from "react";
-import { useSWRRoom } from "../../hooks/useSWRRoom";
-import { toDbDate } from "../../api/collection-storage/backends/directus-utils";
+import { useSWRRoom } from "@/hooks/useSWRRoom";
+import { toDbDate } from "@/api/collection-storage/backends/directus-utils";
 import { DateTime } from "luxon";
 import { AdminInstructionsLayout } from "./layout/admin-instruction-layout";
 

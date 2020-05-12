@@ -1,11 +1,11 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { IResponse, ERR } from "../../../src/api/IResponse";
+import { IResponse, ERR } from "@/api/IResponse";
 import HttpStatus from "http-status-codes";
-import signedUrlCreate from "../../../src/api/rpc/commands/signedurl.create";
-import episodeCreate from "../../../src/api/rpc/commands/episode.create";
-import episodeUpdate from "../../../src/api/rpc/commands/episode.update";
-import roomFetch from "../../../src/api/rpc/commands/room.fetch";
-import playlistCreate from "../../../src/api/rpc/commands/playlist.create";
+import signedUrlCreate from "@/api/rpc/commands/signedurl.create";
+import episodeCreate from "@/api/rpc/commands/episode.create";
+import episodeUpdate from "@/api/rpc/commands/episode.update";
+import roomFetch from "@/api/rpc/commands/room.fetch";
+import playlistCreate from "@/api/rpc/commands/playlist.create";
 
 const handlers = {
   [playlistCreate.commandId]: playlistCreate,

@@ -1,11 +1,11 @@
 import { TypeOf } from "io-ts";
 import { useState, useEffect, useRef } from "react";
 import axios, { AxiosRequestConfig } from "axios";
-import { IResponse, OK, ERR } from "../api/IResponse";
+import { IResponse, OK, ERR } from "@/api/IResponse";
 import useLoadingState from "./useLoadingState";
 
-import signUrlCreateMeta from "../api/rpc/commands/signedurl.create.meta";
-import { RPCClientFactory } from "../api/rpc/rpc-client";
+import signUrlCreateMeta from "@/api/rpc/commands/signedurl.create.meta";
+import { RPCClientFactory } from "@/api/rpc/rpc-client";
 
 type ResponseData = TypeOf<typeof signUrlCreateMeta["resValidator"]>;
 

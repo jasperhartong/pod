@@ -1,13 +1,13 @@
 import aws from "aws-sdk";
 import { IFileStorage } from "../interfaces/IFileStorage";
 import { ISignedUrl } from "../interfaces/ISignedUrl";
-import { OK, ERR } from "../../IResponse";
+import { OK, ERR } from "@/api/IResponse";
 
 const AWSvars = [
   process.env.MY_AWS_ACCESS_BUCKET,
   process.env.MY_AWS_ACCESS_REGION,
   process.env.MY_AWS_ACCESS_KEY_ID,
-  process.env.MY_AWS_SECRET_KEY
+  process.env.MY_AWS_SECRET_KEY,
 ];
 
 class S3FileStorage implements IFileStorage {
@@ -17,14 +17,14 @@ class S3FileStorage implements IFileStorage {
   constructor() {
     if (AWSvars.includes(undefined)) {
       throw Error(
-        `a process.env.AWS was not set: ${AWSvars.map(v => Boolean(v))}`
+        `a process.env.AWS was not set: ${AWSvars.map((v) => Boolean(v))}`
       );
     }
     this.bucket = process.env.MY_AWS_ACCESS_BUCKET!;
     aws.config.update({
       region: process.env.MY_AWS_ACCESS_REGION,
       accessKeyId: process.env.MY_AWS_ACCESS_KEY_ID,
-      secretAccessKey: process.env.MY_AWS_SECRET_KEY
+      secretAccessKey: process.env.MY_AWS_SECRET_KEY,
     });
     this.s3 = new aws.S3();
   }
@@ -36,7 +36,7 @@ class S3FileStorage implements IFileStorage {
       Key: fileName,
       Expires: 500,
       ContentType: fileType,
-      ACL: "public-read"
+      ACL: "public-read",
     };
     try {
       const data: string = await new Promise((resolve, reject) => {
@@ -50,7 +50,7 @@ class S3FileStorage implements IFileStorage {
       });
       return OK<ISignedUrl>({
         downloadUrl: `https://${this.bucket}.s3.amazonaws.com/${fileName}`,
-        uploadUrl: data
+        uploadUrl: data,
       });
     } catch (error) {
       console.error(error);

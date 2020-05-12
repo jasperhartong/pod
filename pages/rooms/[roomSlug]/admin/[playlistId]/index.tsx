@@ -1,8 +1,8 @@
-import { ErrorPage } from "../../../../../src/components/error-page";
-import { useRouter } from "../../../../../src/hooks/useRouter";
-import { useSWRRoom } from "../../../../../src/hooks/useSWRRoom";
-import { LoaderCentered } from "../../../../../src/components/admin/layout/loader-centered";
-import { PlaylistDetails } from "../../../../../src/components/admin/playlist-details";
+import { ErrorPage } from "@/components/error-page";
+import { useRouter } from "@/hooks/useRouter";
+import { useSWRRoom } from "@/hooks/useSWRRoom";
+import { LoaderCentered } from "@/components/admin/layout/loader-centered";
+import { PlaylistDetails } from "@/components/admin/playlist-details";
 
 const AdminPlaylistPage = () => {
   const router = useRouter();

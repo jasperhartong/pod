@@ -6,7 +6,7 @@ import {
   ListItemText,
   ListItemSecondaryAction,
 } from "@material-ui/core";
-import { IPlaylist } from "../app-schema/IPlaylist";
+import { IPlaylist } from "@/app-schema/IPlaylist";
 
 const PlaylistHeader = ({
   playlist,

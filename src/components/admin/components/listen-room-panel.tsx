@@ -14,8 +14,8 @@ import IconShare from "@material-ui/icons/Share";
 import IconCopy from "@material-ui/icons/FileCopy";
 import IconCopySuccess from "@material-ui/icons/CheckCircle";
 import IconRadio from "@material-ui/icons/Radio";
-import { IRoom } from "../../../app-schema/IRoom";
-import useSharing from "../../../hooks/useSharing";
+import { IRoom } from "@/app-schema/IRoom";
+import useSharing from "@/hooks/useSharing";
 import { useClipboard } from "use-clipboard-copy";
 import { AdminInstructionsLayout } from "../layout/admin-instruction-layout";
 

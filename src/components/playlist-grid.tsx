@@ -8,8 +8,8 @@ import {
 } from "@material-ui/core";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
-import { IPlaylist } from "../app-schema/IPlaylist";
-import { IEpisode } from "../app-schema/IEpisode";
+import { IPlaylist } from "@/app-schema/IPlaylist";
+import { IEpisode } from "@/app-schema/IEpisode";
 
 const useStyles = makeStyles((theme) => ({
   gridRoot: {

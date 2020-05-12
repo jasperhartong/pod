@@ -8,7 +8,7 @@ import {
   LinearProgress,
 } from "@material-ui/core";
 import { ReactNode } from "react";
-import { useRouter } from "../hooks/useRouter";
+import { useRouter } from "@/hooks/useRouter";
 
 const useRouterTransition = () => {
   const router = useRouter();

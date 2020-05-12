@@ -1,9 +1,9 @@
-import { IPlaylist } from "../app-schema/IPlaylist";
+import { IPlaylist } from "@/app-schema/IPlaylist";
 import { toXML } from "jstoxml";
 import { futureEpisodePage, roomPageUrl } from "../urls";
-import { parseDbDate } from "../api/collection-storage/backends/directus-utils";
-import { IRoom } from "../app-schema/IRoom";
-import { IEpisode } from "../app-schema/IEpisode";
+import { parseDbDate } from "@/api/collection-storage/backends/directus-utils";
+import { IRoom } from "@/app-schema/IRoom";
+import { IEpisode } from "@/app-schema/IEpisode";
 
 export const podcastXML = (room: IRoom): string => {
   const xmlOptions = {

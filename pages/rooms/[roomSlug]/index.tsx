@@ -8,25 +8,23 @@ import {
   Typography,
   List,
 } from "@material-ui/core";
-import { IRoom } from "../../../src/app-schema/IRoom";
-import { IEpisode } from "../../../src/app-schema/IEpisode";
-import PlaylistHeader from "../../../src/components/playlist-header";
-import PlaylistGrid from "../../../src/components/playlist-grid";
+import { IRoom } from "@/app-schema/IRoom";
+import { IEpisode } from "@/app-schema/IEpisode";
+import PlaylistHeader from "@/components/playlist-header";
+import PlaylistGrid from "@/components/playlist-grid";
 import {
   RoomProvider,
   useRoomContext,
   RoomState,
-} from "../../../src/hooks/useRoomContext";
-import { IResponse } from "../../../src/api/IResponse";
-import roomFetch from "../../../src/api/rpc/commands/room.fetch";
-import AppContainer from "../../../src/components/app-container";
-import { ErrorPage } from "../../../src/components/error-page";
-import PageFooter from "../../../src/components/page-footer";
+} from "@/hooks/useRoomContext";
+import { IResponse } from "@/api/IResponse";
+import roomFetch from "@/api/rpc/commands/room.fetch";
+import AppContainer from "@/components/app-container";
+import { ErrorPage } from "@/components/error-page";
+import PageFooter from "@/components/page-footer";
 
 // Dynamic imports (load on user interaction)
-const SnackbarPlayer = dynamic(() =>
-  import("../../../src/components/snackbar-player")
-);
+const SnackbarPlayer = dynamic(() => import("@/components/snackbar-player"));
 
 const RoomPageContainer = ({ room }: { room: IResponse<IRoom> }) => {
   const defaultState: RoomState = {

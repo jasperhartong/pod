@@ -1,5 +1,5 @@
 import { ISignedUrl } from "./ISignedUrl";
-import { IResponse } from "../../IResponse";
+import { IResponse } from "@/api/IResponse";
 
 export interface IFileStorage {
   getSignedUrl(

@@ -1,8 +1,8 @@
-import { AdminOverview } from "../../../../src/components/admin/admin-overview";
-import { useRouter } from "../../../../src/hooks/useRouter";
-import { useSWRRoom } from "../../../../src/hooks/useSWRRoom";
-import { LoaderCentered } from "../../../../src/components/admin/layout/loader-centered";
-import { ErrorPage } from "../../../../src/components/error-page";
+import { AdminOverview } from "@/components/admin/admin-overview";
+import { useRouter } from "@/hooks/useRouter";
+import { useSWRRoom } from "@/hooks/useSWRRoom";
+import { LoaderCentered } from "@/components/admin/layout/loader-centered";
+import { ErrorPage } from "@/components/error-page";
 
 const AdminPage = () => {
   const router = useRouter();

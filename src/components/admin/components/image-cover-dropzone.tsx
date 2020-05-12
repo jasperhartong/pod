@@ -10,7 +10,7 @@ import {
 import ImageIcon from "@material-ui/icons/Image";
 import IconDelete from "@material-ui/icons/DeleteOutline";
 import { ImageCoverLayout } from "../layout/image-cover-layout";
-import { useSignedDokaImageUploadDropZone } from "../../../hooks/useSignedUploadDropZone";
+import { useSignedDokaImageUploadDropZone } from "@/hooks/useSignedUploadDropZone";
 import { makeStyles } from "@material-ui/styles";
 
 const useStyles = makeStyles(() => ({

@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import { podcastXML } from "../../../src/utils/podcast";
-import { collectionsBackend } from "../../../src/api/collection-storage/index";
-import { IERR } from "../../../src/api/IResponse";
+import { podcastXML } from "@/utils/podcast";
+import { collectionsBackend } from "@/api/collection-storage/index";
+import { IERR } from "@/api/IResponse";
 
 type XMLString = string;
 

@@ -1,12 +1,12 @@
 import DirectusSDK from "@directus/sdk-js";
 import axios, { AxiosResponse } from "axios";
-import { IRoom } from "../../../app-schema/IRoom";
-import { IEpisode } from "../../../app-schema/IEpisode";
-import { IImageData } from "../../../app-schema/IFileData";
-import { IBackend } from "../../../app-schema/IBackend";
-import { OK, ERR } from "../../IResponse";
+import { IRoom } from "@/app-schema/IRoom";
+import { IEpisode } from "@/app-schema/IEpisode";
+import { IImageData } from "@/app-schema/IFileData";
+import { IBackend } from "@/app-schema/IBackend";
+import { OK, ERR } from "@/api/IResponse";
 import HttpStatus from "http-status-codes";
-import { IPlaylist } from "../../../app-schema/IPlaylist";
+import { IPlaylist } from "@/app-schema/IPlaylist";
 
 const token = process.env.DIRECTUS_CLOUD_TOKEN;
 const project = "dcMJTq1b80lIY4CT";

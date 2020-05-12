@@ -8,8 +8,8 @@ import {
   useMediaQuery,
 } from "@material-ui/core";
 import AdminHeader, { AdminHeaderProps } from "./admin-header";
-import AppContainer from "../../app-container";
-import PageFooter from "../../page-footer";
+import AppContainer from "@/components/app-container";
+import PageFooter from "@/components/page-footer";
 
 interface Props extends AdminHeaderProps {
   firstItem: ReactNode;

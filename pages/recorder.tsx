@@ -1,8 +1,8 @@
 import { useState } from "react";
-import useAudioRecorder from "../src/hooks/useAudioRecorder";
+import useAudioRecorder from "@/hooks/useAudioRecorder";
 import { Button, Container, Box } from "@material-ui/core";
-import { AudioRecorderVisualizer } from "../src/components/audio-recorder-hook/audio-recorder-visualizer";
-import { formatBytes } from "../src/utils/audio-context";
+import { AudioRecorderVisualizer } from "@/components/audio-recorder-hook/audio-recorder-visualizer";
+import { formatBytes } from "@/utils/audio-context";
 import { Duration } from "luxon";
 
 const RecorderWrapper = () => {

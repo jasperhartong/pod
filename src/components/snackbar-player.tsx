@@ -15,7 +15,7 @@ import FilePlayer from "react-player/lib/players/FilePlayer";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import PauseIcon from "@material-ui/icons/Pause";
 import CloseIcon from "@material-ui/icons/Close";
-import { IEpisode } from "../app-schema/IEpisode";
+import { IEpisode } from "@/app-schema/IEpisode";
 import { makeStyles } from "@material-ui/styles";
 
 const useStyles = makeStyles((theme) => ({

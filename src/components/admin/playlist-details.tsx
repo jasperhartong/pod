@@ -13,16 +13,16 @@ import {
 } from "@material-ui/core";
 import AdminHeader from "./layout/admin-header";
 import IconAdd from "@material-ui/icons/Add";
-import { IPlaylist } from "../../app-schema/IPlaylist";
-import { parseDbDate } from "../../api/collection-storage/backends/directus-utils";
-import { IEpisode } from "../../app-schema/IEpisode";
-import { IRoom } from "../../app-schema/IRoom";
+import { IPlaylist } from "@/app-schema/IPlaylist";
+import { parseDbDate } from "@/api/collection-storage/backends/directus-utils";
+import { IEpisode } from "@/app-schema/IEpisode";
+import { IRoom } from "@/app-schema/IRoom";
 import AppContainer from "../app-container";
 
 import PageFooter from "../page-footer";
 import { AdminHeaderClose } from "./layout/admin-header-close";
 import { AdminInstructionsLayout } from "./layout/admin-instruction-layout";
-import { useRouter } from "../../hooks/useRouter";
+import { useRouter } from "@/hooks/useRouter";
 
 export const PlaylistDetails = ({
   room,

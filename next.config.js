@@ -3,9 +3,6 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
 });
 
 module.exports = withBundleAnalyzer({
-  experimental: {
-    reactRefresh: true,
-  },
   webpack: function (cfg) {
     const originalEntry = cfg.entry;
     cfg.entry = async () => {

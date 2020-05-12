@@ -10,11 +10,11 @@ import {
 import PlaylistHeader from "../playlist-header";
 import { PodcastPanel } from "./components/podcast-panel";
 import AdminHeader from "./layout/admin-header";
-import { IRoom } from "../../app-schema/IRoom";
+import { IRoom } from "@/app-schema/IRoom";
 import AppContainer from "../app-container";
 import PageFooter from "../page-footer";
 import { ListenRoomPanel } from "./components/listen-room-panel";
-import { useRouter } from "../../hooks/useRouter";
+import { useRouter } from "@/hooks/useRouter";
 
 export const AdminOverview = ({ room }: { room: IRoom }) => {
   const router = useRouter();

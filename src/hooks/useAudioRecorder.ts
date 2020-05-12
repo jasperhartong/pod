@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useImmer } from "use-immer";
-import { killMediaStream } from "../utils/audio-context";
+import { killMediaStream } from "@/utils/audio-context";
 import {
   IAudioContext,
   IAnalyserNode,
@@ -10,7 +10,7 @@ import {
   getAudioContext,
   setupStreamWithAnalyzer,
   killMediaStreamAudioSourceNode,
-} from "../utils/audio-context";
+} from "@/utils/audio-context";
 
 interface TearDowns {
   listening?: () => Promise<void>;

@@ -35,14 +35,15 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
       subtitle={room.title}
       action={<Chip color="secondary" label="beta" />}
       firstItem={
-        <>
+        <Box position="relative">
           <Box textAlign="center">
             <ImageCoverLayout
               style={{
                 width: 240,
                 height: 240,
+                marginTop: 16,
                 display: "inline-block",
-                marginLeft: -8,
+                marginLeft: "-10%",
                 backgroundColor: AppColors.BLUE,
               }}
               centeredChildren={
@@ -100,7 +101,7 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
                 display: "inline-block",
                 transform: "rotate(2deg)",
                 marginTop: -20,
-                marginRight: -8,
+                marginRight: "-10%",
                 backgroundColor: AppColors.MAGENTA,
               }}
               centeredChildren={
@@ -146,7 +147,7 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
             />
           </Box>
           <Box pt={2} />
-        </>
+        </Box>
       }
       secondItem={
         <>

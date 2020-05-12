@@ -22,7 +22,7 @@ interface PageProps {
 const ListenRoomPage = ({ preFetchedRoomResponse }: PageProps) => {
   const router = useRouter();
   const { data } = useSWRRoom(
-    router.query.roomSlug as string,
+    router.isFallback ? null : (router.query.roomSlug as string),
     preFetchedRoomResponse
   );
   const { playerState, start, stop, pause } = usePlayerState();

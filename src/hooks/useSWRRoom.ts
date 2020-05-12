@@ -10,7 +10,10 @@ import useSWR from "swr";
 const fetcher = async (slug: IRoom["slug"]) =>
   RPCClientFactory(roomFetchMeta).call({ slug });
 
-export const useSWRRoom = (slug: string, initialData?: IResponse<IRoom>) => {
+export const useSWRRoom = (
+  slug: string | null,
+  initialData?: IResponse<IRoom>
+) => {
   const { data, mutate, ...rest } = useSWR(slug, fetcher, {
     refreshInterval: 0,
     initialData,

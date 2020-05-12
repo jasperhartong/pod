@@ -1,6 +1,7 @@
 import { IRoom } from "@/app-schema/IRoom";
 import AdminDualPaneLayout from "@/components/admin/layout/admin-dual-pane";
 import { AdminInstructionsLayout } from "@/components/admin/layout/admin-instruction-layout";
+import { ImageCoverLayout } from "@/components/admin/layout/image-cover-layout";
 import { useRouter } from "@/hooks/useRouter";
 import useSharing from "@/hooks/useSharing";
 import {
@@ -15,14 +16,18 @@ import IconCopySuccess from "@material-ui/icons/CheckCircle";
 import IconChevronRight from "@material-ui/icons/ChevronRight";
 import IconHeadset from "@material-ui/icons/Headset";
 import IconMic from "@material-ui/icons/Mic";
+import { useEffect, useState } from "react";
 import { useClipboard } from "use-clipboard-copy";
 import { AppColors } from "../../theme";
-import { ImageCoverLayout } from "./layout/image-cover-layout";
 
 export const AdminWelcome = ({ room }: { room: IRoom }) => {
+  const [basePath, setBasePath] = useState<string>();
   const router = useRouter();
   const clipboard = useClipboard();
   const { hasNativeShare, nativeShare } = useSharing();
+  useEffect(() => {
+    setBasePath(`${window.location.protocol}//${window.location.host}`);
+  }, []);
 
   return (
     <AdminDualPaneLayout
@@ -60,9 +65,12 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
                               nativeShare(
                                 "Opname studio",
                                 "Opname studio",
-                                `/rooms/${room.slug}/admin`
+                                `${basePath}/rooms/${room.slug}/admin`
                               )
-                          : () => clipboard.copy(`/rooms/${room.slug}/admin`)
+                          : () =>
+                              clipboard.copy(
+                                `${basePath}/rooms/${room.slug}/admin`
+                              )
                       }
                     >
                       {clipboard.copied && (
@@ -114,9 +122,10 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
                               nativeShare(
                                 "Luisterkamer",
                                 "Luisterkamer",
-                                `/rooms/${room.slug}`
+                                `${basePath}/rooms/${room.slug}`
                               )
-                          : () => clipboard.copy(`/rooms/${room.slug}`)
+                          : () =>
+                              clipboard.copy(`${basePath}/rooms/${room.slug}`)
                       }
                     >
                       {clipboard.copied && (

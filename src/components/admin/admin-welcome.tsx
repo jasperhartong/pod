@@ -55,8 +55,9 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
                       Oma's en opa's lezen voor in de opname studio.
                     </Typography>
                   </Box>
-                  <Box pt={2}>
+                  <Box pt={2} ml={-1} mr={-1}>
                     <Button
+                      fullWidth
                       variant="contained"
                       size="small"
                       onClick={
@@ -112,8 +113,9 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
                       Kinderen luisteren in de luisterkamer.
                     </Typography>
                   </Box>
-                  <Box pt={2}>
+                  <Box pt={2} ml={-1} mr={-1}>
                     <Button
+                      fullWidth
                       variant="contained"
                       size="small"
                       onClick={

@@ -7,6 +7,7 @@ import { ErrorPage } from "@/components/error-page";
 import PageFooter from "@/components/page-footer";
 import PlaylistGrid from "@/components/playlist-grid";
 import PlaylistHeader from "@/components/playlist-header";
+import SnackbarPlayer from "@/components/snackbar-player";
 import {
   RoomProvider,
   RoomState,
@@ -20,10 +21,6 @@ import {
   Typography,
 } from "@material-ui/core";
 import { NextPageContext } from "next";
-import dynamic from "next/dynamic";
-
-// Dynamic imports (load on user interaction)
-const SnackbarPlayer = dynamic(() => import("@/components/snackbar-player"));
 
 const RoomPageContainer = ({ room }: { room: IResponse<IRoom> }) => {
   const defaultState: RoomState = {

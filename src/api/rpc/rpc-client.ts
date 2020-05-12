@@ -1,7 +1,7 @@
-import axios, { AxiosResponse, AxiosError } from "axios";
-import { IRPCMeta } from "./rpc-meta";
-import { IResponse, ERR } from "../IResponse";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import HttpStatus from "http-status-codes";
+import { ERR, IResponse } from "../IResponse";
+import { IRPCMeta } from "./rpc-meta";
 
 export const rpcBasePath = `/api/rpc/`;
 

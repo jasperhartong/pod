@@ -1,22 +1,21 @@
-import { useState, useEffect } from "react";
-
+import { IEpisode } from "@/app-schema/IEpisode";
 import {
-  IconButton,
-  Box,
   Avatar,
+  Box,
+  Fab,
+  Grid,
+  IconButton,
+  LinearProgress,
   Snackbar,
   SnackbarContent,
-  LinearProgress,
-  Grid,
   Typography,
-  Fab,
 } from "@material-ui/core";
-import FilePlayer from "react-player/lib/players/FilePlayer";
-import PlayIcon from "@material-ui/icons/PlayArrow";
-import PauseIcon from "@material-ui/icons/Pause";
 import CloseIcon from "@material-ui/icons/Close";
-import { IEpisode } from "../app-schema/IEpisode";
+import PauseIcon from "@material-ui/icons/Pause";
+import PlayIcon from "@material-ui/icons/PlayArrow";
 import { makeStyles } from "@material-ui/styles";
+import { useEffect, useState } from "react";
+import FilePlayer from "react-player/lib/players/FilePlayer";
 
 const useStyles = makeStyles((theme) => ({
   snackbarMessage: {
@@ -58,16 +57,23 @@ const SnackbarPlayer = ({
           !!playingItem && (
             <Box>
               <FilePlayer
-                url={playingItem.audio_file}
-                playing={!isPaused}
-                width="0px"
-                height="0px"
+                /* Show controls, but hide them, possible fix for Safari not releasing audio context on unmount */
+                width={0}
+                height={0}
+                controls={true}
+                style={{ display: "none" }}
                 config={{
                   file: { forceAudio: true },
                 }}
+                /* State */
+                playing={!isPaused}
+                url={playingItem.audio_file || undefined}
                 onProgress={({ played, loaded }) => {
                   setProgress(played * 100);
                   setDidLoad(loaded === 1);
+                }}
+                onEnded={() => {
+                  onPlayPause(true);
                 }}
               />
               <Grid container direction="column">

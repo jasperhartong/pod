@@ -1,19 +1,22 @@
+import { IPlaylist } from "@/app-schema/IPlaylist";
 import {
+  Avatar,
   ListItem,
   ListItemAvatar,
-  Avatar,
-  ListItemText,
-  Zoom,
   ListItemSecondaryAction,
-  Fab,
-  List,
+  ListItemText,
 } from "@material-ui/core";
-import AddIcon from "@material-ui/icons/Add";
-import { IPlaylist } from "../app-schema/IPlaylist";
-import { useRoomContext } from "../hooks/useRoomContext";
+import { ReactNode } from "react";
 
-const PlaylistHeader = ({ playlist }: { playlist: IPlaylist }) => {
-  const { state, actions } = useRoomContext();
+const PlaylistHeader = ({
+  playlist,
+  onClick,
+  secondaryAction,
+}: {
+  playlist: IPlaylist;
+  onClick?: () => void;
+  secondaryAction?: ReactNode;
+}) => {
   const cover =
     playlist.cover_file &&
     playlist.cover_file.data &&
@@ -22,35 +25,31 @@ const PlaylistHeader = ({ playlist }: { playlist: IPlaylist }) => {
       : "";
 
   return (
-    <List>
-      <ListItem style={{ paddingLeft: 0 }}>
-        <ListItemAvatar>
-          <Avatar
-            style={{ height: 80, width: 80, marginRight: 16 }}
-            alt={playlist.title}
-            src={cover}
-          />
-        </ListItemAvatar>
-        <ListItemText
-          primary={playlist.title}
-          secondary={playlist.description}
-          primaryTypographyProps={{ variant: "h5" }}
-          secondaryTypographyProps={{ variant: "h6" }}
+    <ListItem
+      // @ts-ignore
+      button={!!onClick ? true : undefined}
+      onClick={onClick}
+    >
+      <ListItemAvatar>
+        <Avatar
+          variant="square"
+          style={{ height: 80, width: 80, marginRight: 16 }}
+          alt={playlist.title}
+          src={cover}
         />
-        <ListItemSecondaryAction>
-          <Zoom in={state.mode === "record"}>
-            <Fab
-              style={{ marginRight: -12 }}
-              color={"primary"}
-              onClick={() => actions.recordingEpisode.initiate(playlist)}
-              aria-label={`Nieuwe opname`}
-            >
-              <AddIcon />
-            </Fab>
-          </Zoom>
-        </ListItemSecondaryAction>
-      </ListItem>
-    </List>
+      </ListItemAvatar>
+      <ListItemText
+        primary={playlist.title}
+        secondary={`${playlist.description} • ${playlist.episodes.length} ${
+          playlist.episodes.length === 1 ? "aflevering" : "afleveringen"
+        }`}
+        primaryTypographyProps={{ variant: "h5" }}
+        secondaryTypographyProps={{ variant: "h6" }}
+      />
+      {secondaryAction && (
+        <ListItemSecondaryAction>{secondaryAction}</ListItemSecondaryAction>
+      )}
+    </ListItem>
   );
 };
 

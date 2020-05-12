@@ -1,16 +1,17 @@
 import { SwipeableDrawer } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
+import { makeStyles } from "@material-ui/styles";
+import { ReactNode } from "react";
 
 const useStyles = makeStyles((theme: Theme) => ({
   drawerPaper: {
     maxWidth: 360,
-    margin: "auto"
-  }
+    margin: "auto",
+  },
 }));
 
 interface Props {
-  children: JSX.Element;
+  children: ReactNode;
   open: boolean;
   onClose(): void;
 }

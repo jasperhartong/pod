@@ -1,28 +1,35 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const useLoadingState = <T extends object>() => {
-  const [loading, setLoading] = useState<boolean>(false);
+  const [isValidating, setIsvalidating] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const [data, setData] = useState<T | undefined>(undefined);
 
   useEffect(() => {
     if (data) {
-      setLoading(false);
+      setIsvalidating(false);
     }
   }, [data]);
   useEffect(() => {
     if (error) {
-      setLoading(false);
+      setIsvalidating(false);
     }
   }, [error]);
   useEffect(() => {
-    if (loading) {
+    if (isValidating) {
       setData(undefined);
       setError(undefined);
     }
-  }, [loading]);
+  }, [isValidating]);
 
-  return { loading, setLoading, error, setError, data, setData };
+  return {
+    isValidating,
+    setIsvalidating,
+    error,
+    setError,
+    data,
+    setData,
+  };
 };
 
 export default useLoadingState;

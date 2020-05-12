@@ -1,5 +1,5 @@
 import { createMuiTheme } from "@material-ui/core/styles";
-import { ThemeOptions, Theme } from "@material-ui/core/styles/createMuiTheme";
+import { Theme, ThemeOptions } from "@material-ui/core/styles/createMuiTheme";
 
 // Imported in CSS in _app.tsx
 const font = "'Questrial', sans-serif";
@@ -12,7 +12,7 @@ export enum ThemePaletteType {
 export enum AppColors {
   BLUE = "rgb(38,124,255)",
   PURPLE = "rgb(121,122,202)",
-  RED = "rgb(140,30,58)",
+  RED = "rgb(200,30,35)",
   MAGENTA = "rgb(221,70,98)",
   YELLOW = "rgb(241,197,47)",
   IOS_LIGHT_BACKGROUND = "rgb(250,250,250)",
@@ -21,30 +21,7 @@ export enum AppColors {
 
 const baseTheme: ThemeOptions = {
   typography: {
-    h1: {
-      fontFamily: font,
-    },
-    h2: {
-      fontFamily: font,
-    },
-    h3: {
-      fontFamily: font,
-    },
-    h4: {
-      fontFamily: font,
-    },
-    h5: {
-      fontFamily: font,
-    },
-    h6: {
-      fontFamily: font,
-    },
-    overline: {
-      fontFamily: font,
-    },
-    button: {
-      fontFamily: font,
-    },
+    fontFamily: font,
   },
   palette: {
     primary: {
@@ -201,6 +178,13 @@ const alwayDarkThemeOptionsProvider = new ThemeOptionsProvider(
   iOSDarkTheme,
   iOSDarkTheme,
   ThemePaletteType.DARK
+);
+
+const alwayLightThemeOptionsProvider = new ThemeOptionsProvider(
+  baseTheme,
+  iOSlightTheme,
+  iOSlightTheme,
+  ThemePaletteType.LIGHT
 );
 
 export default alwayDarkThemeOptionsProvider;

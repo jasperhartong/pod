@@ -1,72 +1,36 @@
-import React, { useCallback, useEffect } from "react";
-import { useDropzone } from "react-dropzone";
-import useSignedMediaUploader from "../hooks/useSignedMediaUploader";
-import { CircularProgress, Button, Box, Typography } from "@material-ui/core";
-import UploadIcon from "@material-ui/icons/CloudUpload";
-import SuccessIcon from "@material-ui/icons/CloudDone";
+import { useSignedMediaUploadDropZone } from "@/hooks/useSignedUploadDropZone";
+import React, { ReactNode } from "react";
 
 interface Props {
   // http://www.iana.org/assignments/media-types/media-types.xhtml
   acceptedMimeTypes: string[];
-  instructions: string;
   onSuccess(downloadUrl: string): void;
+  uploading: (uploadPercentCompleted: number | undefined) => ReactNode;
+  error: ReactNode;
+  success: ReactNode;
+  initial: ReactNode;
 }
 
-const MediaDropZone = ({
-  acceptedMimeTypes,
-  instructions,
-  onSuccess
-}: Props) => {
-  const { uploadFile, loading, error, data } = useSignedMediaUploader();
-
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    // Only supports multiple=false
-    uploadFile(acceptedFiles[0]);
-  }, []);
-
-  const { getRootProps, getInputProps } = useDropzone({
-    onDrop,
-    accept: acceptedMimeTypes,
-    multiple: false
+const MediaDropZone = (props: Props) => {
+  const {
+    getRootProps,
+    getInputProps,
+    uploading,
+    uploadError,
+    downloadUrl,
+    uploadPercentCompleted,
+  } = useSignedMediaUploadDropZone({
+    acceptedMimeTypes: props.acceptedMimeTypes,
+    onSuccess: props.onSuccess,
   });
-
-  useEffect(() => {
-    if (!!data) {
-      onSuccess(data.downloadUrl);
-    }
-  }, [data]);
-
-  let icon = (
-    <CircularProgress
-      variant="indeterminate"
-      size="small"
-      style={{ width: 24 }}
-    />
-  );
-  if (!loading) {
-    icon = <UploadIcon color="disabled" />;
-  }
-  if (data) {
-    icon = <SuccessIcon />;
-  }
 
   return (
     <div {...getRootProps()}>
       <input {...getInputProps()} />
-
-      <Button variant="outlined" component="span">
-        {icon}
-        <Box display="inline-block" pl={1}>
-          {instructions}
-        </Box>
-      </Button>
-      {error && (
-        <Box pt={1} pb={1}>
-          <Typography variant="subtitle2" color="error">
-            {error}
-          </Typography>
-        </Box>
-      )}
+      {uploading && props.uploading(uploadPercentCompleted)}
+      {!uploading && uploadError && props.error}
+      {!uploading && !uploadError && downloadUrl && props.success}
+      {!uploading && !uploadError && !downloadUrl && props.initial}
     </div>
   );
 };

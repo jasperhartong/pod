@@ -1,11 +1,12 @@
 import * as t from "io-ts";
-
+import { TImageData } from "./IFileData";
 import { TPlaylist } from "./IPlaylist";
 
 export const TRoom = t.type({
   id: t.number,
   slug: t.string,
   title: t.string,
+  cover_file: t.type({ data: TImageData }),
   // alias
   playlists: t.array(TPlaylist),
 });

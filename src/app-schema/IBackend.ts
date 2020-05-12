@@ -1,11 +1,17 @@
-import { IRoom } from "./IRoom";
+import { IResponse } from "@/api/IResponse";
 import { IEpisode } from "./IEpisode";
 import { IImageData } from "./IFileData";
-import { IResponse } from "../api/IResponse";
+import { IPlaylist } from "./IPlaylist";
+import { IRoom } from "./IRoom";
 
 export interface IBackend {
   getRoomBySlug: (roomSlug: string) => Promise<IResponse<IRoom>>;
   getEpisode: (episodeId: string) => Promise<IResponse<IEpisode>>;
+  createPlaylist: (
+    playlist: Partial<IPlaylist>,
+    roomId: string,
+    imageFileId: string
+  ) => Promise<IResponse<{ id: IPlaylist["id"] }>>;
   createEpisode: (
     episode: Partial<IEpisode>,
     playlistId: string,

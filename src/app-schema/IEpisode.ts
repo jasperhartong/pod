@@ -1,5 +1,5 @@
+import { optional } from "@/utils/io-ts";
 import * as t from "io-ts";
-
 import { TDateString } from "./IDateString";
 import { TImageData } from "./IFileData";
 
@@ -15,8 +15,13 @@ export const TEpisode = t.type({
   status: TEpisodeStatus,
   created_on: TDateString,
   title: t.string,
-  audio_file: t.string,
   image_file: t.type({ data: TImageData }),
+  audio_file: optional(t.string),
+  published_on: optional(TDateString),
+});
+
+export const TEpisodePartial = t.partial({
+  ...TEpisode.props,
 });
 
 export type IEpisode = t.TypeOf<typeof TEpisode>;

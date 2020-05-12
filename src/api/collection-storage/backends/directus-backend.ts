@@ -1,10 +1,11 @@
+import { ERR, OK } from "@/api/IResponse";
+import { IBackend } from "@/app-schema/IBackend";
+import { IEpisode } from "@/app-schema/IEpisode";
+import { IImageData } from "@/app-schema/IFileData";
+import { IPlaylist } from "@/app-schema/IPlaylist";
+import { IRoom } from "@/app-schema/IRoom";
 import DirectusSDK from "@directus/sdk-js";
 import axios, { AxiosResponse } from "axios";
-import { IRoom } from "../../../app-schema/IRoom";
-import { IEpisode } from "../../../app-schema/IEpisode";
-import { IImageData } from "../../../app-schema/IFileData";
-import { IBackend } from "../../../app-schema/IBackend";
-import { OK, ERR } from "../../IResponse";
 import HttpStatus from "http-status-codes";
 
 const token = process.env.DIRECTUS_CLOUD_TOKEN;
@@ -39,6 +40,7 @@ class DirectusTapesMeBackend implements IBackend {
           },
           fields: [
             "*",
+            "cover_file.data",
             "playlists.*",
             "playlists.cover_file.data",
             "playlists.episodes.*",
@@ -60,6 +62,31 @@ class DirectusTapesMeBackend implements IBackend {
     }
 
     return ERR<IRoom>("Room not found", HttpStatus.NOT_FOUND);
+  };
+
+  public createPlaylist = async (
+    playlist: Partial<IPlaylist>,
+    roomId: string,
+    imageFileId: string
+  ) => {
+    try {
+      const itemResponse = await this.client.createItem<
+        Partial<IPlaylist | { cover_file: string; room: string }>
+      >(this.playlistCollection, {
+        ...playlist,
+        cover_file: imageFileId,
+        room: roomId,
+      });
+      return OK<{ id: IPlaylist["id"] }>({
+        id: (itemResponse.data as IPlaylist).id,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+    return ERR<{ id: IPlaylist["id"] }>(
+      "Playlist could not be created",
+      HttpStatus.BAD_REQUEST
+    );
   };
 
   public getEpisode = async (episodeId: string) => {
@@ -86,8 +113,8 @@ class DirectusTapesMeBackend implements IBackend {
     try {
       const itemResponse = await this.client.createItem<
         Partial<
-          | IEpisode
-          | { image_file: string; audio_file: string; playlist: string }
+          | Omit<IEpisode, "image_file"> /* setting image by id */
+          | { image_file: string; playlist: string }
         >
       >(this.episodeCollection, {
         ...episode,

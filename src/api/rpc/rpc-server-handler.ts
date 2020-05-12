@@ -1,7 +1,7 @@
 import { isLeft } from "fp-ts/lib/Either";
-import { IRPCMeta } from "./rpc-meta";
-import { IResponse, ERR, OK } from "../IResponse";
 import HttpStatus from "http-status-codes";
+import { ERR, IResponse, OK } from "../IResponse";
+import { IRPCMeta } from "./rpc-meta";
 
 export const RPCHandlerFactory = <Tq, Oq, Iq, Ts, Os, Is>(
   meta: IRPCMeta<Tq, Oq, Iq, Ts, Os, Is>,
@@ -38,7 +38,13 @@ export const RPCHandlerFactory = <Tq, Oq, Iq, Ts, Os, Is>(
       // Validate response
       const resValidation = this.meta.resValidator.decode(response.data);
       if (isLeft(resValidation)) {
-        console.error(resValidation.left);
+        console.error(
+          "RPCHandler:: Response Validation Error: " +
+            resValidation.left.map((error) =>
+              error.context.map(({ key }) => key).join(".")
+            )
+        );
+
         // TODO: wrap io-ts Errors errors into ERR
         return ERR("invalid response payload", HttpStatus.METHOD_FAILURE);
       }

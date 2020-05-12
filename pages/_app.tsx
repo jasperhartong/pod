@@ -1,8 +1,9 @@
-import React from "react";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import { ThemeProvider } from "@material-ui/styles";
 import App from "next/app";
 import Head from "next/head";
-import { ThemeProvider } from "@material-ui/styles";
-import CssBaseline from "@material-ui/core/CssBaseline";
+import React from "react";
+import "../src/lib/doka/doka.min.css";
 import themeOptionsProvider from "../src/theme";
 
 /**
@@ -12,7 +13,7 @@ import themeOptionsProvider from "../src/theme";
 
 class MyApp extends App {
   state = {
-    theme: themeOptionsProvider.theme
+    theme: themeOptionsProvider.theme,
   };
 
   componentDidMount() {
@@ -23,7 +24,7 @@ class MyApp extends App {
     }
     themeOptionsProvider.setupListeners(() => {
       this.setState(() => ({
-        theme: themeOptionsProvider.theme
+        theme: themeOptionsProvider.theme,
       }));
     });
   }
@@ -38,6 +39,7 @@ class MyApp extends App {
         </Head>
         <style>
           @import url(https://fonts.googleapis.com/css?family=Questrial);
+          {/* Or Roboto: https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap */}
         </style>
         <ThemeProvider theme={this.state.theme}>
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}

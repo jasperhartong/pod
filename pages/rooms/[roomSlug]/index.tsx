@@ -21,7 +21,8 @@ interface PageProps {
 
 const ListenRoomPage = ({ roomResponse }: PageProps) => {
   const router = useRouter();
-  const { data } = useSWRRoom(router.query.roomSlug as string, roomResponse);
+  const initialData = roomResponse.ok ? roomResponse : undefined;
+  const { data } = useSWRRoom(router.query.roomSlug as string, initialData);
   const { playerState, start, stop, pause } = usePlayerState();
 
   if (!data) {

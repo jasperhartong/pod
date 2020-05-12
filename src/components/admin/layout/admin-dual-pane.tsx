@@ -44,7 +44,7 @@ const AdminDualPaneLayout = (props: Props) => {
           </Box>
         </Paper>
 
-        <PageFooter secondaryText="admin" />
+        <PageFooter />
       </Container>
     </AppContainer>
   );

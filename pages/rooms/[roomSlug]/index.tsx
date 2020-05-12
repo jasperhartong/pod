@@ -1,64 +1,34 @@
-import { IResponse } from "@/api/IResponse";
-import roomFetch from "@/api/rpc/commands/room.fetch";
 import { IEpisode } from "@/app-schema/IEpisode";
 import { IRoom } from "@/app-schema/IRoom";
+import { LoaderCentered } from "@/components/admin/layout/loader-centered";
 import AppContainer from "@/components/app-container";
 import { ErrorPage } from "@/components/error-page";
 import PageFooter from "@/components/page-footer";
 import PlaylistGrid from "@/components/playlist-grid";
 import PlaylistHeader from "@/components/playlist-header";
 import SnackbarPlayer from "@/components/snackbar-player";
-import {
-  RoomProvider,
-  RoomState,
-  useRoomContext,
-} from "@/hooks/useRoomContext";
-import {
-  Box,
-  CircularProgress,
-  Grid,
-  List,
-  Typography,
-} from "@material-ui/core";
-import { NextPageContext } from "next";
+import { useRouter } from "@/hooks/useRouter";
+import { useSWRRoom } from "@/hooks/useSWRRoom";
+import { Box, Grid, List, Typography } from "@material-ui/core";
+import { useImmer } from "use-immer";
 
-const RoomPageContainer = ({ room }: { room: IResponse<IRoom> }) => {
-  const defaultState: RoomState = {
-    slug: room.ok ? room.data.slug : undefined,
-    room,
-    playingEpisode: undefined,
-  };
+const ListenRoomPage = () => {
+  const router = useRouter();
+  const { data } = useSWRRoom(router.query.roomSlug as string);
+  const { playerState, start, stop, pause } = usePlayerState();
 
-  return (
-    <RoomProvider defaultState={defaultState}>
-      <RoomPage />
-    </RoomProvider>
-  );
-};
-
-const RoomPage = () => {
-  const { state, actions } = useRoomContext();
-
-  // derived state
-  const { room, slug } = state;
-
-  if (!room) {
-    return (
-      <AppContainer>
-        <Box textAlign="center" pt={8}>
-          <CircularProgress />
-        </Box>
-      </AppContainer>
-    );
+  if (!data) {
+    return <LoaderCentered />;
   }
 
-  if (!room.ok || !slug) {
-    return <ErrorPage error={!room.ok ? room.error : undefined} />;
+  if (!data.ok) {
+    return <ErrorPage error={data.error} />;
   }
 
+  const room = data.data;
   const playingItem: IEpisode | undefined = findEpisodeById(
-    room.data,
-    state.playingEpisode?.episodeId
+    room,
+    playerState.playingEpisode?.episodeId
   );
 
   return (
@@ -73,12 +43,12 @@ const RoomPage = () => {
           wrap="nowrap"
         >
           <Grid item>
-            <Typography variant="h4">{room.data.title}</Typography>
+            <Typography variant="h4">{room.title}</Typography>
           </Grid>
         </Grid>
       </Box>
 
-      {room.data.playlists
+      {room.playlists
         // Busines Logic: Only show playlists that contain published episodes
         .filter(
           (p) => p.episodes.filter((e) => e.status === "published").length > 0
@@ -91,28 +61,28 @@ const RoomPage = () => {
             <Box p={2}>
               <PlaylistGrid
                 playlist={playlist}
-                playingId={state.playingEpisode?.episodeId}
-                setPlayingId={actions.playingEpisode.initiate}
-                isPaused={Boolean(state.playingEpisode?.isPaused)}
-                setIsPaused={actions.playingEpisode.pause}
+                playingId={playerState.playingEpisode?.episodeId}
+                setPlayingId={start}
+                isPaused={Boolean(playerState.playingEpisode?.isPaused)}
+                setIsPaused={pause}
               />
             </Box>
           </Box>
         ))}
 
-      <PageFooter secondaryText={room.data.slug} />
+      <PageFooter secondaryText={room.slug} />
 
       <SnackbarPlayer
         playingItem={playingItem}
-        isPaused={Boolean(state.playingEpisode?.isPaused)}
-        onPlayPause={actions.playingEpisode.pause}
-        onClose={actions.playingEpisode.stop}
+        isPaused={Boolean(playerState.playingEpisode?.isPaused)}
+        onPlayPause={pause}
+        onClose={stop}
       />
     </AppContainer>
   );
 };
 
-export default RoomPageContainer;
+export default ListenRoomPage;
 
 const findEpisodeById = (room: IRoom, episodeId?: number) => {
   return ([] as IEpisode[])
@@ -120,11 +90,37 @@ const findEpisodeById = (room: IRoom, episodeId?: number) => {
     .find((episode) => episode.id === episodeId);
 };
 
-export async function getServerSideProps(context: NextPageContext) {
-  const room = await roomFetch.handle({
-    slug: context.query.roomSlug as string,
-  });
-  return {
-    props: { room },
+export interface PlayerState {
+  playingEpisode?: {
+    episodeId: IEpisode["id"];
+    isPaused: boolean;
   };
 }
+
+export const usePlayerState = () => {
+  const [state, dispatch] = useImmer<PlayerState>({});
+
+  const start = (episodeId: IEpisode["id"]) => {
+    dispatch((state) => {
+      state.playingEpisode = {
+        episodeId,
+        // always force not be paused when calling start again
+        isPaused: false,
+      };
+    });
+  };
+  const pause = (isPaused: boolean) => {
+    dispatch((state) => {
+      if (state.playingEpisode) {
+        state.playingEpisode.isPaused = isPaused;
+      }
+    });
+  };
+  const stop = () => {
+    dispatch((state) => {
+      state.playingEpisode = undefined;
+    });
+  };
+
+  return { playerState: state, start, pause, stop };
+};

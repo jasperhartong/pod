@@ -1,3 +1,4 @@
+import { useNoSleep } from "@/hooks/useNoSleep";
 import {
   getAudioContext,
   killMediaStream,
@@ -51,6 +52,8 @@ const useAudioRecorder = () => {
 
   /* STATE */
   const [state, dispatch] = useImmer<ImmerState>(ImmerStartState);
+  /* HELPER HOOKS */
+  const noSleep = useNoSleep();
 
   /* SIDE EFFECT CLEAN UP ON UNMOUNT */
   useEffect(() => {
@@ -216,6 +219,9 @@ const useAudioRecorder = () => {
       }, timeSlice);
     }
 
+    // Prevent device sleeping while recording
+    noSleep.enableOnUserInput();
+
     // Transition into isRecording
     dispatch((state) => {
       state.isListening = true;
@@ -239,6 +245,8 @@ const useAudioRecorder = () => {
 
       clearInterval(recordingIntervalRef.current!);
       recordingIntervalRef.current = undefined;
+
+      noSleep.disable();
     };
   };
 

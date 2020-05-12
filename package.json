@@ -24,6 +24,7 @@
     "jstoxml": "^1.6.4",
     "luxon": "^1.22.0",
     "next": "^9.4.0",
+    "nosleep.js": "^0.9.0",
     "react": "16.13.1",
     "react-dom": "16.13.1",
     "react-dropzone": "^10.2.2",
@@ -41,6 +42,7 @@
     "@types/dom-mediacapture-record": "^1.0.5",
     "@types/luxon": "^1.21.0",
     "@types/node": "^13.9.2",
+    "@types/nosleep.js": "^0.9.0",
     "@types/react": "^16.9.25",
     "@types/smooth-scroll": "^16.1.0",
     "typescript": "^3.8.3"

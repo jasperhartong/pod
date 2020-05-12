@@ -15,7 +15,7 @@ import PauseIcon from "@material-ui/icons/Pause";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import { makeStyles } from "@material-ui/styles";
 import { useEffect, useState } from "react";
-import ReactPlayer from "react-player";
+import FilePlayer from "react-player/lib/players/FilePlayer";
 
 const useStyles = makeStyles((theme) => ({
   snackbarMessage: {
@@ -56,17 +56,13 @@ const SnackbarPlayer = ({
         message={
           !!playingItem && (
             <Box>
-              <ReactPlayer
+              <FilePlayer
                 url={playingItem.audio_file || undefined}
                 playing={!isPaused}
                 width="0px"
                 height="0px"
                 config={{
                   file: { forceAudio: true },
-                }}
-                // @ts-ignore
-                onReady={(player: ReactPlayer) => {
-                  console.debug(player.props);
                 }}
                 onProgress={({ played, loaded }) => {
                   setProgress(played * 100);

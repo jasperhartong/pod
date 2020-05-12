@@ -1,12 +1,15 @@
 import { IEpisode } from "@/app-schema/IEpisode";
 import { IRoom } from "@/app-schema/IRoom";
 import { Box, Grid, List, Typography } from "@material-ui/core";
+import dynamic from "next/dynamic";
 import { useImmer } from "use-immer";
 import AppContainer from "./app-container";
 import PageFooter from "./page-footer";
 import PlaylistGrid from "./playlist-grid";
 import PlaylistHeader from "./playlist-header";
-import SnackbarPlayer from "./snackbar-player";
+
+// Dynamic imports (load on user interaction)
+const SnackbarPlayer = dynamic(() => import("./snackbar-player"));
 
 export const ListenRoom = ({ room }: { room: IRoom }) => {
   const { playerState, start, stop, pause } = usePlayerState();

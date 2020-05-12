@@ -21,13 +21,13 @@ interface PageProps {
 
 const ListenRoomPage = ({ preFetchedRoomResponse }: PageProps) => {
   const router = useRouter();
-  const initialData = preFetchedRoomResponse?.ok
-    ? preFetchedRoomResponse
-    : undefined;
-  const { data } = useSWRRoom(router.query.roomSlug as string, initialData);
+  const { data } = useSWRRoom(
+    router.query.roomSlug as string,
+    preFetchedRoomResponse
+  );
   const { playerState, start, stop, pause } = usePlayerState();
 
-  if (!data) {
+  if (!data || router.isFallback) {
     return <LoaderCentered />;
   }
 

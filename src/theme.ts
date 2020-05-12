@@ -21,30 +21,7 @@ export enum AppColors {
 
 const baseTheme: ThemeOptions = {
   typography: {
-    h1: {
-      fontFamily: font,
-    },
-    h2: {
-      fontFamily: font,
-    },
-    h3: {
-      fontFamily: font,
-    },
-    h4: {
-      fontFamily: font,
-    },
-    h5: {
-      fontFamily: font,
-    },
-    h6: {
-      fontFamily: font,
-    },
-    overline: {
-      fontFamily: font,
-    },
-    button: {
-      fontFamily: font,
-    },
+    fontFamily: font,
   },
   palette: {
     primary: {

@@ -39,6 +39,7 @@ class MyApp extends App {
         </Head>
         <style>
           @import url(https://fonts.googleapis.com/css?family=Questrial);
+          {/* Or Roboto: https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap */}
         </style>
         <ThemeProvider theme={this.state.theme}>
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}

@@ -21,7 +21,7 @@ export const RPCClientFactory = <Tq, Oq, Iq, Ts, Os, Is>(
       private meta: IRPCMeta<Tq, Oq, Iq, Ts, Os, Is> = meta,
       private rpcBasePath: string = `/api/rpc/`,
       private client = axios.create({
-        timeout: 10000,
+        timeout: 20000,
       })
     ) {}
 

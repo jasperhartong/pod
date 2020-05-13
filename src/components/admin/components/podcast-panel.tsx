@@ -13,7 +13,6 @@ import {
 import IconCopySuccess from "@material-ui/icons/CheckCircle";
 import IconExpandMore from "@material-ui/icons/ExpandMore";
 import IconCopy from "@material-ui/icons/FileCopy";
-import IconMusic from "@material-ui/icons/MusicNote";
 import IconNewWindow from "@material-ui/icons/OpenInNew";
 import IconShare from "@material-ui/icons/Share";
 import { useEffect, useState } from "react";
@@ -46,8 +45,7 @@ export const PodcastPanel = ({ room }: { room: IRoom }) => {
         id="subscribe-header"
       >
         <Grid container alignContent="center">
-          <IconMusic fontSize="small" style={{ marginRight: 8 }} />
-          <Typography>Deel via een Podcast app</Typography>
+          <Typography>De Podcast feed</Typography>
         </Grid>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails id="subscribe-content">

@@ -2,24 +2,21 @@ import { IRoom } from "@/app-schema/IRoom";
 import AdminDualPaneLayout from "@/components/admin/layout/admin-dual-pane";
 import { AdminInstructionsLayout } from "@/components/admin/layout/admin-instruction-layout";
 import { ImageCoverLayout } from "@/components/admin/layout/image-cover-layout";
+import { useBasePath } from "@/hooks/useBasePath";
 import { useRouter } from "@/hooks/useRouter";
 import useSharing from "@/hooks/useSharing";
 import { Badge, Box, Button, Chip, Link, Typography } from "@material-ui/core";
 import IconCopySuccess from "@material-ui/icons/CheckCircle";
 import IconHeadset from "@material-ui/icons/Headset";
 import IconMic from "@material-ui/icons/Mic";
-import { useEffect, useState } from "react";
 import { useClipboard } from "use-clipboard-copy";
 import { AppColors } from "../../theme";
 
 export const AdminWelcome = ({ room }: { room: IRoom }) => {
-  const [basePath, setBasePath] = useState<string>();
   const router = useRouter();
   const clipboard = useClipboard();
   const { hasNativeShare, nativeShare } = useSharing();
-  useEffect(() => {
-    setBasePath(`${window.location.protocol}//${window.location.host}`);
-  }, []);
+  const { basePath } = useBasePath();
 
   return (
     <AdminDualPaneLayout

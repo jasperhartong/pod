@@ -31,9 +31,9 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
 
   return (
     <AdminDualPaneLayout
-      title="Welkom!"
-      subtitle={room.title}
-      action={<Chip color="secondary" label="beta" />}
+      title={room.title}
+      subtitle={"Besloten luisterbibliotheek"}
+      action={<Chip color="secondary" label="Tapes.me beta" />}
       firstItem={
         <Box position="relative">
           <Box textAlign="center">

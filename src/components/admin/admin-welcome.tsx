@@ -155,11 +155,6 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
           <AdminInstructionsLayout
             items={[
               {
-                title: "Op dit moment is alles nog publiek.",
-                text:
-                  "Ieder die de naam kent kan in principe de kamer vinden. Maar ja, niemand kent dit nog.",
-              },
-              {
                 title: "Alvast wat luistervoer.",
                 text:
                   "De luisterkamer bevat al wat voorleesvoer van mijn eigen moeder :)",

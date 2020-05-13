@@ -7,6 +7,7 @@ import { IRoom } from "@/app-schema/IRoom";
 import { useRouter } from "@/hooks/useRouter";
 import { useSWRRoom } from "@/hooks/useSWRRoom";
 import { Box, Button } from "@material-ui/core";
+import IconHeadset from "@material-ui/icons/Headset";
 import { DateTime } from "luxon";
 import { useState } from "react";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
@@ -115,14 +116,45 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
               </>
             )}
             {episode.status === "published" && (
-              <AdminInstructionsLayout
-                items={[
-                  {
-                    title: "Deze aflevering is gepubliceerd",
-                    text: "Deze is nu zichtbaar in de luisterkamer en Podcast.",
-                  },
-                ]}
-              />
+              <>
+                <AdminInstructionsLayout
+                  items={[
+                    {
+                      title: "Deze aflevering is gepubliceerd",
+                      text:
+                        "Deze is nu zichtbaar in de luisterkamer en Podcast.",
+                    },
+                  ]}
+                />
+                <Box pt={2} />
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  onClick={() =>
+                    router.push(`/rooms/[roomSlug]`, `/rooms/${room.slug}`)
+                  }
+                >
+                  <IconHeadset
+                    fontSize="small"
+                    color="secondary"
+                    style={{ marginRight: 8 }}
+                  />{" "}
+                  Open Luisterkamer
+                </Button>
+                <Box pt={2} />
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  onClick={() =>
+                    router.push(
+                      `/rooms/[roomSlug]/admin`,
+                      `/rooms/${room.slug}/admin`
+                    )
+                  }
+                >
+                  Naar begin Opname Studio
+                </Button>
+              </>
             )}
           </Box>
           {/* We can easily allow to re-record stuff :) */}

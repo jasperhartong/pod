@@ -21,7 +21,7 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
   return (
     <AdminDualPaneLayout
       title={room.title}
-      subtitle={"Besloten luisterbibliotheek"}
+      subtitle={"Welkom bij jullie besloten luisterbibliotheek"}
       action={<Chip color="secondary" label="Tapes.me beta" />}
       firstItem={
         <Box position="relative">
@@ -30,7 +30,7 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
               style={{
                 width: 240,
                 height: 240,
-                marginTop: 16,
+                marginTop: 32,
                 display: "inline-block",
                 marginLeft: "-10%",
                 backgroundColor: AppColors.BLUE,
@@ -88,7 +88,7 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
               {
                 title: "Alvast wat luistervoer.",
                 text:
-                  "De luisterkamer bevat al wat voorleesvoer van mijn eigen moeder :)",
+                  "De luisterkamer bevat al wat voorleesvoer van mijn eigen moeder, veel luisterplezier 😊",
               },
               {
                 title: "Benieuwd naar feedback!",
@@ -117,7 +117,7 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
               color="secondary"
               style={{ marginRight: 8 }}
             />{" "}
-            Opname Studio
+            Naar Opname Studio
           </Button>
           <Box p={2} textAlign="center">
             <Link
@@ -155,7 +155,7 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
               color="secondary"
               style={{ marginRight: 8 }}
             />{" "}
-            Luisterkamer
+            Naar Luisterkamer
           </Button>
           <Box p={2} textAlign="center">
             <Link

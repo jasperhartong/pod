@@ -5,10 +5,13 @@ import {
   Button,
   Container,
   Divider,
+  Grid,
   List,
   Paper,
   Typography,
 } from "@material-ui/core";
+import IconHeadset from "@material-ui/icons/Headset";
+import IconMic from "@material-ui/icons/Mic";
 import AppContainer from "../app-container";
 import PageFooter from "../page-footer";
 import PlaylistHeader from "../playlist-header";
@@ -30,7 +33,19 @@ export const AdminOverview = ({ room }: { room: IRoom }) => {
 
         <Paper>
           <Box pl={2} pr={2} pt={2}>
-            <Typography variant="overline">Collecties</Typography>
+            <Grid container alignContent="center" alignItems="center">
+              <Grid item>
+                <IconMic
+                  fontSize="small"
+                  style={{ marginRight: 4, marginTop: 2 }}
+                />
+              </Grid>
+              <Grid item>
+                <Typography variant="overline">
+                  Neem nieuwe afleveringen op
+                </Typography>
+              </Grid>
+            </Grid>
           </Box>
           {room.playlists.map((p) => (
             <Box style={{ width: "100%" }} key={p.id}>
@@ -74,7 +89,19 @@ export const AdminOverview = ({ room }: { room: IRoom }) => {
         <Box pt={4}>
           <Paper>
             <Box pl={2} pr={2} pt={1} pb={1}>
-              <Typography variant="overline">Delen</Typography>
+              <Grid container alignContent="center" alignItems="center">
+                <Grid item>
+                  <IconHeadset
+                    fontSize="small"
+                    style={{ marginRight: 4, marginTop: 2 }}
+                  />
+                </Grid>
+                <Grid item>
+                  <Typography variant="overline">
+                    Deel de afleveringen om te luisteren
+                  </Typography>
+                </Grid>
+              </Grid>
             </Box>
           </Paper>
           <ListenRoomPanel room={room} />

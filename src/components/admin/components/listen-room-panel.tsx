@@ -1,4 +1,5 @@
 import { IRoom } from "@/app-schema/IRoom";
+import { useBasePath } from "@/hooks/useBasePath";
 import useSharing from "@/hooks/useSharing";
 import {
   Box,
@@ -12,7 +13,6 @@ import {
 import IconCopySuccess from "@material-ui/icons/CheckCircle";
 import IconExpandMore from "@material-ui/icons/ExpandMore";
 import IconCopy from "@material-ui/icons/FileCopy";
-import IconRadio from "@material-ui/icons/Radio";
 import IconShare from "@material-ui/icons/Share";
 import NextLink from "next/link";
 import { useState } from "react";
@@ -23,6 +23,7 @@ export const ListenRoomPanel = ({ room }: { room: IRoom }) => {
   const [didCopy, setDidCopy] = useState<string | undefined>(undefined);
   const clipboard = useClipboard();
   const { hasNativeShare, nativeShare } = useSharing();
+  const { basePath } = useBasePath();
 
   const handleCopy = (url: string) => {
     clipboard.copy(url);
@@ -37,8 +38,7 @@ export const ListenRoomPanel = ({ room }: { room: IRoom }) => {
         id="subscribe-header"
       >
         <Grid container alignContent="center">
-          <IconRadio fontSize="small" style={{ marginRight: 8 }} />
-          <Typography>Deel via de Luisterkamer</Typography>
+          <Typography>De Luisterkamer</Typography>
         </Grid>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails id="subscribe-content">
@@ -52,7 +52,7 @@ export const ListenRoomPanel = ({ room }: { room: IRoom }) => {
                   nativeShare(
                     `${room.title}`,
                     `Luisterkamer – powered by Tapes.me`,
-                    `/rooms/${room.slug}`
+                    `${basePath}/rooms/${room.slug}`
                   )
                 }
               >
@@ -66,7 +66,7 @@ export const ListenRoomPanel = ({ room }: { room: IRoom }) => {
           <Button
             fullWidth
             variant={hasNativeShare ? "outlined" : "contained"}
-            onClick={() => handleCopy(`/rooms/${room.slug}`)}
+            onClick={() => handleCopy(`${basePath}/rooms/${room.slug}`)}
           >
             {`/rooms/${room.slug}` === didCopy ? (
               <>

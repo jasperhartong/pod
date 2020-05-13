@@ -4,16 +4,8 @@ import { AdminInstructionsLayout } from "@/components/admin/layout/admin-instruc
 import { ImageCoverLayout } from "@/components/admin/layout/image-cover-layout";
 import { useRouter } from "@/hooks/useRouter";
 import useSharing from "@/hooks/useSharing";
-import {
-  Badge,
-  Box,
-  Button,
-  Chip,
-  Divider,
-  Typography,
-} from "@material-ui/core";
+import { Badge, Box, Button, Chip, Link, Typography } from "@material-ui/core";
 import IconCopySuccess from "@material-ui/icons/CheckCircle";
-import IconChevronRight from "@material-ui/icons/ChevronRight";
 import IconHeadset from "@material-ui/icons/Headset";
 import IconMic from "@material-ui/icons/Mic";
 import { useEffect, useState } from "react";
@@ -56,36 +48,6 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
                       Oma's en opa's lezen voor in de opname studio.
                     </Typography>
                   </Box>
-                  <Box pt={2} ml={-1} mr={-1}>
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      size="small"
-                      onClick={
-                        hasNativeShare
-                          ? () =>
-                              nativeShare(
-                                "Opname studio",
-                                "Opname studio",
-                                `${basePath}/rooms/${room.slug}/admin`
-                              )
-                          : () =>
-                              clipboard.copy(
-                                `${basePath}/rooms/${room.slug}/admin`
-                              )
-                      }
-                    >
-                      {clipboard.copied && (
-                        <IconCopySuccess
-                          fontSize="small"
-                          style={{ marginRight: 8 }}
-                        />
-                      )}
-                      {hasNativeShare
-                        ? "Deel Opname studio"
-                        : "Kopieer link opname studio"}
-                    </Button>
-                  </Box>
                 </>
               }
             />
@@ -113,34 +75,6 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
                     <Typography variant="body1">
                       Kinderen luisteren in de luisterkamer.
                     </Typography>
-                  </Box>
-                  <Box pt={2} ml={-1} mr={-1}>
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      size="small"
-                      onClick={
-                        hasNativeShare
-                          ? () =>
-                              nativeShare(
-                                "Luisterkamer",
-                                "Luisterkamer",
-                                `${basePath}/rooms/${room.slug}`
-                              )
-                          : () =>
-                              clipboard.copy(`${basePath}/rooms/${room.slug}`)
-                      }
-                    >
-                      {clipboard.copied && (
-                        <IconCopySuccess
-                          fontSize="small"
-                          style={{ marginRight: 8 }}
-                        />
-                      )}
-                      {hasNativeShare
-                        ? "Deel luisterkamer"
-                        : "Kopieer link luisterkamer"}
-                    </Button>
                   </Box>
                 </>
               }
@@ -170,9 +104,7 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
             – Jasper
           </Typography>
 
-          <Box pt={2} />
-          <Divider />
-          <Box pt={2} />
+          <Box pt={4} />
           <Button
             fullWidth
             variant="outlined"
@@ -183,10 +115,37 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
               )
             }
           >
-            Opname Studio{" "}
-            <IconChevronRight fontSize="small" color="secondary" />
+            <IconMic
+              fontSize="small"
+              color="secondary"
+              style={{ marginRight: 8 }}
+            />{" "}
+            Opname Studio
           </Button>
-          <Box pt={2} />
+          <Box p={2} textAlign="center">
+            <Link
+              style={{ cursor: "pointer" }}
+              color="textSecondary"
+              onClick={
+                hasNativeShare
+                  ? () =>
+                      nativeShare(
+                        "Opname studio",
+                        "Opname studio",
+                        `${basePath}/rooms/${room.slug}/admin`
+                      )
+                  : () => clipboard.copy(`${basePath}/rooms/${room.slug}/admin`)
+              }
+            >
+              {clipboard.copied && (
+                <IconCopySuccess fontSize="small" style={{ marginRight: 8 }} />
+              )}
+              {hasNativeShare
+                ? "Deel opname studio link"
+                : "Kopieer opname studio link"}
+            </Link>
+          </Box>
+          <Box pt={4} />
           <Button
             fullWidth
             variant="outlined"
@@ -194,8 +153,36 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
               router.push(`/rooms/[roomSlug]`, `/rooms/${room.slug}`)
             }
           >
-            Luisterkamer <IconChevronRight fontSize="small" color="secondary" />
+            <IconHeadset
+              fontSize="small"
+              color="secondary"
+              style={{ marginRight: 8 }}
+            />{" "}
+            Luisterkamer
           </Button>
+          <Box p={2} textAlign="center">
+            <Link
+              style={{ cursor: "pointer" }}
+              color="textSecondary"
+              onClick={
+                hasNativeShare
+                  ? () =>
+                      nativeShare(
+                        "Luisterkamer",
+                        "Luisterkamer",
+                        `${basePath}/rooms/${room.slug}`
+                      )
+                  : () => clipboard.copy(`${basePath}/rooms/${room.slug}`)
+              }
+            >
+              {clipboard.copied && (
+                <IconCopySuccess fontSize="small" style={{ marginRight: 8 }} />
+              )}
+              {hasNativeShare
+                ? "Deel luisterkamer link"
+                : "Kopieer luisterkamer link"}
+            </Link>
+          </Box>
           <Box pt={2} />
         </>
       }

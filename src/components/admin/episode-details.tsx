@@ -48,10 +48,7 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
         false
       );
 
-      router.push(
-        `/rooms/[roomSlug]/admin/[playlistId]`,
-        `/rooms/${room.slug}/admin/${playlist.id}`
-      );
+      router.push(`/rooms/[roomSlug]/admin`, `/rooms/${room.slug}/admin`);
     } else {
       alert("Publiceren mislukt, probeer nogmaals");
       setIsValidating(false);

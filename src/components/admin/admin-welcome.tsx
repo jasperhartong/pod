@@ -86,7 +86,7 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
           <AdminInstructionsLayout
             items={[
               {
-                title: "Alvast wat luistervoer.",
+                title: "Alvast wat te luisteren.",
                 text:
                   "De luisterkamer bevat al wat voorleesvoer van mijn eigen moeder, veel luisterplezier 😊",
               },

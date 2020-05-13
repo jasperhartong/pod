@@ -93,7 +93,7 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
               {
                 title: "Benieuwd naar feedback!",
                 text:
-                  "Stuur me een mailtje of een appje als je een vet idee hebt of iets enorm frustreert!",
+                  "Stuur me een mailtje of een appje als je een vet idee hebt of iets frustrerends tegekomt! Mocht je iemand weten die het ook zou willen gebruiken. Let me know!",
               },
             ]}
           />

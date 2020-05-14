@@ -1,6 +1,5 @@
 /* 
 https://www.alexdebrie.com/posts/dynamodb-one-to-many/#composite-primary-key--the-query-api-action
-https://www.npmjs.com/package/short-unique-id
 
 PK                      SK
 ROOM#<short-unique-id>  ROOM#<short-unique-id>                                  room fields
@@ -166,11 +165,13 @@ export class TapesDynamoBackend extends DynamodbBackend {
             ERR<IRoom>(err.message, HttpStatus.INTERNAL_SERVER_ERROR)
           );
         } else {
+          // Get roomItem
           const roomItem = data.Items?.find((item) => item.PK.includes("ROOM"));
           if (!roomItem) {
             return resolve(ERR<IRoom>("no roomItem found"));
           }
 
+          // Get and parse playlistItems
           let playlistMap: Record<string, IPlaylist> = {};
           data.Items?.filter(
             (item) =>
@@ -181,6 +182,8 @@ export class TapesDynamoBackend extends DynamodbBackend {
             const playlist = (item as unknown) as IPlaylist;
             playlistMap[item.PK] = playlist;
           });
+
+          // Get and parse episodeItems, also push into playlist
           data.Items?.filter((item) => item.PK.includes("EPISODE")).forEach(
             (episodeItem) => {
               const playlistPK = episodeItem.PK.split("EPISODE#")[0];
@@ -193,12 +196,14 @@ export class TapesDynamoBackend extends DynamodbBackend {
             }
           );
 
-          // Encode back to IRoom (Add io-ts for validation/ decoding)
+          // Encode roomItem to IRoom (Add io-ts for validation/ decoding)
           delete roomItem.PK;
           delete roomItem.SK;
           const room = (roomItem as unknown) as IRoom;
 
           room.cover_file.data.full_url = room.cover_file.data.full_url || ""; // decode `null`
+
+          // Fill its playlist
           room.playlists = Object.values(playlistMap);
 
           return resolve(OK<IRoom>(room));

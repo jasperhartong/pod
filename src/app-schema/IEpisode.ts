@@ -12,6 +12,7 @@ export const TEpisodeStatus = t.keyof({
 
 export const TEpisode = t.type({
   id: t.number,
+  uid: optional(t.string),
   status: TEpisodeStatus,
   created_on: TDateString,
   title: t.string,

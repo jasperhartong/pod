@@ -7,22 +7,28 @@ import { IPlaylist } from "../app-schema/IPlaylist";
 
 let backend: TapesDynamoBackend;
 
+const localConfig = {
+  dbConfig: {
+    region: "local-env",
+  },
+  docClientConfig: {
+    endpoint: "localhost:8000",
+    sslEnabled: false,
+    region: "local-env",
+  },
+};
+const remoteConfig = {
+  dbConfig: {},
+  docClientConfig: {},
+};
+
 beforeAll(async () => {
-  backend = new TapesDynamoBackend({
-    dbConfig: {
-      region: "local-env",
-    },
-    docClientConfig: {
-      endpoint: "localhost:8000",
-      sslEnabled: false,
-      region: "local-env",
-    },
-  });
+  backend = new TapesDynamoBackend(localConfig);
   await backend.initiate();
 });
 
-describe("Use the DynamyDB backend", () => {
-  it("can create room", async () => {
+describe("📦 The DynamyDB backend", () => {
+  it("😊 can create room", async () => {
     const room = generateRoomData();
     const roomCreation = await backend.createRoom(room);
 
@@ -32,7 +38,7 @@ describe("Use the DynamyDB backend", () => {
     }
   });
 
-  it("can fetch just created room", async () => {
+  it("😊 can fetch just created room", async () => {
     const room = generateRoomData();
 
     await backend.createRoom(room);
@@ -44,7 +50,7 @@ describe("Use the DynamyDB backend", () => {
     }
   });
 
-  it("can create playlist", async () => {
+  it("😊 can create playlist", async () => {
     const room = generateRoomData();
     const playlist = generatePlaylistData();
 
@@ -57,7 +63,7 @@ describe("Use the DynamyDB backend", () => {
     }
   });
 
-  it("can create episode", async () => {
+  it("😊 can create episode", async () => {
     const room = generateRoomData();
     const playlist = generatePlaylistData();
     const episode = generateEpisodeData();
@@ -75,9 +81,60 @@ describe("Use the DynamyDB backend", () => {
       expect(episodeCreation.data).toEqual(episode);
     }
   });
+
+  it("😊 can create and retrieve complex nested room", async () => {
+    const room = generateRoomData();
+    const playlist1 = generatePlaylistData({ title: "first" });
+    const playlist2 = generatePlaylistData({ title: "second" });
+    const episode1a = generateEpisodeData({ title: "a" });
+    const episode1b = generateEpisodeData({ title: "b" });
+    const episode2a = generateEpisodeData({ title: "a" });
+    const episode2b = generateEpisodeData({ title: "b" });
+    const episode2c = generateEpisodeData({ title: "c" });
+
+    await backend.createRoom(room);
+    await backend.createPlaylist(room.uid, playlist1);
+    await backend.createPlaylist(room.uid, playlist2);
+    await backend.createEpisode(room.uid, playlist1.uid, episode1a);
+    await backend.createEpisode(room.uid, playlist1.uid, episode1b);
+    await backend.createEpisode(room.uid, playlist2.uid, episode2a);
+    await backend.createEpisode(room.uid, playlist2.uid, episode2b);
+    await backend.createEpisode(room.uid, playlist2.uid, episode2c);
+
+    const complexRoomResponse = await backend.getRoomWithNested(room.uid);
+
+    if (complexRoomResponse.ok) {
+      expect(complexRoomResponse.data.playlists.length).toEqual(2);
+      //   FIXME: Sorting
+      //   expect(complexRoomResponse.data.playlists[0].episodes.length).toEqual(3);
+      //   expect(complexRoomResponse.data.playlists[1].episodes.length).toEqual(2);
+      //   expect(complexRoomResponse.data.playlists.map((p) => p.title)).toEqual([
+      //     "second",
+      //     "first",
+      //   ]);
+      //   expect(
+      //     complexRoomResponse.data.playlists[0].episodes.map((p) => p.title)
+      //   ).toEqual(["b", "a"]);
+      //   expect(
+      //     complexRoomResponse.data.playlists[1].episodes.map((p) => p.title)
+      //   ).toEqual(["c", "b", "a"]);
+    }
+  });
+
+  it("🚧 cannot create room with same uid twice", async () => {
+    const room = generateRoomData();
+    await backend.createRoom(room);
+    const failedRoomCreation = await backend.createRoom(room);
+
+    expect(failedRoomCreation.ok).toEqual(false);
+  });
+
+  //   it("🚧 can cannot create playlist in non-existing room", async () => {})
+  //   it("🚧 can cannot create episode in non-existing room", async () => {})
+  //   it("🚧 can cannot create episode in non-existing playlist", async () => {})
 });
 
-const generateRoomData = (): IRoom => {
+const generateRoomData = (partial?: Partial<IRoom>): IRoom => {
   const uid = shortid.generate();
   return {
     id: 0,
@@ -91,10 +148,11 @@ const generateRoomData = (): IRoom => {
       },
     },
     playlists: [],
+    ...(partial || {}),
   };
 };
 
-const generatePlaylistData = (): IPlaylist => {
+const generatePlaylistData = (partial?: Partial<IPlaylist>): IPlaylist => {
   const uid = shortid.generate();
   return {
     id: 0,
@@ -109,10 +167,11 @@ const generatePlaylistData = (): IPlaylist => {
       },
     },
     episodes: [],
+    ...(partial || {}),
   };
 };
 
-const generateEpisodeData = (): IEpisode => {
+const generateEpisodeData = (partial?: Partial<IEpisode>): IEpisode => {
   const uid = shortid.generate();
   return {
     id: 0,
@@ -128,5 +187,6 @@ const generateEpisodeData = (): IEpisode => {
         thumbnails: [],
       },
     },
+    ...(partial || {}),
   };
 };

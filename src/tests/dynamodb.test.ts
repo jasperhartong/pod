@@ -121,6 +121,8 @@ describe("📦 The DynamyDB backend", () => {
     }
   });
 
+  //   it("😊 can update and episode", async () => {})
+
   it("🚧 cannot create room with same uid twice", async () => {
     const room = generateRoomData();
     await backend.createRoom(room);

@@ -1,11 +1,11 @@
-import { TapesDynamoTable } from "@/api/collection-storage/backends/dynamodb/dynamodb-table-tapes";
+import { DynamoTableTapes } from "@/api/collection-storage/backends/dynamodb/dynamodb-table-tapes";
 import { IEpisode } from "@/app-schema/IEpisode";
 import { IPlaylist } from "@/app-schema/IPlaylist";
 import { IRoom } from "@/app-schema/IRoom";
 import { DateTime } from "luxon";
 import shortid from "shortid";
 
-let backend: TapesDynamoTable;
+let backend: DynamoTableTapes;
 
 const localConfig = {
   dbConfig: {
@@ -23,7 +23,7 @@ const remoteConfig = {
 };
 
 beforeAll(async () => {
-  backend = new TapesDynamoTable(localConfig);
+  backend = new DynamoTableTapes(localConfig);
   await backend.initiate();
 });
 

@@ -2,6 +2,7 @@ import { ERR, IResponse } from "@/api/IResponse";
 import episodeCreate from "@/api/rpc/commands/episode.create";
 import episodeUpdate from "@/api/rpc/commands/episode.update";
 import playlistCreate from "@/api/rpc/commands/playlist.create";
+import roomCreate from "@/api/rpc/commands/room.create";
 import roomFetch from "@/api/rpc/commands/room.fetch";
 import signedUrlCreate from "@/api/rpc/commands/signedurl.create";
 import HttpStatus from "http-status-codes";
@@ -13,6 +14,7 @@ const handlers = {
   [episodeUpdate.commandId]: episodeUpdate,
   [signedUrlCreate.commandId]: signedUrlCreate,
   [roomFetch.commandId]: roomFetch,
+  [roomCreate.commandId]: roomCreate,
 };
 
 export default async (

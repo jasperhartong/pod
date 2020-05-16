@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-const useLoadingState = <T extends object>() => {
+const useLoadingState = <T extends unknown>() => {
   const [isValidating, setIsvalidating] = useState<boolean>(false);
   const [error, setError] = useState<string | undefined>(undefined);
   const [data, setData] = useState<T | undefined>(undefined);

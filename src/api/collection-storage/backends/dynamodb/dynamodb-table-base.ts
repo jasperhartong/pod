@@ -1,4 +1,5 @@
 import aws from "aws-sdk";
+import { GlobalTableStatus } from "aws-sdk/clients/dynamodb";
 
 const AWSvars = [
   process.env.MY_AWS_ACCESS_REGION,
@@ -27,7 +28,7 @@ export class DynamodbTableBase {
   protected dynamodb: aws.DynamoDB;
   protected docClient: aws.DynamoDB.DocumentClient;
   protected tableConfig: aws.DynamoDB.CreateTableInput;
-  public online: boolean = false;
+  public status?: GlobalTableStatus = undefined;
   constructor({
     dbConfig,
     tableConfig,
@@ -49,10 +50,40 @@ export class DynamodbTableBase {
     });
   }
   public async initiate() {
-    this.online = await this.create();
-    return this.online;
+    this.status = await this.create();
+    if (this.status === "CREATING") {
+      this.status = await this.awaitCreation();
+    }
+    return this.status;
   }
-  private async create(): Promise<boolean> {
+
+  private awaitCreationCount = 0;
+  private maxAwaitCreationCount = 30;
+  private async awaitCreation(): Promise<GlobalTableStatus | undefined> {
+    const params: aws.DynamoDB.Types.DescribeTableInput = {
+      TableName: this.tableConfig.TableName,
+    };
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      console.debug(
+        `DynamodbTableBase::awaitCreation: ${this.awaitCreationCount}`
+      );
+      const tableStatus = await this.dynamodb.describeTable(params).promise();
+      if (tableStatus.Table?.TableStatus === "ACTIVE") {
+        return "ACTIVE";
+      }
+    } catch (error) {
+      console.error("Failed getting table status");
+    }
+    this.awaitCreationCount += 1;
+    if (this.awaitCreationCount > this.maxAwaitCreationCount) {
+      return undefined;
+    }
+    return this.awaitCreation();
+  }
+
+  private async create(): Promise<GlobalTableStatus> {
     const tableConfig = this.tableConfig;
     return new Promise((resolve) => {
       this.dynamodb.createTable(tableConfig, function (err, data) {
@@ -61,17 +92,17 @@ export class DynamodbTableBase {
             console.info(
               `Table "${tableConfig.TableName}" was already created`
             );
-            resolve(true);
+            resolve("ACTIVE");
           } else {
             console.error("Unable to create table. Error JSON:", err);
-            resolve(false);
+            resolve(undefined);
           }
         } else {
           console.info(
             `Created "${tableConfig.TableName}" table. Table description JSON:`,
             data
           );
-          resolve(true);
+          resolve(data.TableDescription?.TableStatus);
         }
       });
     });

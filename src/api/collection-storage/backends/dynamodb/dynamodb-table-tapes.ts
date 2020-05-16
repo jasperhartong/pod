@@ -25,7 +25,7 @@ const PARTITION_KEY_NAME = "DYNAMODBPK";
 const SORT_KEY_NAME = "DYNAMODBSK";
 const CREATED_ON_KEY = "DYNAMODBCREATED";
 
-export const tapesDynamodbConfig: aws.DynamoDB.CreateTableInput = {
+export const dynamoTableTapesConfig: aws.DynamoDB.CreateTableInput = {
   TableName: `TAPES`,
   KeySchema: [
     { AttributeName: PARTITION_KEY_NAME, KeyType: "HASH" },
@@ -38,13 +38,13 @@ export const tapesDynamodbConfig: aws.DynamoDB.CreateTableInput = {
   ProvisionedThroughput: { ReadCapacityUnits: 10, WriteCapacityUnits: 10 },
 };
 
-export class TapesDynamoTable extends DynamodbTableBase {
+export class DynamoTableTapes extends DynamodbTableBase {
   constructor(config?: {
     dbConfig?: aws.DynamoDB.ClientConfiguration;
     docClientConfig?: DocumentClientContructorConfig;
   }) {
     super({
-      tableConfig: tapesDynamodbConfig,
+      tableConfig: dynamoTableTapesConfig,
       docClientConfig: config?.docClientConfig,
       dbConfig: config?.docClientConfig,
     });
@@ -473,4 +473,4 @@ export class TapesDynamoTable extends DynamodbTableBase {
   }
 }
 
-export const tapesDynamoTable = new TapesDynamoTable();
+export const dynamoTableTapes = new DynamoTableTapes();

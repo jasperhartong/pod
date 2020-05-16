@@ -20,7 +20,6 @@ export default RPCHandlerFactory(meta, async (reqData) => {
     cover_file: {
       data: {
         full_url: "",
-        thumbnails: [],
       },
     },
     playlists: [],

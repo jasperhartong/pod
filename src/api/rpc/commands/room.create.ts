@@ -7,7 +7,7 @@ import meta from "./room.create.meta";
 export default RPCHandlerFactory(meta, async (reqData) => {
   const uid = shortid.generate();
 
-  if (!dynamoTableTapes.online) {
+  if (dynamoTableTapes.status !== "ACTIVE") {
     await dynamoTableTapes.initiate();
   }
 

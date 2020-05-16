@@ -227,6 +227,17 @@ export class TapesDynamoBackend extends DynamodbBackend {
     );
   }
 
+  async episodeExists(
+    RoomUid: IRoom["uid"],
+    playlistUid: IPlaylist["uid"],
+    episodeUid: IEpisode["uid"]
+  ) {
+    return this.exists(
+      this.partitionKeyValue(RoomUid),
+      this.sortKeyValue.episode(playlistUid, episodeUid)
+    );
+  }
+
   async createRoom(room: IRoom): Promise<IResponse<IRoom>> {
     if (!room.uid) {
       return ERR<IRoom>(`No valid room uid passed along: ${room.uid}`);

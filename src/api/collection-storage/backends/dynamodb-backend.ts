@@ -155,6 +155,19 @@ export class TapesDynamoBackend extends DynamodbBackend {
     delete item?.[CREATED_ON_KEY];
   };
 
+  private async putItem<T extends IBase>(
+    params: aws.DynamoDB.DocumentClient.PutItemInput,
+    getResultValue: () => Promise<IResponse<T>>
+  ): Promise<IResponse<T>> {
+    try {
+      await this.docClient.put(params).promise();
+      // As DynamoDB doesn't return the value upon creation, we get it
+      return await getResultValue();
+    } catch (error) {
+      return ERR<T>((error as aws.AWSError).message);
+    }
+  }
+
   createRoom(room: IRoom): Promise<IResponse<IRoom>> {
     if (!room.uid) {
       return Promise.resolve(
@@ -162,8 +175,7 @@ export class TapesDynamoBackend extends DynamodbBackend {
       );
     }
 
-    const getResultValue = this.getRoom.bind(this);
-
+    const getResultValue = () => this.getRoom(room.uid);
     const params: aws.DynamoDB.DocumentClient.PutItemInput = {
       TableName: this.tableConfig.TableName,
       Item: {
@@ -174,20 +186,7 @@ export class TapesDynamoBackend extends DynamodbBackend {
       },
       ConditionExpression: `attribute_not_exists(${PARTITION_KEY_NAME})`,
     };
-
-    return new Promise((resolve) => {
-      this.docClient.put(params, function (err, data) {
-        if (err) {
-          console.error("TapesDynamoBackend::create Error", err);
-          return resolve(
-            ERR<IRoom>(err.message, HttpStatus.INTERNAL_SERVER_ERROR)
-          );
-        } else {
-          // As DynamoDB doesn't return the value upon creation, we get it
-          return resolve(getResultValue(room.uid));
-        }
-      });
-    });
+    return this.putItem<IRoom>(params, getResultValue);
   }
 
   createPlaylist(
@@ -204,8 +203,8 @@ export class TapesDynamoBackend extends DynamodbBackend {
         ERR<IPlaylist>(`No valid playlist uid passed along: ${playlist.uid}`)
       );
     }
-    const getResultValue = this.getPlaylist.bind(this);
 
+    const getResultValue = () => this.getPlaylist(roomUid, playlist.uid);
     const params = {
       TableName: this.tableConfig.TableName,
       Item: {
@@ -215,20 +214,7 @@ export class TapesDynamoBackend extends DynamodbBackend {
         [CREATED_ON_KEY]: this.createdOnKey(playlist),
       },
     };
-
-    return new Promise((resolve) => {
-      this.docClient.put(params, function (err, data) {
-        if (err) {
-          console.error("TapesDynamoBackend::create Error", err);
-          return resolve(
-            ERR<IPlaylist>(err.message, HttpStatus.INTERNAL_SERVER_ERROR)
-          );
-        } else {
-          // As DynamoDB doesn't return the value upon creation, we get it
-          return resolve(getResultValue(roomUid, playlist.uid));
-        }
-      });
-    });
+    return this.putItem<IPlaylist>(params, getResultValue);
   }
 
   createEpisode(
@@ -251,8 +237,9 @@ export class TapesDynamoBackend extends DynamodbBackend {
         ERR<IEpisode>(`No valid episode uid passed along: ${episode.uid}`)
       );
     }
-    const getResultValue = this.getEpisode.bind(this);
 
+    const getResultValue = () =>
+      this.getEpisode(roomUid, playlistUid, episode.uid);
     const params = {
       TableName: this.tableConfig.TableName,
       Item: {
@@ -262,20 +249,7 @@ export class TapesDynamoBackend extends DynamodbBackend {
         [CREATED_ON_KEY]: this.createdOnKey(episode),
       },
     };
-
-    return new Promise((resolve) => {
-      this.docClient.put(params, function (err, data) {
-        if (err) {
-          console.error("TapesDynamoBackend::create Error", err);
-          return resolve(
-            ERR<IEpisode>(err.message, HttpStatus.INTERNAL_SERVER_ERROR)
-          );
-        } else {
-          // As DynamoDB doesn't return the value upon creation, we get it
-          return resolve(getResultValue(roomUid, playlistUid, episode.uid));
-        }
-      });
-    });
+    return this.putItem<IEpisode>(params, getResultValue);
   }
 
   getRoom(roomUid: IRoom["uid"]): Promise<IResponse<IRoom>> {

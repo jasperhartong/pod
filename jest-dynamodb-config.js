@@ -4,12 +4,12 @@ module.exports = {
     {
       TableName: `TAPES`,
       KeySchema: [
-        { AttributeName: "PK", KeyType: "HASH" },
-        { AttributeName: "SK", KeyType: "RANGE" },
+        { AttributeName: "DYNAMODBPK", KeyType: "HASH" },
+        { AttributeName: "DYNAMODBSK", KeyType: "RANGE" },
       ],
       AttributeDefinitions: [
-        { AttributeName: "PK", AttributeType: "S" },
-        { AttributeName: "SK", AttributeType: "S" },
+        { AttributeName: "DYNAMODBPK", AttributeType: "S" },
+        { AttributeName: "DYNAMODBSK", AttributeType: "S" },
       ],
       ProvisionedThroughput: { ReadCapacityUnits: 1, WriteCapacityUnits: 1 },
     },

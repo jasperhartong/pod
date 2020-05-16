@@ -96,15 +96,17 @@ export class DynamodbBackend {
   }
 }
 
+const PARTITION_KEY_NAME = "DYNAMODBPK";
+const SORT_KEY_NAME = "DYNAMODBSK";
 export const tapesDynamodbConfig: aws.DynamoDB.CreateTableInput = {
   TableName: `TAPES`,
   KeySchema: [
-    { AttributeName: "PK", KeyType: "HASH" }, //Partition key
-    { AttributeName: "SK", KeyType: "RANGE" }, //Sort key
+    { AttributeName: PARTITION_KEY_NAME, KeyType: "HASH" },
+    { AttributeName: SORT_KEY_NAME, KeyType: "RANGE" },
   ],
   AttributeDefinitions: [
-    { AttributeName: "PK", AttributeType: "S" },
-    { AttributeName: "SK", AttributeType: "S" },
+    { AttributeName: PARTITION_KEY_NAME, AttributeType: "S" },
+    { AttributeName: SORT_KEY_NAME, AttributeType: "S" },
   ],
   ProvisionedThroughput: { ReadCapacityUnits: 10, WriteCapacityUnits: 10 },
 };
@@ -150,10 +152,10 @@ export class TapesDynamoBackend extends DynamodbBackend {
       TableName: this.tableConfig.TableName,
       Item: {
         ...room,
-        PK: this.primaryKey(room.uid),
-        SK: this.sortKey.room(room.uid),
+        [PARTITION_KEY_NAME]: this.primaryKey(room.uid),
+        [SORT_KEY_NAME]: this.sortKey.room(room.uid),
       },
-      ConditionExpression: "attribute_not_exists(PK)",
+      ConditionExpression: `attribute_not_exists(${PARTITION_KEY_NAME})`,
     };
 
     return new Promise((resolve) => {
@@ -191,8 +193,8 @@ export class TapesDynamoBackend extends DynamodbBackend {
       TableName: this.tableConfig.TableName,
       Item: {
         ...playlist,
-        PK: this.primaryKey(roomUid),
-        SK: this.sortKey.playlist(playlist.uid),
+        [PARTITION_KEY_NAME]: this.primaryKey(roomUid),
+        [SORT_KEY_NAME]: this.sortKey.playlist(playlist.uid),
       },
     };
 
@@ -237,8 +239,8 @@ export class TapesDynamoBackend extends DynamodbBackend {
       TableName: this.tableConfig.TableName,
       Item: {
         ...episode,
-        PK: this.primaryKey(roomUid),
-        SK: this.sortKey.episode(playlistUid, episode.uid),
+        [PARTITION_KEY_NAME]: this.primaryKey(roomUid),
+        [SORT_KEY_NAME]: this.sortKey.episode(playlistUid, episode.uid),
       },
     };
 
@@ -268,8 +270,8 @@ export class TapesDynamoBackend extends DynamodbBackend {
     const params = {
       TableName: this.tableConfig.TableName,
       Key: {
-        PK: this.primaryKey(roomUid),
-        SK: this.sortKey.room(roomUid),
+        [PARTITION_KEY_NAME]: this.primaryKey(roomUid),
+        [SORT_KEY_NAME]: this.sortKey.room(roomUid),
       },
     };
 
@@ -282,8 +284,8 @@ export class TapesDynamoBackend extends DynamodbBackend {
           );
         } else {
           // Strip mongodb query attributes
-          delete data.Item?.PK;
-          delete data.Item?.SK;
+          delete data.Item?.[PARTITION_KEY_NAME];
+          delete data.Item?.[SORT_KEY_NAME];
 
           // Encode back to IRoom (Add io-ts for validation/ decoding)
           const episode = (data.Item as unknown) as IRoom;
@@ -306,7 +308,7 @@ export class TapesDynamoBackend extends DynamodbBackend {
     const params: aws.DynamoDB.DocumentClient.QueryInput = {
       TableName: this.tableConfig.TableName,
       // ScanIndexForward: true,
-      KeyConditionExpression: "PK = :PK",
+      KeyConditionExpression: `${PARTITION_KEY_NAME} = :PK`,
       ExpressionAttributeValues: {
         ":PK": this.primaryKey(roomUid),
       },
@@ -332,7 +334,9 @@ export class TapesDynamoBackend extends DynamodbBackend {
           }
 
           // Get roomItem
-          const roomItem = data.Items.find((item) => item.SK.includes("ROOM"));
+          const roomItem = data.Items.find((item) =>
+            item[SORT_KEY_NAME].includes("ROOM")
+          );
           if (!roomItem) {
             return resolve(ERR<IRoom>("no roomItem found"));
           }
@@ -344,10 +348,11 @@ export class TapesDynamoBackend extends DynamodbBackend {
           // Get playlist and episodes
           const playlistItems = data.Items.filter(
             (item) =>
-              item.SK.includes("PLAYLIST") && !item.SK.includes("EPISODE")
+              item[SORT_KEY_NAME].includes("PLAYLIST") &&
+              !item[SORT_KEY_NAME].includes("EPISODE")
           );
           const episodeItems = data.Items.filter((item) =>
-            item.SK.includes("EPISODE")
+            item[SORT_KEY_NAME].includes("EPISODE")
           );
 
           // Get and parse playlistItems
@@ -355,25 +360,25 @@ export class TapesDynamoBackend extends DynamodbBackend {
           playlistItems.forEach((playlistItem) => {
             const playlist = (playlistItem as unknown) as IPlaylist;
             room.playlists.push(playlist);
-            playlistMap[playlistItem.SK] = playlist;
-            delete playlistItem.PK;
-            delete playlistItem.SK;
+            playlistMap[playlistItem[SORT_KEY_NAME]] = playlist;
+            delete playlistItem[PARTITION_KEY_NAME];
+            delete playlistItem[SORT_KEY_NAME];
           });
 
           // Get and parse episodeItems, also push into playlist
           episodeItems.forEach((episodeItem) => {
-            const playlistSK = episodeItem.SK.split(":EPISODE#")[0];
+            const playlistSK = episodeItem[SORT_KEY_NAME].split(":EPISODE#")[0];
             const episode = (episodeItem as unknown) as IEpisode;
             if (playlistMap[playlistSK]) {
               playlistMap[playlistSK].episodes.push(episode);
             }
-            delete episodeItem.PK;
-            delete episodeItem.SK;
+            delete episodeItem[PARTITION_KEY_NAME];
+            delete episodeItem[SORT_KEY_NAME];
           });
 
           // Remove SK of room
-          delete roomItem.PK;
-          delete roomItem.SK;
+          delete roomItem[PARTITION_KEY_NAME];
+          delete roomItem[SORT_KEY_NAME];
 
           // Fill its playlist
           room.playlists = Object.values(playlistMap);
@@ -407,8 +412,8 @@ export class TapesDynamoBackend extends DynamodbBackend {
     const params = {
       TableName: this.tableConfig.TableName,
       Key: {
-        PK: this.primaryKey(roomUid),
-        SK: this.sortKey.episode(playlistUid, episodeUid),
+        [PARTITION_KEY_NAME]: this.primaryKey(roomUid),
+        [SORT_KEY_NAME]: this.sortKey.episode(playlistUid, episodeUid),
       },
     };
     return new Promise((resolve) => {
@@ -420,8 +425,8 @@ export class TapesDynamoBackend extends DynamodbBackend {
           );
         } else {
           // Strip mongodb query attributes
-          delete data.Item?.PK;
-          delete data.Item?.SK;
+          delete data.Item?.[PARTITION_KEY_NAME];
+          delete data.Item?.[SORT_KEY_NAME];
 
           // Encode back to IEpisode (Add io-ts for validation/ decoding)
           const episode = (data.Item as unknown) as IEpisode;
@@ -451,8 +456,8 @@ export class TapesDynamoBackend extends DynamodbBackend {
     const params = {
       TableName: this.tableConfig.TableName,
       Key: {
-        PK: this.primaryKey(roomUid),
-        SK: this.sortKey.playlist(playlistUid),
+        [PARTITION_KEY_NAME]: this.primaryKey(roomUid),
+        [SORT_KEY_NAME]: this.sortKey.playlist(playlistUid),
       },
     };
     return new Promise((resolve) => {
@@ -464,8 +469,8 @@ export class TapesDynamoBackend extends DynamodbBackend {
           );
         } else {
           // Strip mongodb query attributes
-          delete data.Item?.PK;
-          delete data.Item?.SK;
+          delete data.Item?.[PARTITION_KEY_NAME];
+          delete data.Item?.[SORT_KEY_NAME];
 
           // Encode back to IPlaylist (Add io-ts for validation/ decoding)
           const playlist = (data.Item as unknown) as IPlaylist;

@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import PauseIcon from "@material-ui/icons/Pause";
-import PlayIcon from "@material-ui/icons/Play";
+import PlayIcon from "@material-ui/icons/PlayArrow";
 
 const useStyles = makeStyles((theme) => ({
   gridRoot: {

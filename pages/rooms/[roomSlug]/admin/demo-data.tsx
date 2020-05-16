@@ -20,7 +20,7 @@ const copyEpisode = async (
     playlistUid,
     data: {
       title: `Demo: ${episode.title}`,
-      status: episode.status,
+      // status: episode.status,
       image_url: episode.image_file.data.full_url,
       audio_file: episode.audio_file || undefined,
       published_on: episode.published_on || episode.created_on,

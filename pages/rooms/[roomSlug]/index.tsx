@@ -39,7 +39,7 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
     props: {
       // Runs serverside, call rpc handler directly
       preFetchedRoomResponse: await roomFetch.handle({
-        slug: params?.roomSlug as string,
+        uid: params?.roomSlug as string,
       }),
     },
     // we will attempt to re-generate the page:

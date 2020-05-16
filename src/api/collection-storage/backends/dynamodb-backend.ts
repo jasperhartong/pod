@@ -284,6 +284,9 @@ export class TapesDynamoBackend extends DynamodbBackend {
     if (!episode.uid) {
       return ERR<IEpisode>(`No valid episode uid passed along: ${episode.uid}`);
     }
+    if (!(await this.roomExists(roomUid))) {
+      return ERR<IEpisode>(`Room doesn't exist`);
+    }
 
     const getResultValue = () =>
       this.getEpisode(roomUid, playlistUid, episode.uid);

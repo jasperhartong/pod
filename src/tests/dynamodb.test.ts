@@ -167,8 +167,10 @@ describe("📦 The DynamoDB backend", () => {
     await backend.createPlaylist(room.uid, playlist1);
 
     const episode1a = generateEpisodeData();
-    // NOT CREATING IT
+
+    // Skip creation
     // await backend.createEpisode(room.uid, playlist1.uid, episode1a);
+    // Skip creation
 
     const episodeUpdate = await backend.updateEpisode(
       room.uid,
@@ -188,12 +190,31 @@ describe("📦 The DynamoDB backend", () => {
 
     // Skip creation
     // await backend.createRoom(room);
+    // Skip creation
+
     const playlistCreation = await backend.createPlaylist(room.uid, playlist);
 
     expect(playlistCreation.ok).toEqual(false);
   });
 
-  //   it("🚧 can cannot create episode in non-existing room", async () => {})
+  it("🚧 can cannot create episode in non-existing room", async () => {
+    const room = generateRoomData();
+    const playlist = generatePlaylistData();
+    const episode = generateEpisodeData();
+
+    // Skip creation
+    // await backend.createRoom(room);
+    // await backend.createPlaylist(room.uid, playlist);
+    // Skip creation
+
+    const episodeCreation = await backend.createEpisode(
+      room.uid,
+      playlist.uid,
+      episode
+    );
+
+    expect(episodeCreation.ok).toEqual(false);
+  });
   //   it("🚧 can cannot create episode in non-existing playlist", async () => {})
 });
 

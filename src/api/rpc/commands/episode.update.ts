@@ -1,15 +1,12 @@
-import { collectionsBackend } from "@/api/collection-storage";
-import { OK } from "@/api/IResponse";
+import { dynamoTableTapes } from "../../collection-storage/backends/dynamodb/dynamodb-table-tapes";
 import { RPCHandlerFactory } from "../rpc-server-handler";
 import meta from "./episode.update.meta";
 
 export default RPCHandlerFactory(meta, async (reqData) => {
-  const episodeCreation = await collectionsBackend.updateEpisode(
-    reqData.id.toString(),
+  return dynamoTableTapes.updateEpisode(
+    reqData.roomUid,
+    reqData.playlistUid,
+    reqData.episodeUid,
     reqData.data
   );
-  if (!episodeCreation.ok) {
-    return episodeCreation;
-  }
-  return OK(episodeCreation.data);
 });

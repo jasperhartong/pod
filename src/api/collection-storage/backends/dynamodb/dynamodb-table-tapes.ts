@@ -163,10 +163,6 @@ export class DynamoTableTapes extends DynamodbTableBase {
   }
 
   async createRoom(room: IRoom): Promise<IResponse<IRoom>> {
-    if (!room.uid) {
-      return ERR<IRoom>(`No valid room uid passed along: ${room.uid}`);
-    }
-
     const getResultValue = () => this.getRoom(room.uid);
     const params: aws.DynamoDB.DocumentClient.PutItemInput = {
       TableName: this.tableConfig.TableName,
@@ -185,14 +181,6 @@ export class DynamoTableTapes extends DynamodbTableBase {
     roomUid: IRoom["uid"],
     playlist: IPlaylist
   ): Promise<IResponse<IPlaylist>> {
-    if (!roomUid) {
-      return ERR<IPlaylist>(`No valid room uid passed along: ${roomUid}`);
-    }
-    if (!playlist.uid) {
-      return ERR<IPlaylist>(
-        `No valid playlist uid passed along: ${playlist.uid}`
-      );
-    }
     if (!(await this.roomExists(roomUid))) {
       return ERR<IPlaylist>(`Room doesn't exist`);
     }
@@ -215,17 +203,6 @@ export class DynamoTableTapes extends DynamodbTableBase {
     playlistUid: IPlaylist["uid"],
     episode: IEpisode
   ): Promise<IResponse<IEpisode>> {
-    if (!roomUid) {
-      return ERR<IEpisode>(`No valid room uid passed along: ${roomUid}`);
-    }
-    if (!playlistUid) {
-      return ERR<IEpisode>(
-        `No valid playlist uid passed along: ${playlistUid}`
-      );
-    }
-    if (!episode.uid) {
-      return ERR<IEpisode>(`No valid episode uid passed along: ${episode.uid}`);
-    }
     if (!(await this.playlistExists(roomUid, playlistUid))) {
       return ERR<IEpisode>(`Playlist doesn't exist`);
     }
@@ -250,17 +227,6 @@ export class DynamoTableTapes extends DynamodbTableBase {
     episodeUid: IEpisode["uid"],
     episode: Partial<IEpisode>
   ): Promise<IResponse<IEpisode>> {
-    if (!roomUid) {
-      return ERR<IEpisode>(`No valid room uid passed along: ${roomUid}`);
-    }
-    if (!playlistUid) {
-      return ERR<IEpisode>(
-        `No valid playlist uid passed along: ${playlistUid}`
-      );
-    }
-    if (!episodeUid) {
-      return ERR<IEpisode>(`No valid episode uid passed along: ${episodeUid}`);
-    }
     const keysToUpdate = Object.keys(episode);
 
     const getResultValue = () =>
@@ -272,13 +238,21 @@ export class DynamoTableTapes extends DynamodbTableBase {
         [PARTITION_KEY_NAME]: this.partitionKeyValue(roomUid),
         [SORT_KEY_NAME]: this.sortKeyValue.episode(playlistUid, episodeUid),
       },
-      // e.g. `set title = :title`
-      UpdateExpression: `set ${keysToUpdate.map((k) => `${k} = :${k}`)}`,
-      // e.g. {":title" : episode.title}
+      // e.g. `set #status = :status`
+      UpdateExpression: `set ${keysToUpdate.map((k) => `#${k} = :${k}`)}`,
+      // e.g. {":status" : episode.status}
       ExpressionAttributeValues: keysToUpdate.reduce(
         (acc: { [key: string]: any }, key) => ({
           ...acc,
           [`:${key}`]: episode[key as keyof IEpisode],
+        }),
+        {}
+      ),
+      // e.g. {"#status" : "status"}
+      ExpressionAttributeNames: keysToUpdate.reduce(
+        (acc: { [key: string]: any }, key) => ({
+          ...acc,
+          [`#${key}`]: key,
         }),
         {}
       ),
@@ -290,10 +264,6 @@ export class DynamoTableTapes extends DynamodbTableBase {
   }
 
   async getRoom(roomUid: IRoom["uid"]): Promise<IResponse<IRoom>> {
-    if (!roomUid) {
-      return ERR<IRoom>(`No valid room uid passed along: ${roomUid}`);
-    }
-
     const params = {
       TableName: this.tableConfig.TableName,
       Key: {
@@ -311,12 +281,6 @@ export class DynamoTableTapes extends DynamodbTableBase {
 
   async getRoomWithNested(roomUid: IRoom["uid"]): Promise<IResponse<IRoom>> {
     /* Returns fully nested room, with nested playlists and episodes sorted latest to oldest */
-    if (!roomUid) {
-      return Promise.resolve(
-        ERR<IRoom>(`No valid room uid passed along: ${roomUid}`)
-      );
-    }
-
     const params: aws.DynamoDB.DocumentClient.QueryInput = {
       TableName: this.tableConfig.TableName,
       // ScanIndexForward: true,
@@ -409,17 +373,6 @@ export class DynamoTableTapes extends DynamodbTableBase {
     playlistUid: IPlaylist["uid"],
     episodeUid: IEpisode["uid"]
   ): Promise<IResponse<IEpisode>> {
-    if (!roomUid) {
-      return ERR<IEpisode>(`No valid room uid passed along: ${roomUid}`);
-    }
-    if (!playlistUid) {
-      return ERR<IEpisode>(
-        `No valid playlist uid passed along: ${playlistUid}`
-      );
-    }
-    if (!episodeUid) {
-      return ERR<IEpisode>(`No valid playlist uid passed along: ${episodeUid}`);
-    }
     const params = {
       TableName: this.tableConfig.TableName,
       Key: {

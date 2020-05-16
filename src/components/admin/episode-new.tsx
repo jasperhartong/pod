@@ -27,11 +27,11 @@ export const EpisodeNew = ({ room, playlist }: Props) => {
 
   const handleSubmit = async (formData: EpisodeFormValues) => {
     const response = await RPCClientFactory(episodeCreateMeta).call({
-      playlistId: playlist.id,
+      roomUid: room.uid,
+      playlistUid: playlist.uid,
       data: {
         title: formData.title,
         image_url: formData.imageUrl,
-        status: "draft",
       },
     });
     if (response.ok) {
@@ -56,9 +56,7 @@ export const EpisodeNew = ({ room, playlist }: Props) => {
     <AdminDualPaneLayout
       title={"Nieuwe aflevering"}
       subtitle={watchedTitle || defaultTitle}
-      image={
-        playlist.cover_file.data.thumbnails.find((t) => t.width > 400)?.url
-      }
+      image={playlist.cover_file.data.full_url}
       blur={40}
       action={
         <AdminHeaderClose

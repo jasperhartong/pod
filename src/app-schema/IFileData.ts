@@ -10,7 +10,7 @@ const TThumbnail = t.type({
 
 export const TImageData = t.type({
   full_url: t.string,
-  thumbnails: t.array(TThumbnail),
+  // thumbnails: t.array(TThumbnail),
 });
 
 export type IImageData = t.TypeOf<typeof TImageData>;

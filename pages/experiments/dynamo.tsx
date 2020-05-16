@@ -19,7 +19,7 @@ const Dynamo = () => {
         </Button>
         {data && (
           <Box textAlign="center" p={4}>
-            Created: {data.title}
+            Created: {data.title} : {data.uid}
           </Box>
         )}
 

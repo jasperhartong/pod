@@ -34,9 +34,7 @@ export const PlaylistDetails = ({
     <AppContainer maxWidth="md">
       <Container maxWidth="sm" style={{ padding: 0 }}>
         <AdminHeader
-          image={
-            playlist.cover_file.data.thumbnails.find((t) => t.width > 400)?.url
-          }
+          image={playlist.cover_file.data.full_url}
           title={playlist.title}
           subtitle={`in ${room.title}`}
           action={
@@ -161,9 +159,7 @@ const AdminEpisodeListItem = ({
         <Avatar
           variant="square"
           alt={episode.title}
-          src={
-            episode.image_file.data.thumbnails.find((t) => t.width > 100)?.url
-          }
+          src={episode.image_file.data.full_url}
         />
       </ListItemAvatar>
       <ListItemText

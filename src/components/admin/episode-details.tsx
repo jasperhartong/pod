@@ -30,7 +30,9 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
     setIsValidating(true);
     const published_on = toDbDate(DateTime.utc());
     const updating = await RPCClientFactory(episodeUpdateMeta).call({
-      id: episode.id,
+      roomUid: room.uid,
+      playlistUid: playlist.uid,
+      episodeUid: episode.uid,
       data: {
         status: "published",
         published_on,
@@ -56,9 +58,7 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
   };
   return (
     <AdminDualPaneLayout
-      image={
-        playlist.cover_file.data.thumbnails.find((t) => t.width > 400)?.url
-      }
+      image={playlist.cover_file.data.full_url}
       blur={40}
       title={episode.title}
       subtitle={"in " + playlist.title}
@@ -72,10 +72,7 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
         <Box p={2} pb={0} textAlign="center">
           <Box style={{ display: "inline-block" }}>
             <ImageCoverLayout
-              imageUrl={
-                episode.image_file.data.thumbnails.find((t) => t.width > 240)
-                  ?.url
-              }
+              imageUrl={episode.image_file.data.full_url}
               style={{ width: 240, height: 240 }}
             />
           </Box>

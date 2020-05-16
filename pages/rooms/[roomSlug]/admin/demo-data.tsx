@@ -10,9 +10,14 @@ import { useSWRRoom } from "@/hooks/useSWRRoom";
 import { Button, Typography } from "@material-ui/core";
 import { useState } from "react";
 
-const copyEpisode = async (episode: IEpisode, playlistId: IPlaylist["id"]) => {
+const copyEpisode = async (
+  episode: IEpisode,
+  roomUid: IRoom["uid"],
+  playlistUid: IPlaylist["uid"]
+) => {
   return await RPCClientFactory(episodeCreateMeta).call({
-    playlistId: playlistId,
+    roomUid,
+    playlistUid,
     data: {
       title: `Demo: ${episode.title}`,
       status: episode.status,
@@ -28,7 +33,7 @@ const copyPlaylist = async (playlist: IPlaylist, room: IRoom) => {
     return console.debug("protecting famhartong room");
   }
   const playlistCreation = await RPCClientFactory(playlistCreateMeta).call({
-    roomId: room.id,
+    roomUid: room.uid,
     data: {
       title: `Demo: ${playlist.title}`,
       description: playlist.description,
@@ -38,7 +43,11 @@ const copyPlaylist = async (playlist: IPlaylist, room: IRoom) => {
   if (playlistCreation.ok) {
     // episodes are ordered from new to old. We want to copy them old to new.
     playlist.episodes.reverse().forEach(async (episode, index) => {
-      const creation = await copyEpisode(episode, playlistCreation.data.id);
+      const creation = await copyEpisode(
+        episode,
+        room.uid,
+        playlistCreation.data.uid
+      );
       if (!creation.ok) {
         console.error(`"${episode.title}" failed to copy. Index: ${index}`);
       }

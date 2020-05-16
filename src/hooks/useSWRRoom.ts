@@ -7,14 +7,14 @@ import { IRoom } from "@/app-schema/IRoom";
 import produce from "immer";
 import useSWR from "swr";
 
-const fetcher = async (slug: IRoom["slug"]) =>
-  RPCClientFactory(roomFetchMeta).call({ slug });
+const fetcher = async (uid: IRoom["uid"]) =>
+  RPCClientFactory(roomFetchMeta).call({ uid });
 
 export const useSWRRoom = (
-  slug: string | null,
+  uid: string | null,
   initialData?: IResponse<IRoom>
 ) => {
-  const { data, mutate, ...rest } = useSWR(slug, fetcher, {
+  const { data, mutate, ...rest } = useSWR(uid, fetcher, {
     refreshInterval: 0,
     initialData,
   });

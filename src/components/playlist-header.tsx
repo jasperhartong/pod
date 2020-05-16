@@ -17,12 +17,7 @@ const PlaylistHeader = ({
   onClick?: () => void;
   secondaryAction?: ReactNode;
 }) => {
-  const cover =
-    playlist.cover_file &&
-    playlist.cover_file.data &&
-    playlist.cover_file.data.thumbnails !== null
-      ? playlist.cover_file.data.thumbnails.find((t) => t.height > 100)!.url
-      : "";
+  const cover = playlist.cover_file.data.full_url;
 
   return (
     <ListItem

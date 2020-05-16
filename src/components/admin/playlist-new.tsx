@@ -25,7 +25,7 @@ export const PlaylistNew = ({ room }: Props) => {
 
   const handleSubmit = async (formData: PlaylistFormValues) => {
     const playlistCreation = await RPCClientFactory(playlistCreateMeta).call({
-      roomId: room.id,
+      roomUid: room.uid,
       data: {
         title: formData.title,
         description: formData.description || "",
@@ -52,7 +52,7 @@ export const PlaylistNew = ({ room }: Props) => {
     <AdminDualPaneLayout
       title={"Nieuwe collectie"}
       subtitle={watchedTitle || defaultTitle}
-      image={room.cover_file.data.thumbnails.find((t) => t.width > 400)?.url}
+      image={room.cover_file.data.full_url}
       blur={40}
       action={
         <AdminHeaderClose

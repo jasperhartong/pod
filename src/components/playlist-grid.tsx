@@ -1,15 +1,6 @@
 import { IEpisode } from "@/app-schema/IEpisode";
 import { IPlaylist } from "@/app-schema/IPlaylist";
-import {
-  Box,
-  ButtonBase,
-  Fab,
-  makeStyles,
-  Paper,
-  Typography,
-} from "@material-ui/core";
-import PauseIcon from "@material-ui/icons/Pause";
-import PlayIcon from "@material-ui/icons/PlayArrow";
+import { ButtonBase, makeStyles, Paper } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   gridRoot: {
@@ -68,11 +59,7 @@ const PlaylistGrid = (props: Props) => {
                 focusRipple={true}
                 className={classes.imageButton}
                 style={{
-                  backgroundImage: `url(${
-                    episode.image_file.data.thumbnails.find(
-                      (t) => t.height > 100
-                    )!.url
-                  })`,
+                  backgroundImage: `url(${episode.image_file.data.full_url}`,
                 }}
               />
             </Paper>

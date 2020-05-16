@@ -6,7 +6,7 @@ export default RPCMeta(
   "room",
   "fetch",
   t.type({
-    slug: t.string,
+    uid: t.string,
   }),
   TRoom
 );

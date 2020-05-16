@@ -246,7 +246,6 @@ const generateRoomData = (partial?: Partial<IRoom>): IRoom => {
     cover_file: {
       data: {
         full_url: "",
-        thumbnails: [],
       },
     },
     playlists: [],
@@ -265,7 +264,6 @@ const generatePlaylistData = (partial?: Partial<IPlaylist>): IPlaylist => {
     cover_file: {
       data: {
         full_url: "",
-        thumbnails: [],
       },
     },
     episodes: [],
@@ -286,7 +284,6 @@ const generateEpisodeData = (partial?: Partial<IEpisode>): IEpisode => {
     image_file: {
       data: {
         full_url: "",
-        thumbnails: [],
       },
     },
     ...(partial || {}),

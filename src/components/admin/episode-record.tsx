@@ -62,20 +62,27 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
   });
   const updateEpisodeWithAudioFile = async (downloadUrl: string) => {
     const updatedEpisode = await RPCClientFactory(episodeUpdateMeta).call({
-      id: episode.id,
+      roomUid: room.uid,
+      playlistUid: playlist.uid,
+      episodeUid: episode.uid,
       data: { audio_file: downloadUrl },
     });
     if (!updatedEpisode.ok) {
       dispatch((state) => {
         state.updateError = updatedEpisode.error;
       });
+    } else {
+      // Update local state, then move on
+      mutateEpisode(
+        playlist.id,
+        { ...episode, audio_file: downloadUrl },
+        false
+      );
+      router.push(
+        "/rooms/[roomSlug]/admin/[playlistId]/episode/[episodeId]",
+        `/rooms/${room.slug}/admin/${playlist.id}/episode/${episode.id}`
+      );
     }
-    // Update local state, then move on
-    mutateEpisode(playlist.id, { ...episode, audio_file: downloadUrl }, false);
-    router.push(
-      "/rooms/[roomSlug]/admin/[playlistId]/episode/[episodeId]",
-      `/rooms/${room.slug}/admin/${playlist.id}/episode/${episode.id}`
-    );
   };
 
   const mp3Recording =
@@ -268,9 +275,7 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
 
   return (
     <AdminDualPaneLayout
-      image={
-        playlist.cover_file.data.thumbnails.find((t) => t.width > 400)?.url
-      }
+      image={playlist.cover_file.data.full_url}
       blur={40}
       title={"Opnemen"}
       subtitle={playlist.title + " • " + episode.title}
@@ -284,10 +289,7 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
         <Box p={2} pb={0} textAlign="center">
           <Box style={{ display: "inline-block" }}>
             <ImageCoverLayout
-              imageUrl={
-                episode.image_file.data.thumbnails.find((t) => t.width > 240)
-                  ?.url
-              }
+              imageUrl={episode.image_file.data.full_url}
               style={{
                 width: 240,
                 height: 240,

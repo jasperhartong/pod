@@ -220,11 +220,9 @@ export class TapesDynamoBackend extends DynamodbBackend {
     );
   }
 
-  createRoom(room: IRoom): Promise<IResponse<IRoom>> {
+  async createRoom(room: IRoom): Promise<IResponse<IRoom>> {
     if (!room.uid) {
-      return Promise.resolve(
-        ERR<IRoom>(`No valid room uid passed along: ${room.uid}`)
-      );
+      return ERR<IRoom>(`No valid room uid passed along: ${room.uid}`);
     }
 
     const getResultValue = () => this.getRoom(room.uid);
@@ -270,25 +268,21 @@ export class TapesDynamoBackend extends DynamodbBackend {
     return this.putItem<IPlaylist>(params, getResultValue);
   }
 
-  createEpisode(
+  async createEpisode(
     roomUid: IRoom["uid"],
     playlistUid: IPlaylist["uid"],
     episode: IEpisode
   ): Promise<IResponse<IEpisode>> {
     if (!roomUid) {
-      return Promise.resolve(
-        ERR<IEpisode>(`No valid room uid passed along: ${roomUid}`)
-      );
+      return ERR<IEpisode>(`No valid room uid passed along: ${roomUid}`);
     }
     if (!playlistUid) {
-      return Promise.resolve(
-        ERR<IEpisode>(`No valid playlist uid passed along: ${playlistUid}`)
+      return ERR<IEpisode>(
+        `No valid playlist uid passed along: ${playlistUid}`
       );
     }
     if (!episode.uid) {
-      return Promise.resolve(
-        ERR<IEpisode>(`No valid episode uid passed along: ${episode.uid}`)
-      );
+      return ERR<IEpisode>(`No valid episode uid passed along: ${episode.uid}`);
     }
 
     const getResultValue = () =>
@@ -305,26 +299,22 @@ export class TapesDynamoBackend extends DynamodbBackend {
     return this.putItem<IEpisode>(params, getResultValue);
   }
 
-  updateEpisode(
+  async updateEpisode(
     roomUid: IRoom["uid"],
     playlistUid: IPlaylist["uid"],
     episodeUid: IEpisode["uid"],
     episode: Partial<IEpisode>
   ): Promise<IResponse<IEpisode>> {
     if (!roomUid) {
-      return Promise.resolve(
-        ERR<IEpisode>(`No valid room uid passed along: ${roomUid}`)
-      );
+      return ERR<IEpisode>(`No valid room uid passed along: ${roomUid}`);
     }
     if (!playlistUid) {
-      return Promise.resolve(
-        ERR<IEpisode>(`No valid playlist uid passed along: ${playlistUid}`)
+      return ERR<IEpisode>(
+        `No valid playlist uid passed along: ${playlistUid}`
       );
     }
     if (!episodeUid) {
-      return Promise.resolve(
-        ERR<IEpisode>(`No valid episode uid passed along: ${episodeUid}`)
-      );
+      return ERR<IEpisode>(`No valid episode uid passed along: ${episodeUid}`);
     }
     const keysToUpdate = Object.keys(episode);
 
@@ -354,11 +344,9 @@ export class TapesDynamoBackend extends DynamodbBackend {
     return this.updateItem<IEpisode>(params, getResultValue);
   }
 
-  getRoom(roomUid: IRoom["uid"]): Promise<IResponse<IRoom>> {
+  async getRoom(roomUid: IRoom["uid"]): Promise<IResponse<IRoom>> {
     if (!roomUid) {
-      return Promise.resolve(
-        ERR<IRoom>(`No valid room uid passed along: ${roomUid}`)
-      );
+      return ERR<IRoom>(`No valid room uid passed along: ${roomUid}`);
     }
 
     const params = {
@@ -471,25 +459,21 @@ export class TapesDynamoBackend extends DynamodbBackend {
     }
   }
 
-  getEpisode(
+  async getEpisode(
     roomUid: IRoom["uid"],
     playlistUid: IPlaylist["uid"],
     episodeUid: IEpisode["uid"]
   ): Promise<IResponse<IEpisode>> {
     if (!roomUid) {
-      return Promise.resolve(
-        ERR<IEpisode>(`No valid room uid passed along: ${roomUid}`)
-      );
+      return ERR<IEpisode>(`No valid room uid passed along: ${roomUid}`);
     }
     if (!playlistUid) {
-      return Promise.resolve(
-        ERR<IEpisode>(`No valid playlist uid passed along: ${playlistUid}`)
+      return ERR<IEpisode>(
+        `No valid playlist uid passed along: ${playlistUid}`
       );
     }
     if (!episodeUid) {
-      return Promise.resolve(
-        ERR<IEpisode>(`No valid playlist uid passed along: ${episodeUid}`)
-      );
+      return ERR<IEpisode>(`No valid playlist uid passed along: ${episodeUid}`);
     }
     const params = {
       TableName: this.tableConfig.TableName,
@@ -507,18 +491,16 @@ export class TapesDynamoBackend extends DynamodbBackend {
     return this.getItem<IEpisode>(params, encode);
   }
 
-  getPlaylist(
+  async getPlaylist(
     roomUid: IRoom["uid"],
     playlistUid: IPlaylist["uid"]
   ): Promise<IResponse<IPlaylist>> {
     if (!roomUid) {
-      return Promise.resolve(
-        ERR<IPlaylist>(`No valid room uid passed along: ${roomUid}`)
-      );
+      return ERR<IPlaylist>(`No valid room uid passed along: ${roomUid}`);
     }
     if (!playlistUid) {
-      return Promise.resolve(
-        ERR<IPlaylist>(`No valid playlist uid passed along: ${playlistUid}`)
+      return ERR<IPlaylist>(
+        `No valid playlist uid passed along: ${playlistUid}`
       );
     }
     const params = {

@@ -184,7 +184,7 @@ describe("📦 The DynamoDB backend", () => {
     expect(episodeUpdate.ok).toBe(false);
   });
 
-  it("🚧 can cannot create playlist in non-existing room", async () => {
+  it("🚧 cannot create playlist in non-existing room", async () => {
     const room = generateRoomData();
     const playlist = generatePlaylistData();
 
@@ -197,7 +197,7 @@ describe("📦 The DynamoDB backend", () => {
     expect(playlistCreation.ok).toEqual(false);
   });
 
-  it("🚧 can cannot create episode in non-existing room", async () => {
+  it("🚧 cannot create episode in non-existing room", async () => {
     const room = generateRoomData();
     const playlist = generatePlaylistData();
     const episode = generateEpisodeData();
@@ -215,7 +215,24 @@ describe("📦 The DynamoDB backend", () => {
 
     expect(episodeCreation.ok).toEqual(false);
   });
-  //   it("🚧 can cannot create episode in non-existing playlist", async () => {})
+  it("🚧 cannot create episode in non-existing playlist", async () => {
+    const room = generateRoomData();
+    const playlist = generatePlaylistData();
+    const episode = generateEpisodeData();
+
+    await backend.createRoom(room);
+    // Skip creation
+    // await backend.createPlaylist(room.uid, playlist);
+    // Skip creation
+
+    const episodeCreation = await backend.createEpisode(
+      room.uid,
+      playlist.uid,
+      episode
+    );
+
+    expect(episodeCreation.ok).toEqual(false);
+  });
 });
 
 const generateRoomData = (partial?: Partial<IRoom>): IRoom => {

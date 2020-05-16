@@ -220,6 +220,13 @@ export class TapesDynamoBackend extends DynamodbBackend {
     );
   }
 
+  async playlistExists(RoomUid: IRoom["uid"], playlistUid: IPlaylist["uid"]) {
+    return this.exists(
+      this.partitionKeyValue(RoomUid),
+      this.sortKeyValue.playlist(playlistUid)
+    );
+  }
+
   async createRoom(room: IRoom): Promise<IResponse<IRoom>> {
     if (!room.uid) {
       return ERR<IRoom>(`No valid room uid passed along: ${room.uid}`);
@@ -284,8 +291,8 @@ export class TapesDynamoBackend extends DynamodbBackend {
     if (!episode.uid) {
       return ERR<IEpisode>(`No valid episode uid passed along: ${episode.uid}`);
     }
-    if (!(await this.roomExists(roomUid))) {
-      return ERR<IEpisode>(`Room doesn't exist`);
+    if (!(await this.playlistExists(roomUid, playlistUid))) {
+      return ERR<IEpisode>(`Playlist doesn't exist`);
     }
 
     const getResultValue = () =>

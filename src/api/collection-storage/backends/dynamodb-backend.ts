@@ -4,18 +4,18 @@ https://www.alexdebrie.com/posts/dynamodb-one-to-many/#composite-primary-key--th
 PK                      SK
 ROOM#<short-unique-id>  ROOM#<short-unique-id>                                  room fields
                         PLAYLIST#<short-unique-id>                              playlist fields
-                        PLAYLIST#<short-unique-id>EPISODE#<short-unique-id>     episode fields
+                        PLAYLIST#<short-unique-id>:EPISODE#<short-unique-id>    episode fields
 
                         ACCESS#<email>
                         
 */
 import { ERR, IResponse, OK } from "@/api/IResponse";
+import { IBase } from "@/app-schema/IBase";
 import { IEpisode } from "@/app-schema/IEpisode";
 import { IPlaylist } from "@/app-schema/IPlaylist";
 import { IRoom } from "@/app-schema/IRoom";
 import aws from "aws-sdk";
 import { DateTime } from "luxon";
-import { IBase } from "../../../app-schema/IBase";
 
 const AWSvars = [
   process.env.MY_AWS_ACCESS_REGION,

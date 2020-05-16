@@ -14,7 +14,6 @@ import { IEpisode } from "@/app-schema/IEpisode";
 import { IPlaylist } from "@/app-schema/IPlaylist";
 import { IRoom } from "@/app-schema/IRoom";
 import aws from "aws-sdk";
-import HttpStatus from "http-status-codes";
 import { DateTime } from "luxon";
 import { IBase } from "../../../app-schema/IBase";
 
@@ -290,8 +289,8 @@ export class TapesDynamoBackend extends DynamodbBackend {
     return this.getItem<IRoom>(params, encode);
   }
 
-  getRoomWithNested(roomUid: IRoom["uid"]): Promise<IResponse<IRoom>> {
-    /* Returns fully nested room */
+  async getRoomWithNested(roomUid: IRoom["uid"]): Promise<IResponse<IRoom>> {
+    /* Returns fully nested room, with nested playlists and episodes sorted latest to oldest */
     if (!roomUid) {
       return Promise.resolve(
         ERR<IRoom>(`No valid room uid passed along: ${roomUid}`)
@@ -307,82 +306,82 @@ export class TapesDynamoBackend extends DynamodbBackend {
       },
     };
 
-    return new Promise((resolve) => {
-      this.docClient.query(params, function (err, data) {
-        if (err) {
-          console.error("TapesDynamoBackend::get Error", err);
-          return resolve(
-            ERR<IRoom>(err.message, HttpStatus.INTERNAL_SERVER_ERROR)
-          );
-        } else {
-          console.info(
-            `TapesDynamodbConfig::getRoom:: data: ${JSON.stringify(
-              data,
-              null,
-              2
-            )} `
-          );
-          if (!data.Items) {
-            return resolve(ERR<IRoom>("no items found"));
-          }
+    try {
+      const queryData = await this.docClient.query(params).promise();
+      if (!queryData.Items) {
+        return ERR<IRoom>("no items found");
+      }
 
-          // Get roomItem
-          const roomItem = data.Items.find((item) =>
-            item[SORT_KEY_NAME].includes("ROOM")
-          );
-          if (!roomItem) {
-            return resolve(ERR<IRoom>("no roomItem found"));
-          }
-          // Encode roomItem to IRoom (Add io-ts for validation/ decoding)
-          const room = (roomItem as unknown) as IRoom;
-
-          room.cover_file.data.full_url = room.cover_file.data.full_url || ""; // decode `null`
-
-          // Get playlist and episodes
-          const playlistItems = data.Items.filter(
-            (item) =>
-              item[SORT_KEY_NAME].includes("PLAYLIST") &&
-              !item[SORT_KEY_NAME].includes("EPISODE")
-          );
-          const episodeItems = data.Items.filter((item) =>
-            item[SORT_KEY_NAME].includes("EPISODE")
-          );
-
-          // Get and parse playlistItems
-          let playlistMap: Record<string, IPlaylist> = {};
-          playlistItems.forEach((playlistItem) => {
-            const playlist = (playlistItem as unknown) as IPlaylist;
-            room.playlists.push(playlist);
-            playlistMap[playlistItem[SORT_KEY_NAME]] = playlist;
-            delete playlistItem[PARTITION_KEY_NAME];
-            delete playlistItem[SORT_KEY_NAME];
-            delete playlistItem[CREATED_ON_KEY];
-          });
-
-          // Get and parse episodeItems, also push into playlist
-          episodeItems.forEach((episodeItem) => {
-            const playlistSK = episodeItem[SORT_KEY_NAME].split(":EPISODE#")[0];
-            const episode = (episodeItem as unknown) as IEpisode;
-            if (playlistMap[playlistSK]) {
-              playlistMap[playlistSK].episodes.push(episode);
-            }
-            delete episodeItem[PARTITION_KEY_NAME];
-            delete episodeItem[SORT_KEY_NAME];
-            delete episodeItem[CREATED_ON_KEY];
-          });
-
-          // Remove SK of room
-          delete roomItem[PARTITION_KEY_NAME];
-          delete roomItem[SORT_KEY_NAME];
-          delete roomItem[CREATED_ON_KEY];
-
-          // Fill its playlist
-          room.playlists = Object.values(playlistMap);
-
-          return resolve(OK<IRoom>(room));
+      const sortedItems = queryData.Items.sort((a, b) => {
+        if (a[CREATED_ON_KEY] < b[CREATED_ON_KEY]) {
+          return 1;
         }
+        if (a[CREATED_ON_KEY] > b[CREATED_ON_KEY]) {
+          return -1;
+        }
+        return 0;
       });
-    });
+
+      // Get roomItem
+      const roomItem = sortedItems.find((item) =>
+        item[SORT_KEY_NAME].includes("ROOM")
+      );
+      if (!roomItem) {
+        return ERR<IRoom>("no roomItem found");
+      }
+
+      // Get playlist and episodes
+      const playlistItems = sortedItems.filter(
+        (item) =>
+          item[SORT_KEY_NAME].includes("PLAYLIST") &&
+          !item[SORT_KEY_NAME].includes("EPISODE")
+      );
+      const episodeItems = sortedItems.filter((item) =>
+        item[SORT_KEY_NAME].includes("EPISODE")
+      );
+
+      // Encode roomItem to IRoom (Add io-ts for validation/ decoding)
+      this.deleteDynamoKeys(roomItem);
+      const room = (roomItem as unknown) as IRoom;
+      room.cover_file.data.full_url = room.cover_file.data.full_url || ""; // decode `null`
+
+      // Get and parse playlistItems
+      let playlistMap: Record<string, IPlaylist> = {};
+      playlistItems.forEach((playlistItem) => {
+        // Encode playlist
+        const playlist = (playlistItem as unknown) as IPlaylist;
+        playlist.cover_file.data.full_url =
+          playlist.cover_file.data.full_url || ""; // decode `null`
+        room.playlists.push(playlist);
+
+        // Prepate to receive nested episodes based on SORT_KEY_NAME
+        playlistMap[playlistItem[SORT_KEY_NAME]] = playlist;
+        this.deleteDynamoKeys(playlistMap);
+      });
+
+      // Get and parse episodeItems, also push into playlist
+      episodeItems.forEach((episodeItem) => {
+        // Encode episode
+        const episode = (episodeItem as unknown) as IEpisode;
+        episode.image_file.data.full_url =
+          episode.image_file.data.full_url || ""; // decode `null`
+        episode.audio_file = episode.audio_file || ""; // decode `null`
+
+        // Nest into correct playlist
+        const playlistSK = episodeItem[SORT_KEY_NAME].split(":EPISODE#")[0];
+        if (playlistMap[playlistSK]) {
+          playlistMap[playlistSK].episodes.push(episode);
+        }
+        this.deleteDynamoKeys(episodeItem);
+      });
+
+      // Fill rooms its playlist
+      room.playlists = Object.values(playlistMap);
+
+      return OK<IRoom>(room);
+    } catch (error) {
+      return ERR<IRoom>((error as aws.AWSError).message);
+    }
   }
 
   getEpisode(

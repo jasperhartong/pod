@@ -84,40 +84,45 @@ describe("📦 The DynamyDB backend", () => {
 
   it("😊 can create and retrieve complex nested room", async () => {
     const room = generateRoomData();
-    const playlist1 = generatePlaylistData({ title: "first" });
-    const playlist2 = generatePlaylistData({ title: "second" });
-    const episode1a = generateEpisodeData({ title: "a" });
-    const episode1b = generateEpisodeData({ title: "b" });
-    const episode2a = generateEpisodeData({ title: "a" });
-    const episode2b = generateEpisodeData({ title: "b" });
-    const episode2c = generateEpisodeData({ title: "c" });
-
     await backend.createRoom(room);
+
+    const playlist1 = generatePlaylistData({ title: "first" });
     await backend.createPlaylist(room.uid, playlist1);
+
+    const playlist2 = generatePlaylistData({ title: "second" });
     await backend.createPlaylist(room.uid, playlist2);
+
+    const episode1a = generateEpisodeData({ title: "a" });
     await backend.createEpisode(room.uid, playlist1.uid, episode1a);
+
+    const episode1b = generateEpisodeData({ title: "b" });
     await backend.createEpisode(room.uid, playlist1.uid, episode1b);
+
+    const episode2a = generateEpisodeData({ title: "a" });
     await backend.createEpisode(room.uid, playlist2.uid, episode2a);
+
+    const episode2b = generateEpisodeData({ title: "b" });
     await backend.createEpisode(room.uid, playlist2.uid, episode2b);
+
+    const episode2c = generateEpisodeData({ title: "c" });
     await backend.createEpisode(room.uid, playlist2.uid, episode2c);
 
     const complexRoomResponse = await backend.getRoomWithNested(room.uid);
 
+    expect(complexRoomResponse.ok).toBe(true);
+
     if (complexRoomResponse.ok) {
-      expect(complexRoomResponse.data.playlists.length).toEqual(2);
-      //   FIXME: Sorting
-      //   expect(complexRoomResponse.data.playlists[0].episodes.length).toEqual(3);
-      //   expect(complexRoomResponse.data.playlists[1].episodes.length).toEqual(2);
-      //   expect(complexRoomResponse.data.playlists.map((p) => p.title)).toEqual([
-      //     "second",
-      //     "first",
-      //   ]);
-      //   expect(
-      //     complexRoomResponse.data.playlists[0].episodes.map((p) => p.title)
-      //   ).toEqual(["b", "a"]);
-      //   expect(
-      //     complexRoomResponse.data.playlists[1].episodes.map((p) => p.title)
-      //   ).toEqual(["c", "b", "a"]);
+      // Expect all sorting to be from latest to oldest
+      expect(complexRoomResponse.data.playlists.map((p) => p.title)).toEqual([
+        "second",
+        "first",
+      ]);
+      expect(
+        complexRoomResponse.data.playlists[0].episodes.map((p) => p.title)
+      ).toEqual(["c", "b", "a"]);
+      expect(
+        complexRoomResponse.data.playlists[1].episodes.map((p) => p.title)
+      ).toEqual(["b", "a"]);
     }
   });
 
@@ -141,6 +146,7 @@ const generateRoomData = (partial?: Partial<IRoom>): IRoom => {
   return {
     id: 0,
     uid,
+    created_on: DateTime.utc().toJSON(),
     slug: uid,
     title: "test",
     cover_file: {

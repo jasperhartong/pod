@@ -1,13 +1,11 @@
-import { optional } from "@/utils/io-ts";
 import * as t from "io-ts";
-import { TDateString } from "./IDateString";
+import { IBase } from "./IBase";
 import { TEpisode } from "./IEpisode";
 import { TImageData } from "./IFileData";
 
 export const TPlaylist = t.type({
+  ...IBase.props,
   id: t.number,
-  uid: optional(t.string),
-  created_on: TDateString,
   title: t.string,
   description: t.string,
   cover_file: t.type({ data: TImageData }),

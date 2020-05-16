@@ -15,6 +15,8 @@ import { IPlaylist } from "@/app-schema/IPlaylist";
 import { IRoom } from "@/app-schema/IRoom";
 import aws from "aws-sdk";
 import HttpStatus from "http-status-codes";
+import { DateTime } from "luxon";
+import { IBase } from "../../../app-schema/IBase";
 
 const AWSvars = [
   process.env.MY_AWS_ACCESS_REGION,
@@ -98,6 +100,8 @@ export class DynamodbBackend {
 
 const PARTITION_KEY_NAME = "DYNAMODBPK";
 const SORT_KEY_NAME = "DYNAMODBSK";
+const CREATED_ON_KEY = "DYNAMODBCREATED";
+
 export const tapesDynamodbConfig: aws.DynamoDB.CreateTableInput = {
   TableName: `TAPES`,
   KeySchema: [
@@ -123,7 +127,7 @@ export class TapesDynamoBackend extends DynamodbBackend {
     });
   }
 
-  private primaryKey = (roomId: IRoom["uid"]) => {
+  private partitionKey = (roomId: IRoom["uid"]) => {
     return `ROOMPK#${roomId}`;
   };
 
@@ -139,6 +143,18 @@ export class TapesDynamoBackend extends DynamodbBackend {
     },
   };
 
+  private createdOnKey = (schema: IBase) => {
+    return DateTime.fromISO(schema.created_on).toMillis().toString();
+  };
+
+  private deleteDynamoKeys = (
+    item?: aws.DynamoDB.DocumentClient.AttributeMap
+  ) => {
+    delete item?.[PARTITION_KEY_NAME];
+    delete item?.[SORT_KEY_NAME];
+    delete item?.[CREATED_ON_KEY];
+  };
+
   createRoom(room: IRoom): Promise<IResponse<IRoom>> {
     if (!room.uid) {
       return Promise.resolve(
@@ -152,8 +168,9 @@ export class TapesDynamoBackend extends DynamodbBackend {
       TableName: this.tableConfig.TableName,
       Item: {
         ...room,
-        [PARTITION_KEY_NAME]: this.primaryKey(room.uid),
+        [PARTITION_KEY_NAME]: this.partitionKey(room.uid),
         [SORT_KEY_NAME]: this.sortKey.room(room.uid),
+        [CREATED_ON_KEY]: this.createdOnKey(room),
       },
       ConditionExpression: `attribute_not_exists(${PARTITION_KEY_NAME})`,
     };
@@ -193,8 +210,9 @@ export class TapesDynamoBackend extends DynamodbBackend {
       TableName: this.tableConfig.TableName,
       Item: {
         ...playlist,
-        [PARTITION_KEY_NAME]: this.primaryKey(roomUid),
+        [PARTITION_KEY_NAME]: this.partitionKey(roomUid),
         [SORT_KEY_NAME]: this.sortKey.playlist(playlist.uid),
+        [CREATED_ON_KEY]: this.createdOnKey(playlist),
       },
     };
 
@@ -239,8 +257,9 @@ export class TapesDynamoBackend extends DynamodbBackend {
       TableName: this.tableConfig.TableName,
       Item: {
         ...episode,
-        [PARTITION_KEY_NAME]: this.primaryKey(roomUid),
+        [PARTITION_KEY_NAME]: this.partitionKey(roomUid),
         [SORT_KEY_NAME]: this.sortKey.episode(playlistUid, episode.uid),
+        [CREATED_ON_KEY]: this.createdOnKey(episode),
       },
     };
 
@@ -270,7 +289,7 @@ export class TapesDynamoBackend extends DynamodbBackend {
     const params = {
       TableName: this.tableConfig.TableName,
       Key: {
-        [PARTITION_KEY_NAME]: this.primaryKey(roomUid),
+        [PARTITION_KEY_NAME]: this.partitionKey(roomUid),
         [SORT_KEY_NAME]: this.sortKey.room(roomUid),
       },
     };
@@ -283,9 +302,10 @@ export class TapesDynamoBackend extends DynamodbBackend {
             ERR<IRoom>(err.message, HttpStatus.INTERNAL_SERVER_ERROR)
           );
         } else {
-          // Strip mongodb query attributes
+          // Strip dynamodb query attributes
           delete data.Item?.[PARTITION_KEY_NAME];
           delete data.Item?.[SORT_KEY_NAME];
+          delete data.Item?.[CREATED_ON_KEY];
 
           // Encode back to IRoom (Add io-ts for validation/ decoding)
           const episode = (data.Item as unknown) as IRoom;
@@ -310,7 +330,7 @@ export class TapesDynamoBackend extends DynamodbBackend {
       // ScanIndexForward: true,
       KeyConditionExpression: `${PARTITION_KEY_NAME} = :PK`,
       ExpressionAttributeValues: {
-        ":PK": this.primaryKey(roomUid),
+        ":PK": this.partitionKey(roomUid),
       },
     };
 
@@ -363,6 +383,7 @@ export class TapesDynamoBackend extends DynamodbBackend {
             playlistMap[playlistItem[SORT_KEY_NAME]] = playlist;
             delete playlistItem[PARTITION_KEY_NAME];
             delete playlistItem[SORT_KEY_NAME];
+            delete playlistItem[CREATED_ON_KEY];
           });
 
           // Get and parse episodeItems, also push into playlist
@@ -374,11 +395,13 @@ export class TapesDynamoBackend extends DynamodbBackend {
             }
             delete episodeItem[PARTITION_KEY_NAME];
             delete episodeItem[SORT_KEY_NAME];
+            delete episodeItem[CREATED_ON_KEY];
           });
 
           // Remove SK of room
           delete roomItem[PARTITION_KEY_NAME];
           delete roomItem[SORT_KEY_NAME];
+          delete roomItem[CREATED_ON_KEY];
 
           // Fill its playlist
           room.playlists = Object.values(playlistMap);
@@ -412,7 +435,7 @@ export class TapesDynamoBackend extends DynamodbBackend {
     const params = {
       TableName: this.tableConfig.TableName,
       Key: {
-        [PARTITION_KEY_NAME]: this.primaryKey(roomUid),
+        [PARTITION_KEY_NAME]: this.partitionKey(roomUid),
         [SORT_KEY_NAME]: this.sortKey.episode(playlistUid, episodeUid),
       },
     };
@@ -424,9 +447,10 @@ export class TapesDynamoBackend extends DynamodbBackend {
             ERR<IEpisode>(err.message, HttpStatus.INTERNAL_SERVER_ERROR)
           );
         } else {
-          // Strip mongodb query attributes
+          // Strip dynamodb query attributes
           delete data.Item?.[PARTITION_KEY_NAME];
           delete data.Item?.[SORT_KEY_NAME];
+          delete data.Item?.[CREATED_ON_KEY];
 
           // Encode back to IEpisode (Add io-ts for validation/ decoding)
           const episode = (data.Item as unknown) as IEpisode;
@@ -456,7 +480,7 @@ export class TapesDynamoBackend extends DynamodbBackend {
     const params = {
       TableName: this.tableConfig.TableName,
       Key: {
-        [PARTITION_KEY_NAME]: this.primaryKey(roomUid),
+        [PARTITION_KEY_NAME]: this.partitionKey(roomUid),
         [SORT_KEY_NAME]: this.sortKey.playlist(playlistUid),
       },
     };
@@ -471,6 +495,7 @@ export class TapesDynamoBackend extends DynamodbBackend {
           // Strip mongodb query attributes
           delete data.Item?.[PARTITION_KEY_NAME];
           delete data.Item?.[SORT_KEY_NAME];
+          delete data.Item?.[CREATED_ON_KEY];
 
           // Encode back to IPlaylist (Add io-ts for validation/ decoding)
           const playlist = (data.Item as unknown) as IPlaylist;

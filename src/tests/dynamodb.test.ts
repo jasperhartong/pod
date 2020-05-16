@@ -1,11 +1,11 @@
-import { TapesDynamoBackend } from "@/api/collection-storage/backends/dynamodb-backend";
+import { TapesDynamoTable } from "@/api/collection-storage/backends/dynamodb/dynamodb-table-tapes";
 import { IEpisode } from "@/app-schema/IEpisode";
+import { IPlaylist } from "@/app-schema/IPlaylist";
 import { IRoom } from "@/app-schema/IRoom";
 import { DateTime } from "luxon";
 import shortid from "shortid";
-import { IPlaylist } from "../app-schema/IPlaylist";
 
-let backend: TapesDynamoBackend;
+let backend: TapesDynamoTable;
 
 const localConfig = {
   dbConfig: {
@@ -23,11 +23,11 @@ const remoteConfig = {
 };
 
 beforeAll(async () => {
-  backend = new TapesDynamoBackend(localConfig);
+  backend = new TapesDynamoTable(localConfig);
   await backend.initiate();
 });
 
-describe("📦 The DynamoDB backend", () => {
+describe("📦 The TapesDynamoTable", () => {
   it("😊 can create room", async () => {
     const room = generateRoomData();
     const roomCreation = await backend.createRoom(room);

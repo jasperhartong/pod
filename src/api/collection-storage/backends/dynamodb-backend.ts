@@ -154,6 +154,23 @@ export class TapesDynamoBackend extends DynamodbBackend {
     delete item?.[CREATED_ON_KEY];
   };
 
+  private async exists(PK: string, SK: string): Promise<boolean> {
+    try {
+      const itemData = await this.docClient
+        .get({
+          TableName: this.tableConfig.TableName,
+          Key: {
+            [PARTITION_KEY_NAME]: PK,
+            [SORT_KEY_NAME]: SK,
+          },
+        })
+        .promise();
+      return !!itemData.Item;
+    } catch (error) {
+      return false;
+    }
+  }
+
   private async putItem<T extends IBase>(
     params: aws.DynamoDB.DocumentClient.PutItemInput,
     getResultValue: () => Promise<IResponse<T>>
@@ -196,6 +213,13 @@ export class TapesDynamoBackend extends DynamodbBackend {
     return ERR<T>("No item found");
   }
 
+  async roomExists(uid: IRoom["uid"]) {
+    return this.exists(
+      this.partitionKeyValue(uid),
+      this.sortKeyValue.room(uid)
+    );
+  }
+
   createRoom(room: IRoom): Promise<IResponse<IRoom>> {
     if (!room.uid) {
       return Promise.resolve(
@@ -217,23 +241,24 @@ export class TapesDynamoBackend extends DynamodbBackend {
     return this.putItem<IRoom>(params, getResultValue);
   }
 
-  createPlaylist(
+  async createPlaylist(
     roomUid: IRoom["uid"],
     playlist: IPlaylist
   ): Promise<IResponse<IPlaylist>> {
     if (!roomUid) {
-      return Promise.resolve(
-        ERR<IPlaylist>(`No valid room uid passed along: ${roomUid}`)
-      );
+      return ERR<IPlaylist>(`No valid room uid passed along: ${roomUid}`);
     }
     if (!playlist.uid) {
-      return Promise.resolve(
-        ERR<IPlaylist>(`No valid playlist uid passed along: ${playlist.uid}`)
+      return ERR<IPlaylist>(
+        `No valid playlist uid passed along: ${playlist.uid}`
       );
+    }
+    if (!(await this.roomExists(roomUid))) {
+      return ERR<IPlaylist>(`Room doesn't exist`);
     }
 
     const getResultValue = () => this.getPlaylist(roomUid, playlist.uid);
-    const params = {
+    const params: aws.DynamoDB.DocumentClient.PutItemInput = {
       TableName: this.tableConfig.TableName,
       Item: {
         ...playlist,

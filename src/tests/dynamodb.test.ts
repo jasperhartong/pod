@@ -182,7 +182,16 @@ describe("📦 The DynamoDB backend", () => {
     expect(episodeUpdate.ok).toBe(false);
   });
 
-  //   it("🚧 can cannot create playlist in non-existing room", async () => {})
+  it("🚧 can cannot create playlist in non-existing room", async () => {
+    const room = generateRoomData();
+    const playlist = generatePlaylistData();
+
+    // Skip creation
+    // await backend.createRoom(room);
+    const playlistCreation = await backend.createPlaylist(room.uid, playlist);
+
+    expect(playlistCreation.ok).toEqual(false);
+  });
 
   //   it("🚧 can cannot create episode in non-existing room", async () => {})
   //   it("🚧 can cannot create episode in non-existing playlist", async () => {})

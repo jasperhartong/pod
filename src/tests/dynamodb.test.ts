@@ -130,10 +130,10 @@ describe("📦 The DynamyDB backend", () => {
     const room = generateRoomData();
     await backend.createRoom(room);
 
-    const playlist1 = generatePlaylistData({ title: "a" });
+    const playlist1 = generatePlaylistData();
     await backend.createPlaylist(room.uid, playlist1);
 
-    const episode1a = generateEpisodeData({ title: "initial" });
+    const episode1a = generateEpisodeData();
     await backend.createEpisode(room.uid, playlist1.uid, episode1a);
 
     const episodeUpdate = await backend.updateEpisode(
@@ -159,8 +159,31 @@ describe("📦 The DynamyDB backend", () => {
     expect(failedRoomCreation.ok).toEqual(false);
   });
 
+  it("🚧 cannot update an episode that was not created before", async () => {
+    const room = generateRoomData();
+    await backend.createRoom(room);
+
+    const playlist1 = generatePlaylistData();
+    await backend.createPlaylist(room.uid, playlist1);
+
+    const episode1a = generateEpisodeData();
+    // NOT CREATING IT
+    // await backend.createEpisode(room.uid, playlist1.uid, episode1a);
+
+    const episodeUpdate = await backend.updateEpisode(
+      room.uid,
+      playlist1.uid,
+      episode1a.uid,
+      {
+        title: "updated",
+      }
+    );
+
+    expect(episodeUpdate.ok).toBe(false);
+  });
+
   //   it("🚧 can cannot create playlist in non-existing room", async () => {})
-  //   it("🚧 can cannot update an episode that was not created before", async () => {})
+
   //   it("🚧 can cannot create episode in non-existing room", async () => {})
   //   it("🚧 can cannot create episode in non-existing playlist", async () => {})
 });

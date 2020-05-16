@@ -127,11 +127,11 @@ export class TapesDynamoBackend extends DynamodbBackend {
     });
   }
 
-  private partitionKey = (roomId: IRoom["uid"]) => {
+  private partitionKeyValue = (roomId: IRoom["uid"]) => {
     return `ROOMPK#${roomId}`;
   };
 
-  private sortKey = {
+  private sortKeyValue = {
     room: (roomId: IRoom["uid"]) => {
       return `ROOM#${roomId}`;
     },
@@ -143,7 +143,7 @@ export class TapesDynamoBackend extends DynamodbBackend {
     },
   };
 
-  private createdOnKey = (schema: IBase) => {
+  private createdOnKeyValue = (schema: IBase) => {
     return DateTime.fromISO(schema.created_on).toMillis().toString();
   };
 
@@ -168,6 +168,22 @@ export class TapesDynamoBackend extends DynamodbBackend {
     }
   }
 
+  private async getItem<T extends IBase>(
+    params: aws.DynamoDB.DocumentClient.GetItemInput,
+    encode: (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => T
+  ): Promise<IResponse<T>> {
+    try {
+      const itemData = await this.docClient.get(params).promise();
+      if (itemData.Item) {
+        this.deleteDynamoKeys(itemData.Item);
+        return OK<T>(encode(itemData.Item));
+      }
+    } catch (error) {
+      return ERR<T>((error as aws.AWSError).message);
+    }
+    return ERR<T>("No item found");
+  }
+
   createRoom(room: IRoom): Promise<IResponse<IRoom>> {
     if (!room.uid) {
       return Promise.resolve(
@@ -180,9 +196,9 @@ export class TapesDynamoBackend extends DynamodbBackend {
       TableName: this.tableConfig.TableName,
       Item: {
         ...room,
-        [PARTITION_KEY_NAME]: this.partitionKey(room.uid),
-        [SORT_KEY_NAME]: this.sortKey.room(room.uid),
-        [CREATED_ON_KEY]: this.createdOnKey(room),
+        [PARTITION_KEY_NAME]: this.partitionKeyValue(room.uid),
+        [SORT_KEY_NAME]: this.sortKeyValue.room(room.uid),
+        [CREATED_ON_KEY]: this.createdOnKeyValue(room),
       },
       ConditionExpression: `attribute_not_exists(${PARTITION_KEY_NAME})`,
     };
@@ -209,9 +225,9 @@ export class TapesDynamoBackend extends DynamodbBackend {
       TableName: this.tableConfig.TableName,
       Item: {
         ...playlist,
-        [PARTITION_KEY_NAME]: this.partitionKey(roomUid),
-        [SORT_KEY_NAME]: this.sortKey.playlist(playlist.uid),
-        [CREATED_ON_KEY]: this.createdOnKey(playlist),
+        [PARTITION_KEY_NAME]: this.partitionKeyValue(roomUid),
+        [SORT_KEY_NAME]: this.sortKeyValue.playlist(playlist.uid),
+        [CREATED_ON_KEY]: this.createdOnKeyValue(playlist),
       },
     };
     return this.putItem<IPlaylist>(params, getResultValue);
@@ -244,16 +260,15 @@ export class TapesDynamoBackend extends DynamodbBackend {
       TableName: this.tableConfig.TableName,
       Item: {
         ...episode,
-        [PARTITION_KEY_NAME]: this.partitionKey(roomUid),
-        [SORT_KEY_NAME]: this.sortKey.episode(playlistUid, episode.uid),
-        [CREATED_ON_KEY]: this.createdOnKey(episode),
+        [PARTITION_KEY_NAME]: this.partitionKeyValue(roomUid),
+        [SORT_KEY_NAME]: this.sortKeyValue.episode(playlistUid, episode.uid),
+        [CREATED_ON_KEY]: this.createdOnKeyValue(episode),
       },
     };
     return this.putItem<IEpisode>(params, getResultValue);
   }
 
   getRoom(roomUid: IRoom["uid"]): Promise<IResponse<IRoom>> {
-    /* Returns fully nested room */
     if (!roomUid) {
       return Promise.resolve(
         ERR<IRoom>(`No valid room uid passed along: ${roomUid}`)
@@ -263,32 +278,16 @@ export class TapesDynamoBackend extends DynamodbBackend {
     const params = {
       TableName: this.tableConfig.TableName,
       Key: {
-        [PARTITION_KEY_NAME]: this.partitionKey(roomUid),
-        [SORT_KEY_NAME]: this.sortKey.room(roomUid),
+        [PARTITION_KEY_NAME]: this.partitionKeyValue(roomUid),
+        [SORT_KEY_NAME]: this.sortKeyValue.room(roomUid),
       },
     };
-
-    return new Promise((resolve) => {
-      this.docClient.get(params, function (err, data) {
-        if (err) {
-          console.error("TapesDynamoBackend::get Error", err);
-          return resolve(
-            ERR<IRoom>(err.message, HttpStatus.INTERNAL_SERVER_ERROR)
-          );
-        } else {
-          // Strip dynamodb query attributes
-          delete data.Item?.[PARTITION_KEY_NAME];
-          delete data.Item?.[SORT_KEY_NAME];
-          delete data.Item?.[CREATED_ON_KEY];
-
-          // Encode back to IRoom (Add io-ts for validation/ decoding)
-          const episode = (data.Item as unknown) as IRoom;
-          episode.cover_file.data.full_url =
-            episode.cover_file.data.full_url || ""; // decode `null`
-          return resolve(OK<IRoom>(episode));
-        }
-      });
-    });
+    const encode = (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => {
+      const room = (itemData as unknown) as IRoom;
+      room.cover_file.data.full_url = room.cover_file.data.full_url || ""; // decode `null`
+      return room;
+    };
+    return this.getItem<IRoom>(params, encode);
   }
 
   getRoomWithNested(roomUid: IRoom["uid"]): Promise<IResponse<IRoom>> {
@@ -304,7 +303,7 @@ export class TapesDynamoBackend extends DynamodbBackend {
       // ScanIndexForward: true,
       KeyConditionExpression: `${PARTITION_KEY_NAME} = :PK`,
       ExpressionAttributeValues: {
-        ":PK": this.partitionKey(roomUid),
+        ":PK": this.partitionKeyValue(roomUid),
       },
     };
 
@@ -409,32 +408,17 @@ export class TapesDynamoBackend extends DynamodbBackend {
     const params = {
       TableName: this.tableConfig.TableName,
       Key: {
-        [PARTITION_KEY_NAME]: this.partitionKey(roomUid),
-        [SORT_KEY_NAME]: this.sortKey.episode(playlistUid, episodeUid),
+        [PARTITION_KEY_NAME]: this.partitionKeyValue(roomUid),
+        [SORT_KEY_NAME]: this.sortKeyValue.episode(playlistUid, episodeUid),
       },
     };
-    return new Promise((resolve) => {
-      this.docClient.get(params, function (err, data) {
-        if (err) {
-          console.error("TapesDynamoBackend::get Error", err);
-          return resolve(
-            ERR<IEpisode>(err.message, HttpStatus.INTERNAL_SERVER_ERROR)
-          );
-        } else {
-          // Strip dynamodb query attributes
-          delete data.Item?.[PARTITION_KEY_NAME];
-          delete data.Item?.[SORT_KEY_NAME];
-          delete data.Item?.[CREATED_ON_KEY];
-
-          // Encode back to IEpisode (Add io-ts for validation/ decoding)
-          const episode = (data.Item as unknown) as IEpisode;
-          episode.image_file.data.full_url =
-            episode.image_file.data.full_url || ""; // decode `null`
-          episode.audio_file = episode.audio_file || ""; // decode `null`
-          return resolve(OK<IEpisode>(episode));
-        }
-      });
-    });
+    const encode = (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => {
+      const episode = (itemData as unknown) as IEpisode;
+      episode.image_file.data.full_url = episode.image_file.data.full_url || ""; // decode `null`
+      episode.audio_file = episode.audio_file || ""; // decode `null`
+      return episode;
+    };
+    return this.getItem<IEpisode>(params, encode);
   }
 
   getPlaylist(
@@ -454,31 +438,17 @@ export class TapesDynamoBackend extends DynamodbBackend {
     const params = {
       TableName: this.tableConfig.TableName,
       Key: {
-        [PARTITION_KEY_NAME]: this.partitionKey(roomUid),
-        [SORT_KEY_NAME]: this.sortKey.playlist(playlistUid),
+        [PARTITION_KEY_NAME]: this.partitionKeyValue(roomUid),
+        [SORT_KEY_NAME]: this.sortKeyValue.playlist(playlistUid),
       },
     };
-    return new Promise((resolve) => {
-      this.docClient.get(params, function (err, data) {
-        if (err) {
-          console.error("TapesDynamoBackend::get Error", err);
-          return resolve(
-            ERR<IPlaylist>(err.message, HttpStatus.INTERNAL_SERVER_ERROR)
-          );
-        } else {
-          // Strip mongodb query attributes
-          delete data.Item?.[PARTITION_KEY_NAME];
-          delete data.Item?.[SORT_KEY_NAME];
-          delete data.Item?.[CREATED_ON_KEY];
-
-          // Encode back to IPlaylist (Add io-ts for validation/ decoding)
-          const playlist = (data.Item as unknown) as IPlaylist;
-          playlist.cover_file.data.full_url =
-            playlist.cover_file.data.full_url || ""; // decode `null`
-          return resolve(OK<IPlaylist>(playlist));
-        }
-      });
-    });
+    const encode = (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => {
+      const playlist = (itemData as unknown) as IPlaylist;
+      playlist.cover_file.data.full_url =
+        playlist.cover_file.data.full_url || ""; // decode `null`
+      return playlist;
+    };
+    return this.getItem<IPlaylist>(params, encode);
   }
 
   async getAllRaw() {

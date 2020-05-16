@@ -27,7 +27,7 @@ beforeAll(async () => {
   await backend.initiate();
 });
 
-describe("📦 The DynamyDB backend", () => {
+describe("📦 The DynamoDB backend", () => {
   it("😊 can create room", async () => {
     const room = generateRoomData();
     const roomCreation = await backend.createRoom(room);

@@ -126,7 +126,30 @@ describe("📦 The DynamyDB backend", () => {
     }
   });
 
-  //   it("😊 can update and episode", async () => {})
+  it("😊 can update an existing episode", async () => {
+    const room = generateRoomData();
+    await backend.createRoom(room);
+
+    const playlist1 = generatePlaylistData({ title: "a" });
+    await backend.createPlaylist(room.uid, playlist1);
+
+    const episode1a = generateEpisodeData({ title: "initial" });
+    await backend.createEpisode(room.uid, playlist1.uid, episode1a);
+
+    const episodeUpdate = await backend.updateEpisode(
+      room.uid,
+      playlist1.uid,
+      episode1a.uid,
+      {
+        title: "updated",
+      }
+    );
+
+    expect(episodeUpdate.ok).toBe(true);
+    if (episodeUpdate.ok) {
+      expect(episodeUpdate.data).toEqual({ ...episode1a, title: "updated" });
+    }
+  });
 
   it("🚧 cannot create room with same uid twice", async () => {
     const room = generateRoomData();
@@ -137,6 +160,7 @@ describe("📦 The DynamyDB backend", () => {
   });
 
   //   it("🚧 can cannot create playlist in non-existing room", async () => {})
+  //   it("🚧 can cannot update an episode that was not created before", async () => {})
   //   it("🚧 can cannot create episode in non-existing room", async () => {})
   //   it("🚧 can cannot create episode in non-existing playlist", async () => {})
 });

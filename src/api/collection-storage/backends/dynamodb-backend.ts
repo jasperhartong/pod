@@ -167,6 +167,19 @@ export class TapesDynamoBackend extends DynamodbBackend {
     }
   }
 
+  private async updateItem<T extends IBase>(
+    params: aws.DynamoDB.DocumentClient.UpdateItemInput,
+    getResultValue: () => Promise<IResponse<T>>
+  ): Promise<IResponse<T>> {
+    try {
+      await this.docClient.update(params).promise();
+      // As DynamoDB doesn't return the value upon creation, we get it
+      return await getResultValue();
+    } catch (error) {
+      return ERR<T>((error as aws.AWSError).message);
+    }
+  }
+
   private async getItem<T extends IBase>(
     params: aws.DynamoDB.DocumentClient.GetItemInput,
     encode: (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => T
@@ -265,6 +278,55 @@ export class TapesDynamoBackend extends DynamodbBackend {
       },
     };
     return this.putItem<IEpisode>(params, getResultValue);
+  }
+
+  updateEpisode(
+    roomUid: IRoom["uid"],
+    playlistUid: IPlaylist["uid"],
+    episodeUid: IEpisode["uid"],
+    episode: Partial<IEpisode>
+  ): Promise<IResponse<IEpisode>> {
+    if (!roomUid) {
+      return Promise.resolve(
+        ERR<IEpisode>(`No valid room uid passed along: ${roomUid}`)
+      );
+    }
+    if (!playlistUid) {
+      return Promise.resolve(
+        ERR<IEpisode>(`No valid playlist uid passed along: ${playlistUid}`)
+      );
+    }
+    if (!episodeUid) {
+      return Promise.resolve(
+        ERR<IEpisode>(`No valid episode uid passed along: ${episodeUid}`)
+      );
+    }
+    const keysToUpdate = Object.keys(episode);
+
+    const getResultValue = () =>
+      this.getEpisode(roomUid, playlistUid, episodeUid);
+
+    const params: aws.DynamoDB.DocumentClient.UpdateItemInput = {
+      TableName: this.tableConfig.TableName,
+      Key: {
+        [PARTITION_KEY_NAME]: this.partitionKeyValue(roomUid),
+        [SORT_KEY_NAME]: this.sortKeyValue.episode(playlistUid, episodeUid),
+      },
+      // e.g. `set title = :title`
+      UpdateExpression: `set ${keysToUpdate.map((k) => `${k} = :${k}`)}`,
+      // e.g. {":title" : episode.title}
+      ExpressionAttributeValues: keysToUpdate.reduce(
+        (acc: { [key: string]: any }, key) => ({
+          ...acc,
+          [`:${key}`]: episode[key as keyof IEpisode],
+        }),
+        {}
+      ),
+      // Only if it already existed
+      ConditionExpression: `attribute_exists(${SORT_KEY_NAME})`,
+    };
+
+    return this.updateItem<IEpisode>(params, getResultValue);
   }
 
   getRoom(roomUid: IRoom["uid"]): Promise<IResponse<IRoom>> {

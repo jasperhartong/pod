@@ -84,7 +84,7 @@ const DemoAdmin = () => {
       </Typography>
       <ul>
         {famHartongRoom.data.data.playlists.map((playlist) => (
-          <li key={playlist.id}>
+          <li key={playlist.uid}>
             {playlist.title} • {playlist.episodes.length}
             <Button
               onClick={async () => {

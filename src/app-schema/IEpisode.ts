@@ -13,7 +13,6 @@ export const TEpisodeStatus = t.keyof({
 
 export const TEpisode = t.type({
   ...IBase.props,
-  id: t.number,
   status: TEpisodeStatus,
   title: t.string,
   image_file: t.type({ data: TImageData }),

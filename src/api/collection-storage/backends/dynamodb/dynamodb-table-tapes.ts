@@ -58,11 +58,11 @@ export class DynamoTableTapes extends DynamodbTableBase {
     room: (roomId: IRoom["uid"]) => {
       return `ROOM#${roomId}`;
     },
-    playlist: (playlistId: IPlaylist["uid"]) => {
-      return `PLAYLIST#${playlistId}`;
+    playlist: (playlistUid: IPlaylist["uid"]) => {
+      return `PLAYLIST#${playlistUid}`;
     },
-    episode: (playlistId: IPlaylist["uid"], episodeId: IEpisode["uid"]) => {
-      return `PLAYLIST#${playlistId}:EPISODE#${episodeId}`;
+    episode: (playlistUid: IPlaylist["uid"], episodeUid: IEpisode["uid"]) => {
+      return `PLAYLIST#${playlistUid}:EPISODE#${episodeUid}`;
     },
   };
 

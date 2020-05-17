@@ -5,7 +5,6 @@ import { TImageData } from "./IFileData";
 
 export const TPlaylist = t.type({
   ...IBase.props,
-  id: t.number,
   title: t.string,
   description: t.string,
   cover_file: t.type({ data: TImageData }),

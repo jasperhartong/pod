@@ -160,7 +160,7 @@ const itemFromEpisode = (
       },
     },
     {
-      guid: futureEpisodePage(room.uid, playlist.id, episode.id),
+      guid: futureEpisodePage(room.uid, playlist.uid, episode.uid),
     },
     {
       pubDate: parseDbDate(

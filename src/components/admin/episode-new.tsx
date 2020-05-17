@@ -38,8 +38,8 @@ export const EpisodeNew = ({ room, playlist }: Props) => {
       // Make sure to update local state with API truth and then move on..
       await revalidate();
       router.push(
-        `/rooms/[roomUid]/admin/[playlistId]/record-episode/[episodeId]`,
-        `/rooms/${room.uid}/admin/${playlist.id}/record-episode/${response.data.id}`
+        `/rooms/[roomUid]/admin/[playlistUid]/record-episode/[episodeUid]`,
+        `/rooms/${room.uid}/admin/${playlist.uid}/record-episode/${response.data.uid}`
       );
     } else {
       alert("De aflevering kan niet bewaard worden.");
@@ -60,8 +60,8 @@ export const EpisodeNew = ({ room, playlist }: Props) => {
       blur={40}
       action={
         <AdminHeaderClose
-          url={`/rooms/[roomUid]/admin/[playlistId]`}
-          as={`/rooms/${room.uid}/admin/${playlist.id}`}
+          url={`/rooms/[roomUid]/admin/[playlistUid]`}
+          as={`/rooms/${room.uid}/admin/${playlist.uid}`}
         />
       }
       firstItem={

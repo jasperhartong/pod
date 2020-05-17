@@ -36,8 +36,8 @@ export const PlaylistNew = ({ room }: Props) => {
       // Make sure to update local state with API truth and then move on..
       await revalidate();
       router.push(
-        `/rooms/[roomUid]/admin/[playlistId]`,
-        `/rooms/${room.uid}/admin/${playlistCreation.data.id}`
+        `/rooms/[roomUid]/admin/[playlistUid]`,
+        `/rooms/${room.uid}/admin/${playlistCreation.data.uid}`
       );
     } else {
       alert("De collectie kon niet worden aangemaakt, probeer opnieuw.");

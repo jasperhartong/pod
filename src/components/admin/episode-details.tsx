@@ -41,7 +41,7 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
     if (updating.ok) {
       // Mutate local data and move on
       mutateEpisode(
-        playlist.id,
+        playlist.uid,
         {
           ...episode,
           status: "published",
@@ -64,8 +64,8 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
       subtitle={"in " + playlist.title}
       action={
         <AdminHeaderClose
-          url={`/rooms/[roomUid]/admin/[playlistId]`}
-          as={`/rooms/${room.uid}/admin/${playlist.id}`}
+          url={`/rooms/[roomUid]/admin/[playlistUid]`}
+          as={`/rooms/${room.uid}/admin/${playlist.uid}`}
         />
       }
       firstItem={
@@ -154,8 +154,8 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
           {/* We can easily allow to re-record stuff :) */}
           {/* <Box mt={2}>
             <Link
-              href={`/rooms/[roomUid]/admin/[playlistId]/record-episode/[episodeId]`}
-              as={`/rooms/${room.uid}/admin/${playlist.id}/record-episode/${episode.id}`}
+              href={`/rooms/[roomUid]/admin/[playlistUid]/record-episode/[episodeUid]`}
+              as={`/rooms/${room.uid}/admin/${playlist.uid}/record-episode/${episode.uid}`}
             >
               <Button fullWidth>Neem opnieuw op</Button>
             </Link>

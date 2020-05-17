@@ -14,6 +14,6 @@ export const roomPageUrl = (uid: IRoom["uid"]) => `${baseUrl}/rooms/${uid}`;
 
 export const futureEpisodePage = (
   uid: IRoom["uid"],
-  playlistId: IPlaylist["id"],
-  episodeId: IEpisode["id"]
-) => `${baseUrl}/rooms/${uid}/admin/${playlistId}/${episodeId}`;
+  playlistUid: IPlaylist["uid"],
+  episodeUid: IEpisode["uid"]
+) => `${baseUrl}/rooms/${uid}/admin/${playlistUid}/${episodeUid}`;

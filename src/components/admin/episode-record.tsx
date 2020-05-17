@@ -74,13 +74,13 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
     } else {
       // Update local state, then move on
       mutateEpisode(
-        playlist.id,
+        playlist.uid,
         { ...episode, audio_file: downloadUrl },
         false
       );
       router.push(
-        "/rooms/[roomUid]/admin/[playlistId]/episode/[episodeId]",
-        `/rooms/${room.uid}/admin/${playlist.id}/episode/${episode.id}`
+        "/rooms/[roomUid]/admin/[playlistUid]/episode/[episodeUid]",
+        `/rooms/${room.uid}/admin/${playlist.uid}/episode/${episode.uid}`
       );
     }
   };
@@ -281,8 +281,8 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
       subtitle={playlist.title + " • " + episode.title}
       action={
         <AdminHeaderClose
-          url={`/rooms/[roomUid]/admin/[playlistId]`}
-          as={`/rooms/${room.uid}/admin/${playlist.id}`}
+          url={`/rooms/[roomUid]/admin/[playlistUid]`}
+          as={`/rooms/${room.uid}/admin/${playlist.uid}`}
         />
       }
       firstItem={
@@ -300,7 +300,7 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
                     <>
                       <Box zIndex={2} style={{ background: "rgba(0,0,0,0.4)" }}>
                         <AudioRecorderVisualizer
-                          uniqueId={episode.id.toString()}
+                          uniqueId={episode.uid}
                           getFrequencyData={recorder.getFrequencyData}
                           width={240}
                           height={240}

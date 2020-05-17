@@ -238,7 +238,6 @@ describe("📦 The TapesDynamoTable", () => {
 const generateRoomData = (partial?: Partial<IRoom>): IRoom => {
   const uid = shortid.generate();
   return {
-    id: 0,
     uid,
     created_on: DateTime.utc().toJSON(),
     title: "test",
@@ -255,7 +254,6 @@ const generateRoomData = (partial?: Partial<IRoom>): IRoom => {
 const generatePlaylistData = (partial?: Partial<IPlaylist>): IPlaylist => {
   const uid = shortid.generate();
   return {
-    id: 0,
     uid,
     created_on: DateTime.utc().toJSON(),
     title: "test",
@@ -273,7 +271,6 @@ const generatePlaylistData = (partial?: Partial<IPlaylist>): IPlaylist => {
 const generateEpisodeData = (partial?: Partial<IEpisode>): IEpisode => {
   const uid = shortid.generate();
   return {
-    id: 0,
     uid,
     status: "draft",
     created_on: DateTime.utc().toJSON(),

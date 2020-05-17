@@ -7,24 +7,24 @@ import { useSWRRoom } from "@/hooks/useSWRRoom";
 const AdminEpisodeDetails = () => {
   const router = useRouter();
   const { data } = useSWRRoom(router.query.roomUid as string);
-  const playlistId = router.query.playlistId as string;
-  const episodeId = router.query.episodeId as string;
+  const playlistUid = router.query.playlistUid as string;
+  const episodeUid = router.query.episodeUid as string;
 
   if (!data) {
     return <LoaderCentered />;
   }
 
-  if (!data.ok || !playlistId) {
+  if (!data.ok || !playlistUid) {
     return <ErrorPage error={!data.ok ? data.error : undefined} />;
   }
   const room = data.data;
-  const playlist = room.playlists.find((p) => p.id.toString() === playlistId);
+  const playlist = room.playlists.find((p) => p.uid === playlistUid);
 
   if (!playlist) {
     return <ErrorPage error="Playlist not found in room" />;
   }
 
-  const episode = playlist.episodes.find((e) => e.id.toString() === episodeId);
+  const episode = playlist.episodes.find((e) => e.uid === episodeUid);
 
   if (!episode) {
     return <ErrorPage error="Episode not found in room" />;

@@ -20,7 +20,7 @@ export const useSWRRoom = (
   });
 
   const mutateEpisode = (
-    playlistId: IPlaylist["id"],
+    playlistUid: IPlaylist["uid"],
     updated: IEpisode,
     shouldRevalidate?: boolean
   ) => {
@@ -29,11 +29,11 @@ export const useSWRRoom = (
         // Even with Immer.. updating data deep down nested arrays is quite a feat to pull off
         if (draft && draft.ok) {
           const playlistDraft = draft.data.playlists.find(
-            (p) => p.id === playlistId
+            (p) => p.uid === playlistUid
           );
           if (playlistDraft) {
             playlistDraft.episodes[
-              playlistDraft.episodes.findIndex((e) => e.id === updated.id)
+              playlistDraft.episodes.findIndex((e) => e.uid === updated.uid)
             ] = updated;
           }
         }

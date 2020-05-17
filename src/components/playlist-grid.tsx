@@ -34,8 +34,8 @@ const useStyles = makeStyles((theme) => ({
 
 interface Props {
   playlist: IPlaylist;
-  setPlayingId: (id: IEpisode["id"]) => void;
-  playingId?: number;
+  setPlayingUid: (id: IEpisode["uid"]) => void;
+  playingUid?: IEpisode["uid"];
   isPaused: boolean;
   setIsPaused: (paused: boolean) => void;
 }
@@ -43,7 +43,7 @@ interface Props {
 const PlaylistGrid = (props: Props) => {
   const classes = useStyles();
 
-  const { playlist, playingId, setPlayingId, isPaused, setIsPaused } = props;
+  const { playlist, playingUid, setPlayingUid, isPaused, setIsPaused } = props;
 
   return (
     <div className={classes.gridRoot}>
@@ -53,13 +53,13 @@ const PlaylistGrid = (props: Props) => {
         .filter((e) => e.status === "published")
         .map((episode) => (
           <div
-            key={episode.id}
+            key={episode.uid}
             className={classes.tileRoot}
             aria-label={`play ${episode.title}`}
             onClick={() =>
-              episode.id === playingId
+              episode.uid === playingUid
                 ? setIsPaused(!isPaused)
-                : setPlayingId(episode.id)
+                : setPlayingUid(episode.uid)
             }
           >
             <Paper elevation={8}>
@@ -73,7 +73,7 @@ const PlaylistGrid = (props: Props) => {
               />
             </Paper>
             <EpisodeTitle title={episode.title} />
-            {episode.id === playingId && (
+            {episode.uid === playingUid && (
               <Fab
                 size="large"
                 style={{

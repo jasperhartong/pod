@@ -8,7 +8,6 @@ import meta from "./playlist.create.meta";
 export default RPCHandlerFactory(meta, async (reqData) => {
   const uid = shortid.generate();
   const playlist: IPlaylist = {
-    id: 42,
     uid,
     created_on: DateTime.utc().toJSON(),
     title: reqData.data.title,

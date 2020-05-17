@@ -20,11 +20,4 @@ const reqDataValidator = t.type({
   data: t.intersection([reqDataRequired, reqDataOptional]),
 });
 
-export default RPCMeta(
-  "episode",
-  "create",
-  reqDataValidator,
-  t.type({
-    id: t.number,
-  })
-);
+export default RPCMeta("episode", "create", reqDataValidator, TEpisode);

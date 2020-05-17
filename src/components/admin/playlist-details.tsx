@@ -75,8 +75,8 @@ const AdminEpisodeList = ({
           button
           onClick={() =>
             router.push(
-              "/rooms/[roomUid]/admin/[playlistId]/new-episode",
-              `/rooms/${room.uid}/admin/${playlist.id}/new-episode`
+              "/rooms/[roomUid]/admin/[playlistUid]/new-episode",
+              `/rooms/${room.uid}/admin/${playlist.uid}/new-episode`
             )
           }
         >
@@ -97,9 +97,9 @@ const AdminEpisodeList = ({
         {/* Existing episodes: drafts, published */}
         {playlist.episodes.map((episode) => (
           <AdminEpisodeListItem
-            key={episode.id}
+            key={episode.uid}
             roomUid={room.uid}
-            playlistId={playlist.id}
+            playlistUid={playlist.uid}
             episode={episode}
           />
         ))}
@@ -129,21 +129,21 @@ const AdminEpisodeList = ({
 
 const AdminEpisodeListItem = ({
   roomUid,
-  playlistId,
+  playlistUid,
   episode,
 }: {
   roomUid: IRoom["uid"];
-  playlistId: IPlaylist["id"];
+  playlistUid: IPlaylist["uid"];
   episode: IEpisode;
 }) => {
   const router = useRouter();
   const recordLink = {
-    url: "/rooms/[roomUid]/admin/[playlistId]/record-episode/[episodeId]",
-    as: `/rooms/${roomUid}/admin/${playlistId}/record-episode/${episode.id}`,
+    url: "/rooms/[roomUid]/admin/[playlistUid]/record-episode/[episodeUid]",
+    as: `/rooms/${roomUid}/admin/${playlistUid}/record-episode/${episode.uid}`,
   };
   const detailsLink = {
-    url: "/rooms/[roomUid]/admin/[playlistId]/episode/[episodeId]",
-    as: `/rooms/${roomUid}/admin/${playlistId}/episode/${episode.id}`,
+    url: "/rooms/[roomUid]/admin/[playlistUid]/episode/[episodeUid]",
+    as: `/rooms/${roomUid}/admin/${playlistUid}/episode/${episode.uid}`,
   };
 
   return (

@@ -12,7 +12,6 @@ export default RPCHandlerFactory(meta, async (reqData) => {
   }
 
   return dynamoTableTapes.createRoom({
-    id: 42,
     uid,
     created_on: DateTime.utc().toJSON(),
     title: reqData.data.title,

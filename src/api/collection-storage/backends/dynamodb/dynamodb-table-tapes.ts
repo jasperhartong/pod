@@ -123,13 +123,13 @@ export class DynamoTableTapes extends DynamodbTableBase {
 
   private async getItem<T extends IBase>(
     params: aws.DynamoDB.DocumentClient.GetItemInput,
-    encode: (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => T
+    decode: (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => T
   ): Promise<IResponse<T>> {
     try {
       const itemData = await this.docClient.get(params).promise();
       if (itemData.Item) {
         this.deleteDynamoKeys(itemData.Item);
-        return OK<T>(encode(itemData.Item));
+        return OK<T>(decode(itemData.Item));
       }
     } catch (error) {
       return ERR<T>((error as aws.AWSError).message);
@@ -163,7 +163,6 @@ export class DynamoTableTapes extends DynamodbTableBase {
   }
 
   async createRoom(room: IRoom): Promise<IResponse<IRoom>> {
-    const getResultValue = () => this.getRoom(room.uid);
     const params: aws.DynamoDB.DocumentClient.PutItemInput = {
       TableName: this.tableConfig.TableName,
       Item: {
@@ -175,7 +174,7 @@ export class DynamoTableTapes extends DynamodbTableBase {
       // Don't allow creation if uid already exists
       ConditionExpression: `attribute_not_exists(${PARTITION_KEY_NAME})`,
     };
-    return this.putItem<IRoom>(params, getResultValue);
+    return this.putItem<IRoom>(params, () => this.getRoom(room.uid));
   }
 
   async createPlaylist(
@@ -183,10 +182,10 @@ export class DynamoTableTapes extends DynamodbTableBase {
     playlist: IPlaylist
   ): Promise<IResponse<IPlaylist>> {
     if (!(await this.roomExists(roomUid))) {
+      // Would expect that this check should be possible to do on put-time..
       return ERR<IPlaylist>(`Room doesn't exist`);
     }
 
-    const getResultValue = () => this.getPlaylist(roomUid, playlist.uid);
     const params: aws.DynamoDB.DocumentClient.PutItemInput = {
       TableName: this.tableConfig.TableName,
       Item: {
@@ -198,7 +197,9 @@ export class DynamoTableTapes extends DynamodbTableBase {
       // Don't allow creation if uid already exists
       ConditionExpression: `attribute_not_exists(${SORT_KEY_NAME})`,
     };
-    return this.putItem<IPlaylist>(params, getResultValue);
+    return this.putItem<IPlaylist>(params, () =>
+      this.getPlaylist(roomUid, playlist.uid)
+    );
   }
 
   async createEpisode(
@@ -207,11 +208,10 @@ export class DynamoTableTapes extends DynamodbTableBase {
     episode: IEpisode
   ): Promise<IResponse<IEpisode>> {
     if (!(await this.playlistExists(roomUid, playlistUid))) {
+      // Would expect that this check should be possible to do on put-time..
       return ERR<IEpisode>(`Playlist doesn't exist`);
     }
 
-    const getResultValue = () =>
-      this.getEpisode(roomUid, playlistUid, episode.uid);
     const params = {
       TableName: this.tableConfig.TableName,
       Item: {
@@ -223,7 +223,9 @@ export class DynamoTableTapes extends DynamodbTableBase {
       // Don't allow creation if uid already exists
       ConditionExpression: `attribute_not_exists(${SORT_KEY_NAME})`,
     };
-    return this.putItem<IEpisode>(params, getResultValue);
+    return this.putItem<IEpisode>(params, () =>
+      this.getEpisode(roomUid, playlistUid, episode.uid)
+    );
   }
 
   async updateEpisode(
@@ -233,10 +235,6 @@ export class DynamoTableTapes extends DynamodbTableBase {
     episode: Partial<IEpisode>
   ): Promise<IResponse<IEpisode>> {
     const keysToUpdate = Object.keys(episode);
-
-    const getResultValue = () =>
-      this.getEpisode(roomUid, playlistUid, episodeUid);
-
     const params: aws.DynamoDB.DocumentClient.UpdateItemInput = {
       TableName: this.tableConfig.TableName,
       Key: {
@@ -265,7 +263,9 @@ export class DynamoTableTapes extends DynamodbTableBase {
       ConditionExpression: `attribute_exists(${SORT_KEY_NAME})`,
     };
 
-    return this.updateItem<IEpisode>(params, getResultValue);
+    return this.updateItem<IEpisode>(params, () =>
+      this.getEpisode(roomUid, playlistUid, episodeUid)
+    );
   }
 
   async getRoom(roomUid: IRoom["uid"]): Promise<IResponse<IRoom>> {
@@ -276,12 +276,12 @@ export class DynamoTableTapes extends DynamodbTableBase {
         [SORT_KEY_NAME]: this.sortKeyValue.room(roomUid),
       },
     };
-    const encode = (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => {
+    const decode = (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => {
       const room = (itemData as unknown) as IRoom;
       room.cover_file.data.full_url = room.cover_file.data.full_url || ""; // decode `null`
       return room;
     };
-    return this.getItem<IRoom>(params, encode);
+    return this.getItem<IRoom>(params, decode);
   }
 
   async getRoomWithNested(roomUid: IRoom["uid"]): Promise<IResponse<IRoom>> {
@@ -385,27 +385,19 @@ export class DynamoTableTapes extends DynamodbTableBase {
         [SORT_KEY_NAME]: this.sortKeyValue.episode(playlistUid, episodeUid),
       },
     };
-    const encode = (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => {
+    const decode = (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => {
       const episode = (itemData as unknown) as IEpisode;
       episode.image_file.data.full_url = episode.image_file.data.full_url || ""; // decode `null`
       episode.audio_file = episode.audio_file || ""; // decode `null`
       return episode;
     };
-    return this.getItem<IEpisode>(params, encode);
+    return this.getItem<IEpisode>(params, decode);
   }
 
   async getPlaylist(
     roomUid: IRoom["uid"],
     playlistUid: IPlaylist["uid"]
   ): Promise<IResponse<IPlaylist>> {
-    if (!roomUid) {
-      return ERR<IPlaylist>(`No valid room uid passed along: ${roomUid}`);
-    }
-    if (!playlistUid) {
-      return ERR<IPlaylist>(
-        `No valid playlist uid passed along: ${playlistUid}`
-      );
-    }
     const params = {
       TableName: this.tableConfig.TableName,
       Key: {
@@ -413,13 +405,13 @@ export class DynamoTableTapes extends DynamodbTableBase {
         [SORT_KEY_NAME]: this.sortKeyValue.playlist(playlistUid),
       },
     };
-    const encode = (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => {
+    const decode = (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => {
       const playlist = (itemData as unknown) as IPlaylist;
       playlist.cover_file.data.full_url =
         playlist.cover_file.data.full_url || ""; // decode `null`
       return playlist;
     };
-    return this.getItem<IPlaylist>(params, encode);
+    return this.getItem<IPlaylist>(params, decode);
   }
 
   async getAllRaw() {

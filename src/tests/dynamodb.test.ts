@@ -159,6 +159,34 @@ describe("📦 The TapesDynamoTable", () => {
     expect(failedRoomCreation.ok).toEqual(false);
   });
 
+  it("🚧 cannot create playlist with same uid twice", async () => {
+    const room = generateRoomData();
+    await backend.createRoom(room);
+    const playlist1 = generatePlaylistData();
+    await backend.createPlaylist(room.uid, playlist1);
+
+    const playlistCreation = await backend.createPlaylist(room.uid, playlist1);
+
+    expect(playlistCreation.ok).toEqual(false);
+  });
+
+  it("🚧 cannot create episode with same uid twice", async () => {
+    const room = generateRoomData();
+    await backend.createRoom(room);
+    const playlist1 = generatePlaylistData();
+    await backend.createPlaylist(room.uid, playlist1);
+    const episode1a = generateEpisodeData();
+    await backend.createEpisode(room.uid, playlist1.uid, episode1a);
+
+    const episodeCreation = await backend.createEpisode(
+      room.uid,
+      playlist1.uid,
+      episode1a
+    );
+
+    expect(episodeCreation.ok).toEqual(false);
+  });
+
   it("🚧 cannot update an episode that was not created before", async () => {
     const room = generateRoomData();
     await backend.createRoom(room);

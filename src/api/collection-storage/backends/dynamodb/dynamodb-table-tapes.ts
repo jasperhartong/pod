@@ -172,6 +172,7 @@ export class DynamoTableTapes extends DynamodbTableBase {
         [SORT_KEY_NAME]: this.sortKeyValue.room(room.uid),
         [CREATED_ON_KEY]: this.createdOnKeyValue(room),
       },
+      // Don't allow creation if uid already exists
       ConditionExpression: `attribute_not_exists(${PARTITION_KEY_NAME})`,
     };
     return this.putItem<IRoom>(params, getResultValue);
@@ -194,6 +195,8 @@ export class DynamoTableTapes extends DynamodbTableBase {
         [SORT_KEY_NAME]: this.sortKeyValue.playlist(playlist.uid),
         [CREATED_ON_KEY]: this.createdOnKeyValue(playlist),
       },
+      // Don't allow creation if uid already exists
+      ConditionExpression: `attribute_not_exists(${SORT_KEY_NAME})`,
     };
     return this.putItem<IPlaylist>(params, getResultValue);
   }
@@ -217,6 +220,8 @@ export class DynamoTableTapes extends DynamodbTableBase {
         [SORT_KEY_NAME]: this.sortKeyValue.episode(playlistUid, episode.uid),
         [CREATED_ON_KEY]: this.createdOnKeyValue(episode),
       },
+      // Don't allow creation if uid already exists
+      ConditionExpression: `attribute_not_exists(${SORT_KEY_NAME})`,
     };
     return this.putItem<IEpisode>(params, getResultValue);
   }

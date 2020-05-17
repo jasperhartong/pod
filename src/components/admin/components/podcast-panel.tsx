@@ -29,7 +29,7 @@ export const PodcastPanel = ({ room }: { room: IRoom }) => {
   const { hasNativeShare, nativeShare } = useSharing();
 
   useEffect(() => {
-    setSubscribeLinks(subscribeLinksForCurrentHost(room.slug));
+    setSubscribeLinks(subscribeLinksForCurrentHost(room.uid));
   }, []);
 
   const handleCopy = (url: string) => {
@@ -110,7 +110,7 @@ export const PodcastPanel = ({ room }: { room: IRoom }) => {
   );
 };
 
-const subscribeLinksForCurrentHost = (slug: IRoom["slug"]) => {
+const subscribeLinksForCurrentHost = (uid: IRoom["uid"]) => {
   // Only works correctly on client side
   const host = typeof window !== "undefined" ? window.location.host : "";
   const protocol =
@@ -119,16 +119,16 @@ const subscribeLinksForCurrentHost = (slug: IRoom["slug"]) => {
   const subscribeLinks: SubscribeLink[] = [
     {
       label: "Apple Podcast (iPad / iPhone)",
-      url: rssUrl("podcast:", host, slug),
+      url: rssUrl("podcast:", host, uid),
     },
     {
       label: "Apple Podcast (Mac)",
-      url: rssUrl("pcast:", host, slug),
+      url: rssUrl("pcast:", host, uid),
     },
-    { label: "RSS Feed", url: rssUrl("feed:", host, slug) },
+    { label: "RSS Feed", url: rssUrl("feed:", host, uid) },
     {
       label: "XML Feed",
-      url: rssUrl(protocol, host, slug),
+      url: rssUrl(protocol, host, uid),
     },
   ];
   return subscribeLinks;

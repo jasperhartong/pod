@@ -55,8 +55,8 @@ export const AdminOverview = ({ room }: { room: IRoom }) => {
                   playlist={p}
                   onClick={() => {
                     router.push(
-                      "/rooms/[roomSlug]/admin/[playlistId]",
-                      `/rooms/${room.slug}/admin/${p.id}`
+                      "/rooms/[roomUid]/admin/[playlistId]",
+                      `/rooms/${room.uid}/admin/${p.id}`
                     );
                   }}
                   secondaryAction={
@@ -76,8 +76,8 @@ export const AdminOverview = ({ room }: { room: IRoom }) => {
               fullWidth
               onClick={() => {
                 router.push(
-                  "/rooms/[roomSlug]/admin/new-playlist",
-                  `/rooms/${room.slug}/admin/new-playlist`
+                  "/rooms/[roomUid]/admin/new-playlist",
+                  `/rooms/${room.uid}/admin/new-playlist`
                 );
               }}
             >

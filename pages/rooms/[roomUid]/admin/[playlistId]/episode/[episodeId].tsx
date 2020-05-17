@@ -6,7 +6,7 @@ import { useSWRRoom } from "@/hooks/useSWRRoom";
 
 const AdminEpisodeDetails = () => {
   const router = useRouter();
-  const { data } = useSWRRoom(router.query.roomSlug as string);
+  const { data } = useSWRRoom(router.query.roomUid as string);
   const playlistId = router.query.playlistId as string;
   const episodeId = router.query.episodeId as string;
 

@@ -29,7 +29,7 @@ const copyEpisode = async (
 };
 
 const copyPlaylist = async (playlist: IPlaylist, room: IRoom) => {
-  if (room.slug === "famhartong") {
+  if (room.uid === "famhartong") {
     return console.debug("protecting famhartong room");
   }
   const playlistCreation = await RPCClientFactory(playlistCreateMeta).call({
@@ -58,7 +58,7 @@ const copyPlaylist = async (playlist: IPlaylist, room: IRoom) => {
 const DemoAdmin = () => {
   const router = useRouter();
   const famHartongRoom = useSWRRoom("famhartong");
-  const currentRoom = useSWRRoom(router.query.roomSlug as string);
+  const currentRoom = useSWRRoom(router.query.roomUid as string);
   const [copying, setCopying] = useState<boolean>(false);
 
   if (!currentRoom.data || !famHartongRoom.data) {

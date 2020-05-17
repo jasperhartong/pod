@@ -6,7 +6,7 @@ import { useSWRRoom } from "@/hooks/useSWRRoom";
 
 const AdminPage = () => {
   const router = useRouter();
-  const { data } = useSWRRoom(router.query.roomSlug as string);
+  const { data } = useSWRRoom(router.query.roomUid as string);
 
   if (!data) {
     return <LoaderCentered />;

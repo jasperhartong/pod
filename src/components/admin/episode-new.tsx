@@ -23,7 +23,7 @@ interface Props {
 export const EpisodeNew = ({ room, playlist }: Props) => {
   const router = useRouter();
   const episodeFormContext = useEpisodeFormContext();
-  const { revalidate } = useSWRRoom(room.slug);
+  const { revalidate } = useSWRRoom(room.uid);
 
   const handleSubmit = async (formData: EpisodeFormValues) => {
     const response = await RPCClientFactory(episodeCreateMeta).call({
@@ -38,8 +38,8 @@ export const EpisodeNew = ({ room, playlist }: Props) => {
       // Make sure to update local state with API truth and then move on..
       await revalidate();
       router.push(
-        `/rooms/[roomSlug]/admin/[playlistId]/record-episode/[episodeId]`,
-        `/rooms/${room.slug}/admin/${playlist.id}/record-episode/${response.data.id}`
+        `/rooms/[roomUid]/admin/[playlistId]/record-episode/[episodeId]`,
+        `/rooms/${room.uid}/admin/${playlist.id}/record-episode/${response.data.id}`
       );
     } else {
       alert("De aflevering kan niet bewaard worden.");
@@ -60,8 +60,8 @@ export const EpisodeNew = ({ room, playlist }: Props) => {
       blur={40}
       action={
         <AdminHeaderClose
-          url={`/rooms/[roomSlug]/admin/[playlistId]`}
-          as={`/rooms/${room.slug}/admin/${playlist.id}`}
+          url={`/rooms/[roomUid]/admin/[playlistId]`}
+          as={`/rooms/${room.uid}/admin/${playlist.id}`}
         />
       }
       firstItem={

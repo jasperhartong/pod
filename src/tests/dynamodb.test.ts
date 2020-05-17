@@ -241,7 +241,6 @@ const generateRoomData = (partial?: Partial<IRoom>): IRoom => {
     id: 0,
     uid,
     created_on: DateTime.utc().toJSON(),
-    slug: uid,
     title: "test",
     cover_file: {
       data: {

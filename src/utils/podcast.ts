@@ -62,7 +62,7 @@ export const podcastXML = (room: IRoom): string => {
             title: room.title,
           },
           {
-            link: roomPageUrl(room.slug),
+            link: roomPageUrl(room.uid),
           },
           {
             language: "nl",
@@ -71,7 +71,7 @@ export const podcastXML = (room: IRoom): string => {
             copyright: "Copyright 2020",
           },
           {
-            "itunes:subtitle": room.slug,
+            "itunes:subtitle": room.title,
           },
           {
             "itunes:author": room.title,
@@ -160,7 +160,7 @@ const itemFromEpisode = (
       },
     },
     {
-      guid: futureEpisodePage(room.slug, playlist.id, episode.id),
+      guid: futureEpisodePage(room.uid, playlist.id, episode.id),
     },
     {
       pubDate: parseDbDate(

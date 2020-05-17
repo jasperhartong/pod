@@ -1,29 +1,23 @@
-import { EpisodeNew } from "@/components/admin/episode-new";
 import { LoaderCentered } from "@/components/admin/layout/loader-centered";
+import { PlaylistNew } from "@/components/admin/playlist-new";
 import { ErrorPage } from "@/components/error-page";
 import { useRouter } from "@/hooks/useRouter";
 import { useSWRRoom } from "@/hooks/useSWRRoom";
 
 const AdminNewEpisodePage = () => {
   const router = useRouter();
-  const { data } = useSWRRoom(router.query.roomSlug as string);
-  const playlistId = router.query.playlistId as string;
+  const { data } = useSWRRoom(router.query.roomUid as string);
 
   if (!data) {
     return <LoaderCentered />;
   }
 
-  if (!data.ok || !playlistId) {
+  if (!data.ok) {
     return <ErrorPage error={!data.ok ? data.error : undefined} />;
   }
   const room = data.data;
-  const playlist = room.playlists.find((p) => p.id.toString() === playlistId);
 
-  if (!playlist) {
-    return <ErrorPage error="No playlist found" />;
-  }
-
-  return <EpisodeNew room={room} playlist={playlist} />;
+  return <PlaylistNew room={room} />;
 };
 
 export default AdminNewEpisodePage;

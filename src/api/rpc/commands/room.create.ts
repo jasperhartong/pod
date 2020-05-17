@@ -15,7 +15,6 @@ export default RPCHandlerFactory(meta, async (reqData) => {
     id: 42,
     uid,
     created_on: DateTime.utc().toJSON(),
-    slug: uid,
     title: reqData.data.title,
     cover_file: {
       data: {

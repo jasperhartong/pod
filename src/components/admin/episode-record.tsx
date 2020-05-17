@@ -47,7 +47,7 @@ const initialState: State = {
 
 export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
   const router = useRouter();
-  const { mutateEpisode } = useSWRRoom(room.slug);
+  const { mutateEpisode } = useSWRRoom(room.uid);
   const [localState, dispatch] = useImmer<State>(initialState);
   const recorder = useAudioRecorder();
   const uploader = useSignedMediaUploader({
@@ -79,8 +79,8 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
         false
       );
       router.push(
-        "/rooms/[roomSlug]/admin/[playlistId]/episode/[episodeId]",
-        `/rooms/${room.slug}/admin/${playlist.id}/episode/${episode.id}`
+        "/rooms/[roomUid]/admin/[playlistId]/episode/[episodeId]",
+        `/rooms/${room.uid}/admin/${playlist.id}/episode/${episode.id}`
       );
     }
   };
@@ -281,8 +281,8 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
       subtitle={playlist.title + " • " + episode.title}
       action={
         <AdminHeaderClose
-          url={`/rooms/[roomSlug]/admin/[playlistId]`}
-          as={`/rooms/${room.slug}/admin/${playlist.id}`}
+          url={`/rooms/[roomUid]/admin/[playlistId]`}
+          as={`/rooms/${room.uid}/admin/${playlist.id}`}
         />
       }
       firstItem={

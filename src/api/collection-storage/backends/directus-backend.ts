@@ -1,5 +1,5 @@
+import { IDirectusBackend } from "@/api/collection-storage/IDirectusBackend";
 import { ERR, OK } from "@/api/IResponse";
-import { IBackend } from "@/app-schema/IBackend";
 import { IEpisode } from "@/app-schema/IEpisode";
 import { IImageData } from "@/app-schema/IFileData";
 import { IPlaylist } from "@/app-schema/IPlaylist";
@@ -15,7 +15,7 @@ if (!token) {
   throw Error(`process.env.DIRECTUS_CLOUD_TOKEN not set`);
 }
 
-class DirectusTapesMeBackend implements IBackend {
+class DirectusTapesMeBackend implements IDirectusBackend {
   constructor(
     private client = new DirectusSDK({
       url: "https://api.directus.cloud/",

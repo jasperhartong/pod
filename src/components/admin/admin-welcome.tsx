@@ -106,10 +106,7 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
             fullWidth
             variant="outlined"
             onClick={() =>
-              router.push(
-                `/rooms/[roomSlug]/admin`,
-                `/rooms/${room.slug}/admin`
-              )
+              router.push(`/rooms/[roomUid]/admin`, `/rooms/${room.uid}/admin`)
             }
           >
             <IconMic
@@ -129,9 +126,9 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
                       nativeShare(
                         "Opname studio",
                         "Opname studio",
-                        `${basePath}/rooms/${room.slug}/admin`
+                        `${basePath}/rooms/${room.uid}/admin`
                       )
-                  : () => clipboard.copy(`${basePath}/rooms/${room.slug}/admin`)
+                  : () => clipboard.copy(`${basePath}/rooms/${room.uid}/admin`)
               }
             >
               {clipboard.copied && (
@@ -147,7 +144,7 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
             fullWidth
             variant="outlined"
             onClick={() =>
-              router.push(`/rooms/[roomSlug]`, `/rooms/${room.slug}`)
+              router.push(`/rooms/[roomUid]`, `/rooms/${room.uid}`)
             }
           >
             <IconHeadset
@@ -167,9 +164,9 @@ export const AdminWelcome = ({ room }: { room: IRoom }) => {
                       nativeShare(
                         "Luisterkamer",
                         "Luisterkamer",
-                        `${basePath}/rooms/${room.slug}`
+                        `${basePath}/rooms/${room.uid}`
                       )
-                  : () => clipboard.copy(`${basePath}/rooms/${room.slug}`)
+                  : () => clipboard.copy(`${basePath}/rooms/${room.uid}`)
               }
             >
               {clipboard.copied && (

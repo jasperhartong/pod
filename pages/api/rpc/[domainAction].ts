@@ -26,7 +26,7 @@ export default async (
   let responseData = ERR("No RPC found to handle", HttpStatus.NOT_IMPLEMENTED);
 
   if (handlers[domainAction]) {
-    responseData = await handlers[domainAction].handle(req.body);
+    responseData = await handlers[domainAction].handleUnsafe(req.body);
   }
 
   return res

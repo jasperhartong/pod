@@ -23,7 +23,7 @@ interface Props {
 
 export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
   const router = useRouter();
-  const { mutateEpisode } = useSWRRoom(room.slug);
+  const { mutateEpisode } = useSWRRoom(room.uid);
   const [isValidating, setIsValidating] = useState<boolean>(false);
 
   const handlePublish = async () => {
@@ -50,7 +50,7 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
         false
       );
 
-      router.push(`/rooms/[roomSlug]/admin`, `/rooms/${room.slug}/admin`);
+      router.push(`/rooms/[roomUid]/admin`, `/rooms/${room.uid}/admin`);
     } else {
       alert("Publiceren mislukt, probeer nogmaals");
       setIsValidating(false);
@@ -64,8 +64,8 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
       subtitle={"in " + playlist.title}
       action={
         <AdminHeaderClose
-          url={`/rooms/[roomSlug]/admin/[playlistId]`}
-          as={`/rooms/${room.slug}/admin/${playlist.id}`}
+          url={`/rooms/[roomUid]/admin/[playlistId]`}
+          as={`/rooms/${room.uid}/admin/${playlist.id}`}
         />
       }
       firstItem={
@@ -125,7 +125,7 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
                   fullWidth
                   variant="outlined"
                   onClick={() =>
-                    router.push(`/rooms/[roomSlug]`, `/rooms/${room.slug}`)
+                    router.push(`/rooms/[roomUid]`, `/rooms/${room.uid}`)
                   }
                 >
                   <IconHeadset
@@ -141,8 +141,8 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
                   variant="outlined"
                   onClick={() =>
                     router.push(
-                      `/rooms/[roomSlug]/admin`,
-                      `/rooms/${room.slug}/admin`
+                      `/rooms/[roomUid]/admin`,
+                      `/rooms/${room.uid}/admin`
                     )
                   }
                 >
@@ -154,8 +154,8 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
           {/* We can easily allow to re-record stuff :) */}
           {/* <Box mt={2}>
             <Link
-              href={`/rooms/[roomSlug]/admin/[playlistId]/record-episode/[episodeId]`}
-              as={`/rooms/${room.slug}/admin/${playlist.id}/record-episode/${episode.id}`}
+              href={`/rooms/[roomUid]/admin/[playlistId]/record-episode/[episodeId]`}
+              as={`/rooms/${room.uid}/admin/${playlist.id}/record-episode/${episode.id}`}
             >
               <Button fullWidth>Neem opnieuw op</Button>
             </Link>

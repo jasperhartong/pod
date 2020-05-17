@@ -1,10 +1,10 @@
 import { IResponse } from "@/api/IResponse";
-import { IEpisode } from "./IEpisode";
-import { IImageData } from "./IFileData";
-import { IPlaylist } from "./IPlaylist";
-import { IRoom } from "./IRoom";
+import { IEpisode } from "../../app-schema/IEpisode";
+import { IImageData } from "../../app-schema/IFileData";
+import { IPlaylist } from "../../app-schema/IPlaylist";
+import { IRoom } from "../../app-schema/IRoom";
 
-export interface IBackend {
+export interface IDirectusBackend {
   getRoomBySlug: (roomSlug: string) => Promise<IResponse<IRoom>>;
   getEpisode: (episodeId: string) => Promise<IResponse<IEpisode>>;
   createPlaylist: (

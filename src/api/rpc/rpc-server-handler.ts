@@ -20,7 +20,13 @@ export const RPCHandlerFactory = <Tq, Oq, Iq, Ts, Os, Is>(
       this.commandId = `${this.meta.domain}.${this.meta.action}`;
     }
 
-    public handle = async (reqData: any): Promise<IResponse<Ts>> => {
+    public call = async (reqData: Tq): Promise<IResponse<Ts>> => {
+      /* Type safe call (used when directly calling serverside) */
+      return this.handleUnsafe(reqData);
+      // TODO: Could probaby use a faster shortcut code path
+    };
+
+    public handleUnsafe = async (reqData: any): Promise<IResponse<Ts>> => {
       // Validate request data
       const reqValidation = this.meta.reqValidator.decode(reqData);
       if (isLeft(reqValidation)) {

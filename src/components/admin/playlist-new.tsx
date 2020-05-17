@@ -21,7 +21,7 @@ interface Props {
 export const PlaylistNew = ({ room }: Props) => {
   const router = useRouter();
   const formContext = usePlaylistFormContext();
-  const { revalidate } = useSWRRoom(room.slug);
+  const { revalidate } = useSWRRoom(room.uid);
 
   const handleSubmit = async (formData: PlaylistFormValues) => {
     const playlistCreation = await RPCClientFactory(playlistCreateMeta).call({
@@ -36,8 +36,8 @@ export const PlaylistNew = ({ room }: Props) => {
       // Make sure to update local state with API truth and then move on..
       await revalidate();
       router.push(
-        `/rooms/[roomSlug]/admin/[playlistId]`,
-        `/rooms/${room.slug}/admin/${playlistCreation.data.id}`
+        `/rooms/[roomUid]/admin/[playlistId]`,
+        `/rooms/${room.uid}/admin/${playlistCreation.data.id}`
       );
     } else {
       alert("De collectie kon niet worden aangemaakt, probeer opnieuw.");
@@ -56,8 +56,8 @@ export const PlaylistNew = ({ room }: Props) => {
       blur={40}
       action={
         <AdminHeaderClose
-          url={`/rooms/[roomSlug]/admin`}
-          as={`/rooms/${room.slug}/admin`}
+          url={`/rooms/[roomUid]/admin`}
+          as={`/rooms/${room.uid}/admin`}
         />
       }
       firstItem={

@@ -17,7 +17,7 @@ interface PageProps {
 const ListenRoomPage = ({ preFetchedRoomResponse }: PageProps) => {
   const router = useRouter();
   const { data } = useSWRRoom(
-    router.isFallback ? null : (router.query.roomSlug as string),
+    router.isFallback ? null : (router.query.roomUid as string),
     preFetchedRoomResponse
   );
 
@@ -38,8 +38,8 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
   return {
     props: {
       // Runs serverside, call rpc handler directly
-      preFetchedRoomResponse: await roomFetch.handle({
-        uid: params?.roomSlug as string,
+      preFetchedRoomResponse: await roomFetch.call({
+        uid: params?.roomUid as string,
       }),
     },
     // we will attempt to re-generate the page:

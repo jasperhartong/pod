@@ -58,7 +58,7 @@ export const ListenRoom = ({ room }: { room: IRoom }) => {
           </Box>
         ))}
 
-      <PageFooter secondaryText={room.slug} />
+      <PageFooter secondaryText={room.uid} />
 
       <SnackbarPlayer
         playingItem={playingItem}

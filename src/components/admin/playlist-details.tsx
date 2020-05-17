@@ -39,8 +39,8 @@ export const PlaylistDetails = ({
           subtitle={`in ${room.title}`}
           action={
             <AdminHeaderClose
-              url={`/rooms/[roomSlug]/admin`}
-              as={`/rooms/${room.slug}/admin`}
+              url={`/rooms/[roomUid]/admin`}
+              as={`/rooms/${room.uid}/admin`}
             />
           }
         />
@@ -75,8 +75,8 @@ const AdminEpisodeList = ({
           button
           onClick={() =>
             router.push(
-              "/rooms/[roomSlug]/admin/[playlistId]/new-episode",
-              `/rooms/${room.slug}/admin/${playlist.id}/new-episode`
+              "/rooms/[roomUid]/admin/[playlistId]/new-episode",
+              `/rooms/${room.uid}/admin/${playlist.id}/new-episode`
             )
           }
         >
@@ -98,7 +98,7 @@ const AdminEpisodeList = ({
         {playlist.episodes.map((episode) => (
           <AdminEpisodeListItem
             key={episode.id}
-            roomSlug={room.slug}
+            roomUid={room.uid}
             playlistId={playlist.id}
             episode={episode}
           />
@@ -128,22 +128,22 @@ const AdminEpisodeList = ({
 };
 
 const AdminEpisodeListItem = ({
-  roomSlug,
+  roomUid,
   playlistId,
   episode,
 }: {
-  roomSlug: IRoom["slug"];
+  roomUid: IRoom["uid"];
   playlistId: IPlaylist["id"];
   episode: IEpisode;
 }) => {
   const router = useRouter();
   const recordLink = {
-    url: "/rooms/[roomSlug]/admin/[playlistId]/record-episode/[episodeId]",
-    as: `/rooms/${roomSlug}/admin/${playlistId}/record-episode/${episode.id}`,
+    url: "/rooms/[roomUid]/admin/[playlistId]/record-episode/[episodeId]",
+    as: `/rooms/${roomUid}/admin/${playlistId}/record-episode/${episode.id}`,
   };
   const detailsLink = {
-    url: "/rooms/[roomSlug]/admin/[playlistId]/episode/[episodeId]",
-    as: `/rooms/${roomSlug}/admin/${playlistId}/episode/${episode.id}`,
+    url: "/rooms/[roomUid]/admin/[playlistId]/episode/[episodeId]",
+    as: `/rooms/${roomUid}/admin/${playlistId}/episode/${episode.id}`,
   };
 
   return (

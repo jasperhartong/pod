@@ -1,11 +1,13 @@
-import roomCreateMeta from "@/api/rpc/commands/room.create.meta";
+import roomImportMeta from "@/api/rpc/commands/room.import.meta";
 import AppContainer from "@/components/app-container";
 import { useRPC } from "@/hooks/useRPC";
 import { Box, Button } from "@material-ui/core";
 
+const slug = "famhartong";
+
 const Dynamo = () => {
-  const { call: createRoom, isValidating, data, error } = useRPC(
-    roomCreateMeta
+  const { call: importRoom, isValidating, data, error } = useRPC(
+    roomImportMeta
   );
 
   return (
@@ -13,13 +15,13 @@ const Dynamo = () => {
       <Box textAlign="center" p={4}>
         <Button
           disabled={isValidating}
-          onClick={() => createRoom({ data: { title: "test" } })}
+          onClick={() => importRoom({ uid: slug })}
         >
-          Create room
+          Import room: {slug}
         </Button>
         {data && (
           <Box textAlign="center" p={4}>
-            Created: {data.title} : {data.uid}
+            Imported: {data.title} : {data.uid}
           </Box>
         )}
 

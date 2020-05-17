@@ -4,6 +4,7 @@ import episodeUpdate from "@/api/rpc/commands/episode.update";
 import playlistCreate from "@/api/rpc/commands/playlist.create";
 import roomCreate from "@/api/rpc/commands/room.create";
 import roomFetch from "@/api/rpc/commands/room.fetch";
+import roomImport from "@/api/rpc/commands/room.import";
 import signedUrlCreate from "@/api/rpc/commands/signedurl.create";
 import HttpStatus from "http-status-codes";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -15,6 +16,7 @@ const handlers = {
   [signedUrlCreate.commandId]: signedUrlCreate,
   [roomFetch.commandId]: roomFetch,
   [roomCreate.commandId]: roomCreate,
+  [roomImport.commandId]: roomImport,
 };
 
 export default async (

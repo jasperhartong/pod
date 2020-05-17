@@ -1,8 +1,8 @@
-import { parseDbDate } from "@/api/collection-storage/backends/directus-utils";
 import { IEpisode } from "@/app-schema/IEpisode";
 import { IPlaylist } from "@/app-schema/IPlaylist";
 import { IRoom } from "@/app-schema/IRoom";
 import { toXML } from "jstoxml";
+import { DateTime } from "luxon";
 import { futureEpisodePage, roomPageUrl } from "../urls";
 
 export const podcastXML = (room: IRoom): string => {
@@ -163,7 +163,7 @@ const itemFromEpisode = (
       guid: futureEpisodePage(room.uid, playlist.uid, episode.uid),
     },
     {
-      pubDate: parseDbDate(
+      pubDate: DateTime.fromISO(
         episode.published_on || episode.created_on
       ).toRFC2822(),
     },

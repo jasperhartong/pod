@@ -1,4 +1,3 @@
-import { parseDbDate } from "@/api/collection-storage/backends/directus-utils";
 import { IEpisode } from "@/app-schema/IEpisode";
 import { IPlaylist } from "@/app-schema/IPlaylist";
 import { IRoom } from "@/app-schema/IRoom";
@@ -17,6 +16,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import IconAdd from "@material-ui/icons/Add";
+import { DateTime } from "luxon";
 import AppContainer from "../app-container";
 import PageFooter from "../page-footer";
 import AdminHeader from "./layout/admin-header";
@@ -171,8 +171,8 @@ const AdminEpisodeListItem = ({
                 ? "Niet gepubliceerd"
                 : "Geen opname"
               : episode.published_on
-              ? parseDbDate(episode.published_on).toRelative()
-              : parseDbDate(episode.created_on).toRelative()}
+              ? DateTime.fromISO(episode.published_on).toRelative()
+              : DateTime.fromISO(episode.created_on).toRelative()}
           </>
         }
       />

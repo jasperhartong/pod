@@ -1,9 +1,10 @@
-import { IDirectusBackend } from "@/api/collection-storage/IDirectusBackend";
 import { ERR, OK } from "@/api/IResponse";
+import { TDateString } from "@/app-schema/IDateString";
 import { IImageData } from "@/app-schema/IFileData";
-import { IRoom } from "@/app-schema/IRoom";
+import { optional } from "@/utils/io-ts";
 import DirectusSDK from "@directus/sdk-js";
 import HttpStatus from "http-status-codes";
+import * as t from "io-ts";
 
 const token = process.env.DIRECTUS_CLOUD_TOKEN;
 const project = "dcMJTq1b80lIY4CT";
@@ -12,7 +13,59 @@ if (!token) {
   throw Error(`process.env.DIRECTUS_CLOUD_TOKEN not set`);
 }
 
-class DirectusTapesMeBackend implements IDirectusBackend {
+// Typings for Room Stored in Directus
+const TDirectusThumbnail = t.type({
+  url: t.string,
+  relative_url: t.string,
+  dimension: t.string,
+  width: t.number,
+  height: t.number,
+});
+
+const TDirectusImageData = t.type({
+  full_url: t.string,
+  thumbnails: t.array(TDirectusThumbnail),
+});
+
+const TDirectusEpisodeStatus = t.keyof({
+  // https://github.com/gcanti/io-ts#union-of-string-literals
+  published: null,
+  draft: null,
+  deleted: null,
+});
+
+const TDirectusEpisode = t.type({
+  id: t.number,
+  status: TDirectusEpisodeStatus,
+  created_on: TDateString,
+  title: t.string,
+  image_file: t.type({ data: TDirectusImageData }),
+  audio_file: optional(t.string),
+  published_on: optional(TDateString),
+});
+
+const TDirectusPlaylist = t.type({
+  id: t.number,
+  created_on: TDateString,
+  title: t.string,
+  description: t.string,
+  cover_file: t.type({ data: TDirectusImageData }),
+  // alias
+  episodes: t.array(TDirectusEpisode),
+});
+
+const TDirectusRoom = t.type({
+  id: t.number,
+  slug: t.string,
+  title: t.string,
+  cover_file: t.type({ data: TDirectusImageData }),
+  // alias
+  playlists: t.array(TDirectusPlaylist),
+});
+
+type IDirectusRoom = t.TypeOf<typeof TDirectusRoom>;
+
+class DirectusTapesMeBackend {
   constructor(
     private client = new DirectusSDK({
       url: "https://api.directus.cloud/",
@@ -27,7 +80,7 @@ class DirectusTapesMeBackend implements IDirectusBackend {
 
   public getRoomBySlug = async (roomSlug: string) => {
     try {
-      const roomResponse = await this.client.getItems<IRoom[]>(
+      const roomResponse = await this.client.getItems<IDirectusRoom[]>(
         this.roomCollection,
         {
           filter: {
@@ -51,14 +104,14 @@ class DirectusTapesMeBackend implements IDirectusBackend {
         roomResponse.data[0].playlists
           .reverse()
           .map((p) => p.episodes.reverse());
-        return OK<IRoom>(roomResponse.data[0]);
+        return OK<IDirectusRoom>(roomResponse.data[0]);
       }
     } catch (error) {
       console.error(error);
-      return ERR<IRoom>("Room fetch errored");
+      return ERR<IDirectusRoom>("Room fetch errored");
     }
 
-    return ERR<IRoom>("Room not found", HttpStatus.NOT_FOUND);
+    return ERR<IDirectusRoom>("Room not found", HttpStatus.NOT_FOUND);
   };
 
   // public createPlaylist = async (

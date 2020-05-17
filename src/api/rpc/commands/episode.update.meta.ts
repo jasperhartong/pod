@@ -12,9 +12,4 @@ const reqDataValidator = t.type({
   data: TEpisodePartial,
 });
 
-// FIXME: Invalid response payload somehow..
-const resDataValidator = t.type({
-  TEpisode,
-});
-
-export default RPCMeta("episode", "update", reqDataValidator, resDataValidator);
+export default RPCMeta("episode", "update", reqDataValidator, TEpisode);

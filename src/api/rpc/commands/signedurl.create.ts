@@ -1,6 +1,6 @@
 import { fileStorageBackend } from "@/api/file-storage/index";
+import { RPCHandlerFactory } from "@/api/rpc/rpc-server-handler";
 import uuid4 from "uuid4";
-import { RPCHandlerFactory } from "../rpc-server-handler";
 import meta from "./signedurl.create.meta";
 
 const getFileExtension = (fileName: string): string | undefined => {

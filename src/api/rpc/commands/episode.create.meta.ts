@@ -1,8 +1,8 @@
+import { RPCMeta } from "@/api/rpc/rpc-meta";
 import { TEpisode } from "@/app-schema/IEpisode";
 import { TPlaylist } from "@/app-schema/IPlaylist";
+import { TRoom } from "@/app-schema/IRoom";
 import * as t from "io-ts";
-import { TRoom } from "../../../app-schema/IRoom";
-import { RPCMeta } from "../rpc-meta";
 
 const reqDataRequired = t.type({
   title: t.string,

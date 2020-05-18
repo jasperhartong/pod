@@ -123,6 +123,23 @@ describe("📦 The TapesDynamoTable", () => {
       expect(
         complexRoomResponse.data.playlists[1].episodes.map((p) => p.title)
       ).toEqual(["b", "a"]);
+      // expect episodes to be same shape
+      expect(complexRoomResponse.data.playlists[0].episodes).toEqual([
+        episode2c,
+        episode2b,
+        episode2a,
+      ]);
+      expect(complexRoomResponse.data.playlists[1].episodes).toEqual([
+        episode1b,
+        episode1a,
+      ]);
+      // expect playlist to be same shape (except for added episodes)
+      expect(
+        complexRoomResponse.data.playlists.map((p) => {
+          p.episodes = [];
+          return p;
+        })
+      ).toEqual([playlist2, playlist1]);
     }
   });
 

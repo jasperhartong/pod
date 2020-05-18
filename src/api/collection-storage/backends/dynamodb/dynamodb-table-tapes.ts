@@ -343,9 +343,9 @@ export class DynamoTableTapes extends DynamodbTableBase {
           playlist.cover_file.data.full_url || ""; // decode `null`
         room.playlists.push(playlist);
 
-        // Prepate to receive nested episodes based on SORT_KEY_NAME
+        // Prepare to receive nested episodes based on SORT_KEY_NAME
         playlistMap[playlistItem[SORT_KEY_NAME]] = playlist;
-        this.deleteDynamoKeys(playlistMap);
+        this.deleteDynamoKeys(playlist);
       });
 
       // Get and parse episodeItems, also push into playlist

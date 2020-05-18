@@ -38,7 +38,7 @@ export const RPCHandlerFactory = <Tq, Oq, Iq, Ts, Os, Is>(
       // Retrieve result
       const response = await this.handler(reqValidation.right);
       if (!response.ok) {
-        return ERR(response.error);
+        return ERR(response.error, response.status);
       }
 
       // Validate response

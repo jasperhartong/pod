@@ -151,6 +151,42 @@ describe("📦 The TapesDynamoTable", () => {
     }
   });
 
+  it("😊 can update nested fields in an existing episode", async () => {
+    const room = generateRoomData();
+    await backend.createRoom(room);
+
+    const playlist1 = generatePlaylistData();
+    await backend.createPlaylist(room.uid, playlist1);
+
+    const episode1a = generateEpisodeData();
+    await backend.createEpisode(room.uid, playlist1.uid, episode1a);
+
+    const episodeUpdate = await backend.updateEpisode(
+      room.uid,
+      playlist1.uid,
+      episode1a.uid,
+      {
+        image_file: {
+          data: {
+            full_url: "updated",
+          },
+        },
+      }
+    );
+
+    expect(episodeUpdate.ok).toBe(true);
+    if (episodeUpdate.ok) {
+      expect(episodeUpdate.data).toEqual({
+        ...episode1a,
+        image_file: {
+          data: {
+            full_url: "updated",
+          },
+        },
+      });
+    }
+  });
+
   it("🚧 cannot create room with same uid twice", async () => {
     const room = generateRoomData();
     await backend.createRoom(room);

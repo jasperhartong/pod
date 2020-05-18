@@ -2,19 +2,33 @@ import directusTapesMeBackend from "@/api/collection-storage/backends/directus-b
 import { parseDbDate } from "@/api/collection-storage/backends/directus-utils";
 import { dynamoTableTapes } from "@/api/collection-storage/backends/dynamodb/dynamodb-table-tapes";
 import { generateUid } from "@/api/collection-storage/backends/dynamodb/dynamodb-utils";
-import { ERR } from "@/api/IResponse";
+import { ERR, OK } from "@/api/IResponse";
 import { RPCHandlerFactory } from "@/api/rpc/rpc-server-handler";
 import { IRoom } from "@/app-schema/IRoom";
+import HttpStatus from "http-status-codes";
 import { DateTime } from "luxon";
 import meta from "./room.import.meta";
 
 export default RPCHandlerFactory(meta, async (reqData) => {
-  console.debug(`directusTapesMeBackend.getRoomBySlug`);
-  const directusRoomImport = await directusTapesMeBackend.getRoomBySlug(
-    reqData.uid
+  const roomResponses = await Promise.all(
+    reqData.uids.map((uid) => importRoom(uid))
   );
+  const rooms = roomResponses
+    .map((r) => (r.ok ? r.data : undefined))
+    .filter((r) => r !== undefined) as IRoom[];
+
+  if (!rooms.length) {
+    return ERR<IRoom>("No room imported", HttpStatus.BAD_REQUEST);
+  }
+
+  return OK<IRoom[]>(rooms);
+});
+
+const importRoom = async (uid: string) => {
+  console.debug(`directusTapesMeBackend.getRoomBySlug`);
+  const directusRoomImport = await directusTapesMeBackend.getRoomBySlug(uid);
   if (!directusRoomImport.ok) {
-    return ERR<IRoom>(directusRoomImport.error);
+    return ERR<IRoom>(directusRoomImport.error, directusRoomImport.status);
   }
   const roomUid = directusRoomImport.data.slug;
   const roomCreatedOnApproximation = DateTime.fromMillis(
@@ -32,7 +46,7 @@ export default RPCHandlerFactory(meta, async (reqData) => {
     `dynamoTableTapes.createRoom: ${roomUid} ${roomCreatedOnApproximation.toJSON()}`
   );
 
-  await dynamoTableTapes.createRoom({
+  const roomImport = await dynamoTableTapes.createRoom({
     uid: roomUid,
     created_on: roomCreatedOnApproximation.toJSON(),
     title: directusRoomImport.data.title,
@@ -43,6 +57,9 @@ export default RPCHandlerFactory(meta, async (reqData) => {
     },
     playlists: [],
   });
+  if (!roomImport.ok) {
+    return ERR<IRoom>(roomImport.error, roomImport.status);
+  }
 
   directusRoomImport.data.playlists
     .reverse()
@@ -64,7 +81,7 @@ export default RPCHandlerFactory(meta, async (reqData) => {
       });
 
       if (!playlistImport.ok) {
-        return ERR<IRoom>(playlistImport.error);
+        return ERR<IRoom>(playlistImport.error, playlistImport.status);
       }
 
       directusPlaylist.episodes.reverse().forEach(async (directusEpisode) => {
@@ -89,10 +106,10 @@ export default RPCHandlerFactory(meta, async (reqData) => {
           }
         );
         if (!episodeImport.ok) {
-          return ERR<IRoom>(episodeImport.error);
+          return ERR<IRoom>(episodeImport.error, episodeImport.status);
         }
       });
     });
 
-  return await dynamoTableTapes.getRoomWithNested(reqData.uid);
-});
+  return await dynamoTableTapes.getRoomWithNested(uid);
+};

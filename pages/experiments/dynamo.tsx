@@ -3,7 +3,7 @@ import AppContainer from "@/components/app-container";
 import { useRPC } from "@/hooks/useRPC";
 import { Box, Button } from "@material-ui/core";
 
-const slug = "famhartong";
+const slugs = ["famhartong", "v6p4vd", "yjcx3c", "3jyqrn", "678cp7", "demo"];
 
 const Dynamo = () => {
   const { call: importRoom, isValidating, data, error } = useRPC(
@@ -15,13 +15,13 @@ const Dynamo = () => {
       <Box textAlign="center" p={4}>
         <Button
           disabled={isValidating}
-          onClick={() => importRoom({ uid: slug })}
+          onClick={() => importRoom({ uids: slugs })}
         >
-          Import room: {slug}
+          Import rooms: {slugs.join(", ")}
         </Button>
         {data && (
           <Box textAlign="center" p={4}>
-            Imported: {data.title} : {data.uid}
+            Imported: {data.map((d) => d.title + ":" + d.uid)}
           </Box>
         )}
 

@@ -6,7 +6,7 @@ export default RPCMeta(
   "room",
   "import",
   t.type({
-    uid: t.string,
+    uids: t.array(t.string),
   }),
-  TRoom
+  t.array(TRoom)
 );

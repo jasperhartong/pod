@@ -1,9 +1,9 @@
 import { DynamoTableTapes } from "@/api/collection-storage/backends/dynamodb/dynamodb-table-tapes";
+import { generateUid } from "@/api/collection-storage/backends/dynamodb/dynamodb-utils";
 import { IEpisode } from "@/app-schema/IEpisode";
 import { IPlaylist } from "@/app-schema/IPlaylist";
 import { IRoom } from "@/app-schema/IRoom";
 import { DateTime } from "luxon";
-import shortid from "shortid";
 
 let backend: DynamoTableTapes;
 
@@ -300,7 +300,7 @@ describe("📦 The TapesDynamoTable", () => {
 });
 
 const generateRoomData = (partial?: Partial<IRoom>): IRoom => {
-  const uid = shortid.generate();
+  const uid = generateUid();
   return {
     uid,
     created_on: DateTime.utc().toJSON(),
@@ -316,7 +316,7 @@ const generateRoomData = (partial?: Partial<IRoom>): IRoom => {
 };
 
 const generatePlaylistData = (partial?: Partial<IPlaylist>): IPlaylist => {
-  const uid = shortid.generate();
+  const uid = generateUid();
   return {
     uid,
     created_on: DateTime.utc().toJSON(),
@@ -333,7 +333,7 @@ const generatePlaylistData = (partial?: Partial<IPlaylist>): IPlaylist => {
 };
 
 const generateEpisodeData = (partial?: Partial<IEpisode>): IEpisode => {
-  const uid = shortid.generate();
+  const uid = generateUid();
   return {
     uid,
     status: "draft",

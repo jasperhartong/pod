@@ -1,11 +1,11 @@
 import directusTapesMeBackend from "@/api/collection-storage/backends/directus-backend";
 import { parseDbDate } from "@/api/collection-storage/backends/directus-utils";
 import { dynamoTableTapes } from "@/api/collection-storage/backends/dynamodb/dynamodb-table-tapes";
+import { generateUid } from "@/api/collection-storage/backends/dynamodb/dynamodb-utils";
 import { ERR } from "@/api/IResponse";
 import { RPCHandlerFactory } from "@/api/rpc/rpc-server-handler";
 import { IRoom } from "@/app-schema/IRoom";
 import { DateTime } from "luxon";
-import shortid from "shortid";
 import meta from "./room.import.meta";
 
 export default RPCHandlerFactory(meta, async (reqData) => {
@@ -34,7 +34,7 @@ export default RPCHandlerFactory(meta, async (reqData) => {
   directusRoomImport.data.playlists
     .reverse()
     .forEach(async (directusPlaylist) => {
-      const playlistUid = shortid.generate();
+      const playlistUid = generateUid();
 
       console.debug(`dynamoTableTapes.createPlaylist`);
       const playlistImport = await dynamoTableTapes.createPlaylist(roomUid, {
@@ -60,7 +60,7 @@ export default RPCHandlerFactory(meta, async (reqData) => {
           roomUid,
           playlistUid,
           {
-            uid: shortid.generate(),
+            uid: generateUid(),
             title: directusEpisode.title,
             status: directusEpisode.status,
             published_on: directusEpisode.published_on

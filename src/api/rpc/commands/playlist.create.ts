@@ -1,12 +1,12 @@
+import { dynamoTableTapes } from "@/api/collection-storage/backends/dynamodb/dynamodb-table-tapes";
+import { generateUid } from "@/api/collection-storage/backends/dynamodb/dynamodb-utils";
 import { IPlaylist } from "@/app-schema/IPlaylist";
 import { DateTime } from "luxon";
-import shortid from "shortid";
-import { dynamoTableTapes } from "../../collection-storage/backends/dynamodb/dynamodb-table-tapes";
 import { RPCHandlerFactory } from "../rpc-server-handler";
 import meta from "./playlist.create.meta";
 
 export default RPCHandlerFactory(meta, async (reqData) => {
-  const uid = shortid.generate();
+  const uid = generateUid();
   const playlist: IPlaylist = {
     uid,
     created_on: DateTime.utc().toJSON(),

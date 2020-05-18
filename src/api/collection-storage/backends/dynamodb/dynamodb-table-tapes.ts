@@ -50,13 +50,13 @@ export class DynamoTableTapes extends DynamodbTableBase {
     });
   }
 
-  private partitionKeyValue = (roomId: IRoom["uid"]) => {
-    return `ROOMPK#${roomId}`;
+  private partitionKeyValue = (roomUid: IRoom["uid"]) => {
+    return `ROOMPK#${roomUid}`;
   };
 
   private sortKeyValue = {
-    room: (roomId: IRoom["uid"]) => {
-      return `ROOM#${roomId}`;
+    room: (roomUid: IRoom["uid"]) => {
+      return `ROOM#${roomUid}`;
     },
     playlist: (playlistUid: IPlaylist["uid"]) => {
       return `PLAYLIST#${playlistUid}`;

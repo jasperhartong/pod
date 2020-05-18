@@ -17,11 +17,24 @@ export default RPCHandlerFactory(meta, async (reqData) => {
     return ERR<IRoom>(directusRoomImport.error);
   }
   const roomUid = directusRoomImport.data.slug;
+  const roomCreatedOnApproximation = DateTime.fromMillis(
+    [
+      /* oldest creation date of a playlist */
+      ...directusRoomImport.data.playlists.map(
+        (p) => parseDbDate(p.created_on).toMillis(),
+        /* or now */
+        DateTime.utc().toMillis()
+      ),
+    ].sort((a: number, b: number) => a - b)[0]
+  );
 
-  console.debug(`dynamoTableTapes.createRoom`);
+  console.debug(
+    `dynamoTableTapes.createRoom: ${roomUid} ${roomCreatedOnApproximation.toJSON()}`
+  );
+
   await dynamoTableTapes.createRoom({
     uid: roomUid,
-    created_on: DateTime.utc().toJSON(), // TODO: get better approximation
+    created_on: roomCreatedOnApproximation.toJSON(),
     title: directusRoomImport.data.title,
     cover_file: {
       data: {
@@ -41,7 +54,7 @@ export default RPCHandlerFactory(meta, async (reqData) => {
         uid: playlistUid,
         title: directusPlaylist.title,
         description: directusPlaylist.description,
-        created_on: directusPlaylist.created_on,
+        created_on: parseDbDate(directusPlaylist.created_on).toJSON(),
         cover_file: {
           data: {
             full_url: directusPlaylist.cover_file.data.full_url,

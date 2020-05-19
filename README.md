@@ -29,7 +29,7 @@ export const roomFetchMeta = RPCMeta(
   "room",
   "fetch",
   t.type({
-    slug: t.string,
+    uid: t.string,
   }),
   TRoom
 );
@@ -41,7 +41,7 @@ _Note: put meta in separate file of below handler as it will be used both on the
 
 ```javascript
 export const roomFetch = RPCHandlerFactory(meta, async (reqData) => {
-  return await collectionsBackend.getRoomBySlug(reqData.slug);
+  return await collectionsBackend.getRoomBySlug(reqData.uid);
 });
 ```
 
@@ -53,7 +53,7 @@ Server side:
 // export type IResponse<T> = IOK<T> | IERR;
 // type IRoom = t.TypeOf<typeof TRoom>;
 const room: IResponse<IRoom> = await roomFetch.call({
-  slug,
+  uid,
 });
 ```
 
@@ -61,7 +61,7 @@ Client side:
 
 ```javascript
 const room: IResponse<IRoom> = await RPCClientFactory(roomFetchMeta).call({
-  slug,
+  uid,
 });
 ```
 

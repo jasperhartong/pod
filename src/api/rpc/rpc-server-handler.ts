@@ -32,7 +32,13 @@ export const RPCHandlerFactory = <Tq, Oq, Iq, Ts, Os, Is>(
       if (isLeft(reqValidation)) {
         console.error(reqValidation.left);
         // TODO: wrap io-ts Errors errors into ERR
-        return ERR("invalid request", HttpStatus.BAD_REQUEST);
+        console.error(
+          "RPCHandler:: Request Validation Error: " +
+            reqValidation.left.map((error) =>
+              error.context.map(({ key }) => key).join(".")
+            )
+        );
+        return ERR("RPCHandler:: invalid request", HttpStatus.BAD_REQUEST);
       }
 
       // Retrieve result
@@ -52,7 +58,10 @@ export const RPCHandlerFactory = <Tq, Oq, Iq, Ts, Os, Is>(
         );
 
         // TODO: wrap io-ts Errors errors into ERR
-        return ERR("invalid response payload", HttpStatus.METHOD_FAILURE);
+        return ERR(
+          "RPCHandler:: invalid response payload",
+          HttpStatus.METHOD_FAILURE
+        );
       }
 
       // Send back succesful response

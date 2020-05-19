@@ -2,7 +2,7 @@
 module.exports = {
   tables: [
     {
-      TableName: `TAPES`,
+      TableName: `TAPESTEST`,
       KeySchema: [
         { AttributeName: "DYNAMODBPK", KeyType: "HASH" },
         { AttributeName: "DYNAMODBSK", KeyType: "RANGE" },

@@ -40,11 +40,13 @@ export const dynamoTableTapesConfig: aws.DynamoDB.CreateTableInput = {
 
 export class DynamoTableTapes extends DynamodbTableBase {
   constructor(config?: {
+    tableConfig?: aws.DynamoDB.CreateTableInput;
     dbConfig?: aws.DynamoDB.ClientConfiguration;
     docClientConfig?: DocumentClientContructorConfig;
   }) {
     super({
-      tableConfig: dynamoTableTapesConfig,
+      // Default to tapes table config
+      tableConfig: config?.tableConfig || dynamoTableTapesConfig,
       docClientConfig: config?.docClientConfig,
       dbConfig: config?.docClientConfig,
     });

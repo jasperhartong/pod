@@ -4,10 +4,12 @@ import { IEpisode } from "@/app-schema/IEpisode";
 import { IPlaylist } from "@/app-schema/IPlaylist";
 import { IRoom } from "@/app-schema/IRoom";
 import { DateTime } from "luxon";
+import testTableConfig from "../../jest-dynamodb-config";
 
 let backend: DynamoTableTapes;
 
 const localConfig = {
+  tableConfig: testTableConfig.tables[0],
   dbConfig: {
     region: "local-env",
   },

@@ -22,6 +22,8 @@ export const RPCClientFactory = <Tq, Oq, Iq, Ts, Os, Is>(
       private rpcBasePath: string = `/api/rpc/`,
       private client = axios.create({
         timeout: 20000,
+        // don't validate status, allows to handle the response data and get actual error response
+        validateStatus: () => true,
       })
     ) {}
 

@@ -7,9 +7,17 @@ import { RPCHandlerFactory } from "@/api/rpc/rpc-server-handler";
 import { IRoom } from "@/app-schema/IRoom";
 import HttpStatus from "http-status-codes";
 import { DateTime } from "luxon";
+import { IResponse } from "../../IResponse";
 import meta from "./room.import.meta";
 
 export default RPCHandlerFactory(meta, async (reqData) => {
+  console.debug(`dynamoTableTapes.backup`);
+  const tableBackup = await dynamoTableTapes.backup();
+  if (!tableBackup.ok) {
+    console.error(tableBackup.error);
+    return ERR(tableBackup.error);
+  }
+
   const roomResponses = await Promise.all(
     reqData.uids.map((uid) => importRoom(uid))
   );
@@ -24,12 +32,13 @@ export default RPCHandlerFactory(meta, async (reqData) => {
   return OK<IRoom[]>(rooms);
 });
 
-const importRoom = async (uid: string) => {
+const importRoom = async (uid: string): Promise<IResponse<IRoom>> => {
   console.debug(`directusTapesMeBackend.getRoomBySlug`);
   const directusRoomImport = await directusTapesMeBackend.getRoomBySlug(uid);
   if (!directusRoomImport.ok) {
-    return ERR<IRoom>(directusRoomImport.error, directusRoomImport.status);
+    return ERR(directusRoomImport.error, directusRoomImport.status);
   }
+
   const roomUid = directusRoomImport.data.slug;
   const roomCreatedOnApproximation = DateTime.fromMillis(
     [
@@ -58,7 +67,7 @@ const importRoom = async (uid: string) => {
     playlists: [],
   });
   if (!roomImport.ok) {
-    return ERR<IRoom>(roomImport.error, roomImport.status);
+    return ERR(roomImport.error, roomImport.status);
   }
 
   directusRoomImport.data.playlists
@@ -81,7 +90,7 @@ const importRoom = async (uid: string) => {
       });
 
       if (!playlistImport.ok) {
-        return ERR<IRoom>(playlistImport.error, playlistImport.status);
+        return ERR(playlistImport.error, playlistImport.status);
       }
 
       directusPlaylist.episodes.reverse().forEach(async (directusEpisode) => {
@@ -106,7 +115,7 @@ const importRoom = async (uid: string) => {
           }
         );
         if (!episodeImport.ok) {
-          return ERR<IRoom>(episodeImport.error, episodeImport.status);
+          return ERR(episodeImport.error, episodeImport.status);
         }
       });
     });

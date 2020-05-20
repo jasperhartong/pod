@@ -7,10 +7,6 @@ import meta from "./room.create.meta";
 export default RPCHandlerFactory(meta, async (reqData) => {
   const uid = generateUid();
 
-  if (dynamoTableTapes.status !== "ACTIVE") {
-    await dynamoTableTapes.initiate();
-  }
-
   return dynamoTableTapes.createRoom({
     uid,
     created_on: DateTime.utc().toJSON(),

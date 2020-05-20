@@ -1,5 +1,7 @@
+import { ERR, IResponse, OK } from "@/api/IResponse";
 import aws from "aws-sdk";
 import { GlobalTableStatus } from "aws-sdk/clients/dynamodb";
+import { DateTime } from "luxon";
 
 const AWSvars = [
   process.env.MY_AWS_ACCESS_REGION,
@@ -28,7 +30,7 @@ export class DynamodbTableBase {
   protected dynamodb: aws.DynamoDB;
   protected docClient: aws.DynamoDB.DocumentClient;
   protected tableConfig: aws.DynamoDB.CreateTableInput;
-  public status?: GlobalTableStatus = undefined;
+  public status: GlobalTableStatus | null = null;
   constructor({
     dbConfig,
     tableConfig,
@@ -38,7 +40,7 @@ export class DynamodbTableBase {
     dbConfig?: aws.DynamoDB.ClientConfiguration;
     docClientConfig?: DocumentClientContructorConfig;
   }) {
-    this.tableConfig = tableConfig;
+    this.tableConfig = { ...tableConfig };
     this.dynamodb = new aws.DynamoDB({
       apiVersion: this.apiVersion,
       ...(dbConfig || {}),
@@ -49,38 +51,37 @@ export class DynamodbTableBase {
       ...(docClientConfig || {}),
     });
   }
-  public async initiate() {
+  public async initiate(): Promise<IResponse<boolean>> {
     this.status = await this.create();
     if (this.status === "CREATING") {
-      this.status = await this.awaitCreation();
+      this.status = await this.awaitCreation(this.tableConfig.TableName);
     }
-    return this.status;
+    if (this.status === "ACTIVE") {
+      return OK(true);
+    }
+    return ERR(`Table not active: ${this.status}`);
   }
 
-  private awaitCreationCount = 0;
-  private maxAwaitCreationCount = 30;
-  private async awaitCreation(): Promise<GlobalTableStatus | undefined> {
-    const params: aws.DynamoDB.Types.DescribeTableInput = {
-      TableName: this.tableConfig.TableName,
-    };
+  public async backup(): Promise<IResponse<boolean>> {
+    const backupName = `${DateTime.utc().toISODate()}_${
+      this.tableConfig.TableName
+    }`;
 
-    await new Promise((resolve) => setTimeout(resolve, 1000));
     try {
-      console.debug(
-        `DynamodbTableBase::awaitCreation: ${this.awaitCreationCount}`
-      );
-      const tableStatus = await this.dynamodb.describeTable(params).promise();
-      if (tableStatus.Table?.TableStatus === "ACTIVE") {
-        return "ACTIVE";
-      }
+      await this.dynamodb
+        .createBackup({
+          TableName: this.tableConfig.TableName,
+          BackupName: backupName,
+        })
+        .promise();
+      return OK(true);
     } catch (error) {
-      console.error("Failed getting table status");
+      const errorMessage = `DynamodbTableBase:: backup: ${
+        (error as aws.AWSError).message
+      }`;
+      console.error(errorMessage);
+      return ERR(errorMessage);
     }
-    this.awaitCreationCount += 1;
-    if (this.awaitCreationCount > this.maxAwaitCreationCount) {
-      return undefined;
-    }
-    return this.awaitCreation();
   }
 
   private async create(): Promise<GlobalTableStatus> {
@@ -106,5 +107,33 @@ export class DynamodbTableBase {
         }
       });
     });
+  }
+
+  private awaitCreationCount = 0;
+  private maxAwaitCreationCount = 10;
+  private async awaitCreation(
+    tableName: string
+  ): Promise<GlobalTableStatus | null> {
+    const params: aws.DynamoDB.Types.DescribeTableInput = {
+      TableName: tableName,
+    };
+
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    try {
+      console.debug(
+        `DynamodbTableBase::awaitCreation: ${this.awaitCreationCount}`
+      );
+      const tableStatus = await this.dynamodb.describeTable(params).promise();
+      if (tableStatus.Table?.TableStatus === "ACTIVE") {
+        return "ACTIVE";
+      }
+    } catch (error) {
+      console.error("Failed getting table status", error);
+    }
+    this.awaitCreationCount += 1;
+    if (this.awaitCreationCount > this.maxAwaitCreationCount) {
+      return null;
+    }
+    return this.awaitCreation(tableName);
   }
 }

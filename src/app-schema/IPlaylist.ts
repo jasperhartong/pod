@@ -1,5 +1,6 @@
+import { TForcedString } from "@/utils/io-ts";
 import * as t from "io-ts";
-import { IBase, TForcedString } from "./IBase";
+import { IBase } from "./IBase";
 import { TEpisode } from "./IEpisode";
 import { TImageData } from "./IFileData";
 

@@ -1,6 +1,6 @@
-import { optional } from "@/utils/io-ts";
+import { TForcedNullable, TForcedString } from "@/utils/io-ts";
 import * as t from "io-ts";
-import { IBase, TForcedString } from "./IBase";
+import { IBase } from "./IBase";
 import { TDateString } from "./IDateString";
 import { TImageData } from "./IFileData";
 
@@ -16,8 +16,8 @@ export const TEpisode = t.type({
   status: TEpisodeStatus,
   title: TForcedString,
   image_file: t.type({ data: TImageData }),
-  audio_file: optional(t.string),
-  published_on: optional(TDateString),
+  audio_file: TForcedNullable(t.string),
+  published_on: TForcedNullable(TDateString),
 });
 
 export const TEpisodePartial = t.partial({

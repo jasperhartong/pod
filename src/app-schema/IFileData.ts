@@ -1,5 +1,5 @@
+import { TForcedString } from "@/utils/io-ts";
 import * as t from "io-ts";
-import { TForcedString } from "./IBase";
 
 export const TImageData = t.type({
   full_url: TForcedString,

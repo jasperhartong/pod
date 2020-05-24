@@ -1,7 +1,6 @@
 import { ERR, OK } from "@/api/IResponse";
 import { TDateString } from "@/app-schema/IDateString";
 import { IImageData } from "@/app-schema/IFileData";
-import { optional } from "@/utils/io-ts";
 import DirectusSDK from "@directus/sdk-js";
 import HttpStatus from "http-status-codes";
 import * as t from "io-ts";
@@ -12,6 +11,20 @@ if (!token) {
   console.warn(process.env);
   throw Error(`process.env.DIRECTUS_CLOUD_TOKEN not set`);
 }
+
+/* 
+https://github.com/gcanti/io-ts/pull/266#issuecomment-474935329
+
+    const Person = t.interface({
+    name: t.string,
+    age: optional(t.number)
+    })
+
+    Person.decode({name: 'bob'}) // returns right({name: 'bob'})
+    Person.is({name: 'bob'}) // returns false
+ */
+export const optional = <T extends t.Type<any, any, any>>(type: T) =>
+  t.union([type, t.null, t.undefined]);
 
 // Typings for Room Stored in Directus
 const TDirectusThumbnail = t.type({

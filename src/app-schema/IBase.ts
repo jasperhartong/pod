@@ -1,5 +1,4 @@
 import * as t from "io-ts";
-import { withFallback } from "io-ts-types/lib/withFallback";
 import { TDateString } from "./IDateString";
 
 export const IBase = t.type({
@@ -8,5 +7,3 @@ export const IBase = t.type({
 });
 
 export type IBase = t.TypeOf<typeof IBase>;
-
-export const TForcedString = withFallback(t.string, "");

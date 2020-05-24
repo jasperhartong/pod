@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import PauseIcon from "@material-ui/icons/Pause";
 import PlayIcon from "@material-ui/icons/PlayArrow";
+import LazyLoad from "react-lazyload";
 
 const useStyles = makeStyles((theme) => ({
   gridRoot: {
@@ -62,15 +63,22 @@ const PlaylistGrid = (props: Props) => {
                 : setPlayingUid(episode.uid)
             }
           >
-            <Paper elevation={8}>
-              <ButtonBase
-                aria-label={`play ${episode.title}`}
-                focusRipple={true}
-                className={classes.imageButton}
-                style={{
-                  backgroundImage: `url(${episode.image_file.data.full_url}`,
-                }}
-              />
+            <Paper elevation={3}>
+              <LazyLoad
+                once={true}
+                offset={200}
+                resize={true}
+                placeholder={<div className={classes.imageButton} />}
+              >
+                <ButtonBase
+                  aria-label={`play ${episode.title}`}
+                  focusRipple={true}
+                  className={classes.imageButton}
+                  style={{
+                    backgroundImage: `url(${episode.image_file.data.full_url}`,
+                  }}
+                />
+              </LazyLoad>
             </Paper>
             <EpisodeTitle title={episode.title} />
             {episode.uid === playingUid && (

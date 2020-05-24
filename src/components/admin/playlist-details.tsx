@@ -17,6 +17,7 @@ import {
 } from "@material-ui/core";
 import IconAdd from "@material-ui/icons/Add";
 import { DateTime } from "luxon";
+import LazyLoad from "react-lazyload";
 import AppContainer from "../app-container";
 import PageFooter from "../page-footer";
 import AdminHeader from "./layout/admin-header";
@@ -156,11 +157,17 @@ const AdminEpisodeListItem = ({
       button
     >
       <ListItemAvatar>
-        <Avatar
-          variant="square"
-          alt={episode.title}
-          src={episode.image_file.data.full_url}
-        />
+        <LazyLoad
+          offset={100}
+          once={true}
+          placeholder={<Avatar variant="square" />}
+        >
+          <Avatar
+            variant="square"
+            alt={episode.title}
+            src={episode.image_file.data.full_url}
+          />
+        </LazyLoad>
       </ListItemAvatar>
       <ListItemText
         primary={episode.title}

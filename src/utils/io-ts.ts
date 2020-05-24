@@ -16,3 +16,6 @@ Beware of the following behavior though
  */
 export const optional = <T extends t.Type<any, any, any>>(type: T) =>
   t.union([type, t.null, t.undefined]);
+
+export const formatErrors = (errors: t.Errors) =>
+  errors.map((error) => error.context.map(({ key }) => key).join("."));

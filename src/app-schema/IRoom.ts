@@ -14,9 +14,3 @@ export const TRoom = t.type({
 });
 
 export type IRoom = t.TypeOf<typeof TRoom>;
-
-// Restrict updatable fields
-const { uid, created_on, playlists, ...updatable } = TRoom.props;
-export const TRoomUpdatable = t.partial({
-  ...updatable,
-});

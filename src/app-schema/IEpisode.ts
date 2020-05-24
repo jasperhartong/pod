@@ -22,8 +22,11 @@ export const TEpisode = t.type({
 
 export type IEpisode = t.TypeOf<typeof TEpisode>;
 
-// Restrict updatable fields
-const { uid, created_on, ...updatable } = TEpisode.props;
+// Restrict updatable fields, also ensure they can be nulled if nullable, but don't use fallback
 export const TEpisodeUpdatable = t.partial({
-  ...updatable,
+  status: TEpisodeStatus,
+  title: t.string,
+  image_file: t.type({ data: TImageData }),
+  audio_file: t.union([t.string, t.null]),
+  published_on: t.union([TDateString, t.null]),
 });

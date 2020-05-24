@@ -18,9 +18,3 @@ export const TPlaylist = t.type({
 });
 
 export type IPlaylist = t.TypeOf<typeof TPlaylist>;
-
-// Restrict updatable fields
-const { uid, created_on, episodes, ...updatable } = TPlaylist.props;
-export const TPlaylistUpdatable = t.partial({
-  ...updatable,
-});

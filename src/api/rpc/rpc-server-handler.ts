@@ -1,3 +1,4 @@
+import { formatErrors } from "@/utils/io-ts";
 import { isLeft } from "fp-ts/lib/Either";
 import HttpStatus from "http-status-codes";
 import { ERR, IResponse, OK } from "../IResponse";
@@ -30,43 +31,40 @@ export const RPCHandlerFactory = <Tq, Oq, Iq, Ts, Os, Is>(
       // Validate request data
       const reqValidation = this.meta.reqValidator.decode(reqData);
       if (isLeft(reqValidation)) {
-        console.error(reqValidation.left);
-        // TODO: wrap io-ts Errors errors into ERR
-        console.error(
-          "RPCHandler:: Request Validation Error: " +
-            reqValidation.left.map((error) =>
-              error.context.map(({ key }) => key).join(".")
-            )
-        );
-        return ERR("RPCHandler:: invalid request", HttpStatus.BAD_REQUEST);
+        // const formattedErrors = formatErrors(reqValidation.left);
+        const formattedErrors = `RPCHandler:: Request Validation Error: ${formatErrors(
+          reqValidation.left
+        )}`;
+        this.logError(formattedErrors);
+        return ERR(formattedErrors, HttpStatus.BAD_REQUEST);
       }
 
       // Retrieve result
       const response = await this.handler(reqValidation.right);
       if (!response.ok) {
+        this.logError(response.error);
         return ERR(response.error, response.status);
       }
 
       // Validate response
       const resValidation = this.meta.resValidator.decode(response.data);
       if (isLeft(resValidation)) {
-        console.error(
-          "RPCHandler:: Response Validation Error: " +
-            resValidation.left.map((error) =>
-              error.context.map(({ key }) => key).join(".")
-            )
-        );
+        const formattedErrors = `RPCHandler:: Response Validation Error: ${formatErrors(
+          resValidation.left
+        )}`;
+        this.logError(formattedErrors);
 
-        // TODO: wrap io-ts Errors errors into ERR
-        return ERR(
-          "RPCHandler:: invalid response payload",
-          HttpStatus.METHOD_FAILURE
-        );
+        return ERR(formattedErrors, HttpStatus.METHOD_FAILURE);
       }
 
       // Send back succesful response
       return OK(response.data);
     };
+
+    private logError = (errorMessage: string) => {
+      console.error(`RPCHandler::Error (${this.commandId}): ${errorMessage}`);
+    };
   }
+
   return new RPCHandler(meta, handler);
 };

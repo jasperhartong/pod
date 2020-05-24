@@ -116,9 +116,9 @@ const importRoom = async (uid: string): Promise<IResponse<IRoom>> => {
                 status: directusEpisode.status,
                 published_on: directusEpisode.published_on
                   ? parseDbDate(directusEpisode.created_on).toJSON()
-                  : undefined,
+                  : null,
                 created_on: parseDbDate(directusEpisode.created_on).toJSON(),
-                audio_file: directusEpisode.audio_file,
+                audio_file: directusEpisode.audio_file || null,
                 image_file: {
                   data: {
                     full_url: unwrap(

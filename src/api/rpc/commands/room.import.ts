@@ -11,11 +11,18 @@ import { IResponse } from "../../IResponse";
 import meta from "./room.import.meta";
 
 export default RPCHandlerFactory(meta, async (reqData) => {
+  console.debug(`dynamoTableTapes.initiate`);
+  const tableInitiation = await dynamoTableTapes.initiate();
+  if (!tableInitiation.ok) {
+    console.error(tableInitiation.error);
+    return ERR(tableInitiation.error);
+  }
+
   console.debug(`dynamoTableTapes.backup`);
   const tableBackup = await dynamoTableTapes.backup();
   if (!tableBackup.ok) {
+    // Might fail when the table was not there in the beginning, that's ok
     console.error(tableBackup.error);
-    return ERR(tableBackup.error);
   }
 
   const roomResponses = await Promise.all(
@@ -40,24 +47,12 @@ const importRoom = async (uid: string): Promise<IResponse<IRoom>> => {
   }
 
   const roomUid = directusRoomImport.data.slug;
-  const roomCreatedOnApproximation = DateTime.fromMillis(
-    [
-      /* oldest creation date of a playlist */
-      ...directusRoomImport.data.playlists.map(
-        (p) => parseDbDate(p.created_on).toMillis(),
-        /* or now */
-        DateTime.utc().toMillis()
-      ),
-    ].sort((a: number, b: number) => a - b)[0]
-  );
 
-  console.debug(
-    `dynamoTableTapes.createRoom: ${roomUid} ${roomCreatedOnApproximation.toJSON()}`
-  );
+  console.debug(`dynamoTableTapes.createRoom: ${roomUid}`);
 
   const roomImport = await dynamoTableTapes.createRoom({
     uid: roomUid,
-    created_on: roomCreatedOnApproximation.toJSON(),
+    created_on: DateTime.utc().toJSON(),
     title: directusRoomImport.data.title,
     cover_file: {
       data: {
@@ -67,58 +62,70 @@ const importRoom = async (uid: string): Promise<IResponse<IRoom>> => {
     playlists: [],
   });
   if (!roomImport.ok) {
-    return ERR(roomImport.error, roomImport.status);
+    console.debug(`dynamoTableTapes.createRoom failed: ${roomImport.error}`);
   }
 
-  directusRoomImport.data.playlists
-    .reverse()
-    .forEach(async (directusPlaylist) => {
-      const playlistUid = generateUid();
+  await Promise.all(
+    directusRoomImport.data.playlists
+      .reverse()
+      .map(async (directusPlaylist) => {
+        const playlistUid = generateUid();
 
-      console.debug(`dynamoTableTapes.createPlaylist`);
-      const playlistImport = await dynamoTableTapes.createPlaylist(roomUid, {
-        uid: playlistUid,
-        title: directusPlaylist.title,
-        description: directusPlaylist.description,
-        created_on: parseDbDate(directusPlaylist.created_on).toJSON(),
-        cover_file: {
-          data: {
-            full_url: directusPlaylist.cover_file.data.full_url,
-          },
-        },
-        episodes: [],
-      });
-
-      if (!playlistImport.ok) {
-        return ERR(playlistImport.error, playlistImport.status);
-      }
-
-      directusPlaylist.episodes.reverse().forEach(async (directusEpisode) => {
-        console.debug(`dynamoTableTapes.createEpisode`);
-        const episodeImport = await dynamoTableTapes.createEpisode(
-          roomUid,
-          playlistUid,
-          {
-            uid: generateUid(),
-            title: directusEpisode.title,
-            status: directusEpisode.status,
-            published_on: directusEpisode.published_on
-              ? parseDbDate(directusEpisode.created_on).toJSON()
-              : undefined,
-            created_on: parseDbDate(directusEpisode.created_on).toJSON(),
-            audio_file: directusEpisode.audio_file,
-            image_file: {
-              data: {
-                full_url: directusEpisode.image_file.data.full_url,
-              },
-            },
-          }
+        console.debug(
+          `dynamoTableTapes.createPlaylist: ${parseDbDate(
+            // FIXMEEEE
+            directusPlaylist.created_on.replace("+00:00", "")
+          ).toJSON()}`
         );
-        if (!episodeImport.ok) {
-          return ERR(episodeImport.error, episodeImport.status);
+        const playlistImport = await dynamoTableTapes.createPlaylist(roomUid, {
+          uid: playlistUid,
+          title: directusPlaylist.title,
+          description: directusPlaylist.description,
+          created_on: parseDbDate(directusPlaylist.created_on).toJSON(),
+          cover_file: {
+            data: {
+              full_url: directusPlaylist.cover_file.data.full_url,
+            },
+          },
+          episodes: [],
+        });
+
+        if (!playlistImport.ok) {
+          console.debug(
+            `dynamoTableTapes.createPlaylist failed: ${playlistImport.error}`
+          );
+          return ERR(playlistImport.error, playlistImport.status);
         }
-      });
-    });
+
+        await Promise.all(
+          directusPlaylist.episodes.reverse().map(async (directusEpisode) => {
+            console.debug(`dynamoTableTapes.createEpisode`);
+            const episodeImport = await dynamoTableTapes.createEpisode(
+              roomUid,
+              playlistUid,
+              {
+                uid: generateUid(),
+                title: directusEpisode.title,
+                status: directusEpisode.status,
+                published_on: directusEpisode.published_on
+                  ? parseDbDate(directusEpisode.created_on).toJSON()
+                  : undefined,
+                created_on: parseDbDate(directusEpisode.created_on).toJSON(),
+                audio_file: directusEpisode.audio_file,
+                image_file: {
+                  data: {
+                    full_url: directusEpisode.image_file.data.full_url,
+                  },
+                },
+              }
+            );
+            if (!episodeImport.ok) {
+              return ERR(episodeImport.error, episodeImport.status);
+            }
+          })
+        );
+      })
+  );
 
   return await dynamoTableTapes.getRoomWithNested(uid);
 };

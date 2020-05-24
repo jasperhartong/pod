@@ -32,6 +32,8 @@ export const EpisodeNew = ({ room, playlist }: Props) => {
       data: {
         title: formData.title,
         image_url: formData.imageUrl,
+        audio_file: null,
+        published_on: null,
       },
     });
     if (response.ok) {

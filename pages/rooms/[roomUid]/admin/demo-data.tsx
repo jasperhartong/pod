@@ -22,7 +22,7 @@ const copyEpisode = async (
       title: `Demo: ${episode.title}`,
       // status: episode.status,
       image_url: episode.image_file.data.full_url,
-      audio_file: episode.audio_file || undefined,
+      audio_file: episode.audio_file,
       published_on: episode.published_on || episode.created_on,
     },
   });

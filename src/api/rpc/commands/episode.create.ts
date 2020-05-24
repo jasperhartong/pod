@@ -18,7 +18,7 @@ export default RPCHandlerFactory(meta, async (reqData) => {
     },
     status: "draft",
     audio_file: reqData.data.audio_file,
-    published_on: "",
+    published_on: null,
   };
 
   return dynamoTableTapes.createEpisode(

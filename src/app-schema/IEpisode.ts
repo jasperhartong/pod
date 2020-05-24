@@ -1,6 +1,6 @@
 import { optional } from "@/utils/io-ts";
 import * as t from "io-ts";
-import { IBase } from "./IBase";
+import { IBase, TForcedString } from "./IBase";
 import { TDateString } from "./IDateString";
 import { TImageData } from "./IFileData";
 
@@ -14,7 +14,7 @@ export const TEpisodeStatus = t.keyof({
 export const TEpisode = t.type({
   ...IBase.props,
   status: TEpisodeStatus,
-  title: t.string,
+  title: TForcedString,
   image_file: t.type({ data: TImageData }),
   audio_file: optional(t.string),
   published_on: optional(TDateString),

@@ -16,7 +16,7 @@ import { IPlaylist, TPlaylist } from "@/app-schema/IPlaylist";
 import { IRoom, TRoom } from "@/app-schema/IRoom";
 import { formatErrors } from "@/utils/io-ts";
 import aws from "aws-sdk";
-import { isLeft } from "fp-ts/lib/Either";
+import { isLeft, isRight } from "fp-ts/lib/Either";
 import { DateTime } from "luxon";
 import {
   DocumentClientContructorConfig,
@@ -127,13 +127,18 @@ export class DynamoTableTapes extends DynamodbTableBase {
 
   private async getItem<T extends IBase>(
     params: aws.DynamoDB.DocumentClient.GetItemInput,
-    decode: (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => T
+    decode: (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => T | false
   ): Promise<IResponse<T>> {
     try {
       const itemData = await this.docClient.get(params).promise();
       if (itemData.Item) {
         this.deleteDynamoKeys(itemData.Item);
-        return OK<T>(decode(itemData.Item));
+        const decoded = decode(itemData.Item);
+        if (decoded) {
+          return OK<T>(decoded);
+        } else {
+          return ERR<T>("decoding failed");
+        }
       }
     } catch (error) {
       return ERR<T>((error as aws.AWSError).message);
@@ -293,9 +298,8 @@ export class DynamoTableTapes extends DynamodbTableBase {
       },
     };
     const decode = (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => {
-      const room = (itemData as unknown) as IRoom;
-      room.cover_file.data.full_url = room.cover_file.data.full_url || ""; // decode `null`
-      return room;
+      const decoded = TRoom.decode(itemData);
+      return isRight(decoded) && decoded.right;
     };
     return this.getItem<IRoom>(params, decode);
   }
@@ -317,6 +321,7 @@ export class DynamoTableTapes extends DynamodbTableBase {
         return ERR<IRoom>("no items found");
       }
 
+      // Sort from latest to oldest
       const sortedItems = queryData.Items.sort((a, b) => {
         if (a[CREATED_ON_KEY] < b[CREATED_ON_KEY]) {
           return 1;
@@ -345,39 +350,49 @@ export class DynamoTableTapes extends DynamodbTableBase {
         item[SORT_KEY_NAME].includes("EPISODE")
       );
 
-      // Encode roomItem to IRoom (Add io-ts for validation/ decoding)
+      // Encode roomItem to IRoom
       this.deleteDynamoKeys(roomItem);
-      const room = (roomItem as unknown) as IRoom;
-      room.cover_file.data.full_url = room.cover_file.data.full_url || ""; // decode `null`
+      const maybeRoom = TRoom.decode(roomItem);
+      if (isLeft(maybeRoom)) {
+        return ERR<IRoom>("room decoding error");
+      }
+      const room = maybeRoom.right;
 
       // Get and parse playlistItems
       let playlistMap: Record<string, IPlaylist> = {};
       playlistItems.forEach((playlistItem) => {
+        const playlistSK = playlistItem[SORT_KEY_NAME];
+
         // Encode playlist
-        const playlist = (playlistItem as unknown) as IPlaylist;
-        playlist.cover_file.data.full_url =
-          playlist.cover_file.data.full_url || ""; // decode `null`
-        room.playlists.push(playlist);
+        this.deleteDynamoKeys(playlistItem);
+        const maybePlaylist = TPlaylist.decode(playlistItem);
+        if (isLeft(maybePlaylist)) {
+          return ERR<IRoom>("playlist decoding error");
+        }
 
         // Prepare to receive nested episodes based on SORT_KEY_NAME
-        playlistMap[playlistItem[SORT_KEY_NAME]] = playlist;
-        this.deleteDynamoKeys(playlist);
+        playlistMap[playlistSK] = maybePlaylist.right;
       });
 
       // Get and parse episodeItems, also push into playlist
       episodeItems.forEach((episodeItem) => {
+        const playlistSKfromEpisodeSK = episodeItem[SORT_KEY_NAME].split(
+          ":EPISODE#"
+        )[0];
+
         // Encode episode
-        const episode = (episodeItem as unknown) as IEpisode;
-        episode.image_file.data.full_url =
-          episode.image_file.data.full_url || ""; // decode `null`
-        episode.audio_file = episode.audio_file || ""; // decode `null`
+        this.deleteDynamoKeys(episodeItem);
+        const maybeEpisode = TEpisode.decode(episodeItem);
+        if (isLeft(maybeEpisode)) {
+          return ERR<IRoom>("episode decoding error");
+        }
+
+        const episode = maybeEpisode.right;
 
         // Nest into correct playlist
-        const playlistSK = episodeItem[SORT_KEY_NAME].split(":EPISODE#")[0];
-        if (playlistMap[playlistSK]) {
-          playlistMap[playlistSK].episodes.push(episode);
+        if (playlistMap[playlistSKfromEpisodeSK]) {
+          playlistMap[playlistSKfromEpisodeSK].episodes.push(episode);
         }
-        this.deleteDynamoKeys(episodeItem);
       });
 
       // Fill rooms its playlist
@@ -402,10 +417,8 @@ export class DynamoTableTapes extends DynamodbTableBase {
       },
     };
     const decode = (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => {
-      const episode = (itemData as unknown) as IEpisode;
-      episode.image_file.data.full_url = episode.image_file.data.full_url || ""; // decode `null`
-      episode.audio_file = episode.audio_file || ""; // decode `null`
-      return episode;
+      const decoded = TEpisode.decode(itemData);
+      return isRight(decoded) && decoded.right;
     };
     return this.getItem<IEpisode>(params, decode);
   }
@@ -422,10 +435,8 @@ export class DynamoTableTapes extends DynamodbTableBase {
       },
     };
     const decode = (itemData: aws.DynamoDB.DocumentClient.AttributeMap) => {
-      const playlist = (itemData as unknown) as IPlaylist;
-      playlist.cover_file.data.full_url =
-        playlist.cover_file.data.full_url || ""; // decode `null`
-      return playlist;
+      const decoded = TPlaylist.decode(itemData);
+      return isRight(decoded) && decoded.right;
     };
     return this.getItem<IPlaylist>(params, decode);
   }

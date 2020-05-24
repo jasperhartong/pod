@@ -358,11 +358,11 @@ const generateEpisodeData = (partial?: Partial<IEpisode>): IEpisode => {
     status: "draft",
     created_on: DateTime.utc().toJSON(),
     published_on: DateTime.utc().toJSON(),
-    audio_file: "",
+    audio_file: null,
     title: "test",
     image_file: {
       data: {
-        full_url: "",
+        full_url: "a",
       },
     },
     ...(partial || {}),

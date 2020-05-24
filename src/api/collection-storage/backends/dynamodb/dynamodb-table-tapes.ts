@@ -11,10 +11,12 @@ ROOM#<short-unique-id>  ROOM#<short-unique-id>                                  
 */
 import { ERR, IResponse, OK } from "@/api/IResponse";
 import { IBase } from "@/app-schema/IBase";
-import { IEpisode } from "@/app-schema/IEpisode";
-import { IPlaylist } from "@/app-schema/IPlaylist";
-import { IRoom } from "@/app-schema/IRoom";
+import { IEpisode, TEpisode } from "@/app-schema/IEpisode";
+import { IPlaylist, TPlaylist } from "@/app-schema/IPlaylist";
+import { IRoom, TRoom } from "@/app-schema/IRoom";
+import { formatErrors } from "@/utils/io-ts";
 import aws from "aws-sdk";
+import { isLeft } from "fp-ts/lib/Either";
 import { DateTime } from "luxon";
 import {
   DocumentClientContructorConfig,
@@ -165,6 +167,10 @@ export class DynamoTableTapes extends DynamodbTableBase {
   }
 
   async createRoom(room: IRoom): Promise<IResponse<IRoom>> {
+    const decoded = TRoom.decode(room);
+    if (isLeft(decoded)) {
+      return ERR(`Invalid room: ${formatErrors(decoded.left)}`);
+    }
     const params: aws.DynamoDB.DocumentClient.PutItemInput = {
       TableName: this.tableConfig.TableName,
       Item: {
@@ -183,6 +189,10 @@ export class DynamoTableTapes extends DynamodbTableBase {
     roomUid: IRoom["uid"],
     playlist: IPlaylist
   ): Promise<IResponse<IPlaylist>> {
+    const decoded = TPlaylist.decode(playlist);
+    if (isLeft(decoded)) {
+      return ERR(`Invalid playlist: ${formatErrors(decoded.left)}`);
+    }
     if (!(await this.roomExists(roomUid))) {
       // Would expect that this check should be possible to do on put-time..
       return ERR<IPlaylist>(`Room doesn't exist`);
@@ -209,6 +219,10 @@ export class DynamoTableTapes extends DynamodbTableBase {
     playlistUid: IPlaylist["uid"],
     episode: IEpisode
   ): Promise<IResponse<IEpisode>> {
+    const decoded = TEpisode.decode(episode);
+    if (isLeft(decoded)) {
+      return ERR(`Invalid episode: ${formatErrors(decoded.left)}`);
+    }
     if (!(await this.playlistExists(roomUid, playlistUid))) {
       // Would expect that this check should be possible to do on put-time..
       return ERR<IEpisode>(`Playlist doesn't exist`);

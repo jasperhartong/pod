@@ -2,12 +2,13 @@ import directusTapesMeBackend from "@/api/collection-storage/backends/directus-b
 import { parseDbDate } from "@/api/collection-storage/backends/directus-utils";
 import { dynamoTableTapes } from "@/api/collection-storage/backends/dynamodb/dynamodb-table-tapes";
 import { generateUid } from "@/api/collection-storage/backends/dynamodb/dynamodb-utils";
-import { ERR, OK } from "@/api/IResponse";
+import { ERR, IResponse, OK, unwrap } from "@/api/IResponse";
+import signedUrlCreate from "@/api/rpc/commands/signedurl.create";
 import { RPCHandlerFactory } from "@/api/rpc/rpc-server-handler";
 import { IRoom } from "@/app-schema/IRoom";
+import axios from "axios";
 import HttpStatus from "http-status-codes";
 import { DateTime } from "luxon";
-import { IResponse } from "../../IResponse";
 import meta from "./room.import.meta";
 
 export default RPCHandlerFactory(meta, async (reqData) => {
@@ -56,11 +57,16 @@ const importRoom = async (uid: string): Promise<IResponse<IRoom>> => {
     title: directusRoomImport.data.title,
     cover_file: {
       data: {
-        full_url: directusRoomImport.data.cover_file.data.full_url,
+        full_url: unwrap(
+          await reuploadUrlToS3(
+            directusRoomImport.data.cover_file.data.full_url
+          )
+        ),
       },
     },
     playlists: [],
   });
+
   if (!roomImport.ok) {
     console.debug(`dynamoTableTapes.createRoom failed: ${roomImport.error}`);
   }
@@ -73,8 +79,7 @@ const importRoom = async (uid: string): Promise<IResponse<IRoom>> => {
 
         console.debug(
           `dynamoTableTapes.createPlaylist: ${parseDbDate(
-            // FIXMEEEE
-            directusPlaylist.created_on.replace("+00:00", "")
+            directusPlaylist.created_on
           ).toJSON()}`
         );
         const playlistImport = await dynamoTableTapes.createPlaylist(roomUid, {
@@ -84,7 +89,9 @@ const importRoom = async (uid: string): Promise<IResponse<IRoom>> => {
           created_on: parseDbDate(directusPlaylist.created_on).toJSON(),
           cover_file: {
             data: {
-              full_url: directusPlaylist.cover_file.data.full_url,
+              full_url: unwrap(
+                await reuploadUrlToS3(directusPlaylist.cover_file.data.full_url)
+              ),
             },
           },
           episodes: [],
@@ -114,7 +121,11 @@ const importRoom = async (uid: string): Promise<IResponse<IRoom>> => {
                 audio_file: directusEpisode.audio_file,
                 image_file: {
                   data: {
-                    full_url: directusEpisode.image_file.data.full_url,
+                    full_url: unwrap(
+                      await reuploadUrlToS3(
+                        directusEpisode.image_file.data.full_url
+                      )
+                    ),
                   },
                 },
               }
@@ -128,4 +139,47 @@ const importRoom = async (uid: string): Promise<IResponse<IRoom>> => {
   );
 
   return await dynamoTableTapes.getRoomWithNested(uid);
+};
+
+export const reuploadUrlToS3 = async (
+  fileUrl: string
+): Promise<IResponse<string>> => {
+  /* 
+    Downloads file and then streams it into S3 bucket with signed url upload
+    - takes fileType and contentLength from downloaded fileUrl
+   */
+  const fileName = fileUrl.split("/")[fileUrl.split("/").length - 1];
+  console.debug(`reuploadUrlToS3: ${fileName}`);
+
+  return await new Promise<IResponse<string>>(async (resolve) => {
+    try {
+      await axios
+        .get(fileUrl, { responseType: "stream" })
+        .then(async (response) => {
+          const fileType = response.headers["content-type"];
+          const contentLength = response.headers["content-length"];
+          const signedUrlCreation = await signedUrlCreate.call({
+            fileName,
+            fileType,
+          });
+          if (signedUrlCreation.ok) {
+            const { uploadUrl, downloadUrl } = signedUrlCreation.data;
+
+            await axios.put(uploadUrl, response.data, {
+              headers: {
+                "Content-Type": fileType,
+                "Content-Length": contentLength,
+              },
+            });
+
+            resolve(OK(downloadUrl));
+          } else {
+            resolve(ERR(signedUrlCreation.error, signedUrlCreation.status));
+          }
+        });
+    } catch (error) {
+      console.error(error);
+      resolve(ERR("unknown error"));
+    }
+  });
 };

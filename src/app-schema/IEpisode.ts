@@ -1,4 +1,4 @@
-import { TForcedNullable, TForcedString } from "@/utils/io-ts";
+import { TNullableWithFallback, TStringWithFallback } from "@/utils/io-ts";
 import * as t from "io-ts";
 import { IBase } from "./IBase";
 import { TDateString } from "./IDateString";
@@ -14,10 +14,10 @@ export const TEpisodeStatus = t.keyof({
 export const TEpisode = t.type({
   ...IBase.props,
   status: TEpisodeStatus,
-  title: TForcedString,
+  title: TStringWithFallback,
   image_file: t.type({ data: TImageData }),
-  audio_file: TForcedNullable(t.string),
-  published_on: TForcedNullable(TDateString),
+  audio_file: TNullableWithFallback(t.string),
+  published_on: TNullableWithFallback(TDateString),
 });
 
 export const TEpisodePartial = t.partial({

@@ -20,8 +20,10 @@ export const TEpisode = t.type({
   published_on: TNullableWithFallback(TDateString),
 });
 
-export const TEpisodePartial = t.partial({
-  ...TEpisode.props,
-});
-
 export type IEpisode = t.TypeOf<typeof TEpisode>;
+
+// Restrict updatable fields
+const { uid, created_on, ...updatable } = TEpisode.props;
+export const TEpisodeUpdatable = t.partial({
+  ...updatable,
+});

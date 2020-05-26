@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "region": ["bru"],
+  "regions": ["bru"],
   "public": false,
   "env": {
     "DIRECTUS_CLOUD_TOKEN": "@production-directus-cloud-token",

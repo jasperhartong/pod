@@ -48,6 +48,7 @@ const SuperAdmin = () => {
   }, [secret]);
 
   useEffect(() => {
+    // Refetch all rooms after creation
     if (createdRoom) {
       fetchRooms({ secret });
     }
@@ -84,6 +85,7 @@ const SuperAdmin = () => {
             </ListItem>
           ))}
         </List>
+        {!currentRooms?.length && <>No Rooms</>}
 
         <Box pt={8} />
         <Divider />

@@ -1,4 +1,4 @@
-import { dynamoTableTapes } from "@/api/collection-storage/backends/dynamodb/dynamodb-table-tapes";
+import { dynamoTableTapes } from "@/api/collection-storage/backends/dynamodb";
 import { generateUid } from "@/api/collection-storage/backends/dynamodb/dynamodb-utils";
 import { RPCHandlerFactory } from "@/api/rpc/rpc-server-handler";
 import { DateTime } from "luxon";

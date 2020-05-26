@@ -449,5 +449,3 @@ export class DynamoTableTapes extends DynamodbTableBase {
     return items;
   }
 }
-
-export const dynamoTableTapes = new DynamoTableTapes();

@@ -31,6 +31,8 @@ export class DynamodbTableBase {
   protected docClient: aws.DynamoDB.DocumentClient;
   protected tableConfig: aws.DynamoDB.CreateTableInput;
   public status: GlobalTableStatus | null = null;
+  public tableName: string;
+
   constructor({
     dbConfig,
     tableConfig,
@@ -41,6 +43,7 @@ export class DynamodbTableBase {
     docClientConfig?: DocumentClientContructorConfig;
   }) {
     this.tableConfig = { ...tableConfig };
+    this.tableName = this.tableConfig.TableName;
     this.dynamodb = new aws.DynamoDB({
       apiVersion: this.apiVersion,
       ...(dbConfig || {}),

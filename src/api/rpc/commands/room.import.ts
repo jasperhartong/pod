@@ -1,6 +1,6 @@
 import directusTapesMeBackend from "@/api/collection-storage/backends/directus-backend";
 import { parseDbDate } from "@/api/collection-storage/backends/directus-utils";
-import { dynamoTableTapes } from "@/api/collection-storage/backends/dynamodb/dynamodb-table-tapes";
+import { dynamoTableTapes } from "@/api/collection-storage/backends/dynamodb";
 import { generateUid } from "@/api/collection-storage/backends/dynamodb/dynamodb-utils";
 import { ERR, IResponse, OK, unwrap } from "@/api/IResponse";
 import signedUrlCreate from "@/api/rpc/commands/signedurl.create";

@@ -7,21 +7,36 @@ import { IRoom } from "@/app-schema/IRoom";
 import produce from "immer";
 import useSWR from "swr";
 
-const fetcher = async (uid: IRoom["uid"]) =>
-  RPCClientFactory(roomFetchMeta).call({ uid });
-
+/**
+ * Hook to fetch IRoom
+ *
+ * Wraps useSWR
+ * - exposes all return values except the raw `mutate`
+ * - exposes explicit methods instead, e.g: mutateEpisode
+ *
+ * @param uid Uid of IRoom to fetch
+ * @param initialData initial data of IRoom
+ */
 export const useSWRRoom = (
   uid: string | null,
   initialData?: IResponse<IRoom>
 ) => {
-  const { data, mutate, ...rest } = useSWR(uid, fetcher, {
+  const { data, mutate, ...rest } = useSWR(uid, roomFetcher, {
     refreshInterval: 0,
     initialData,
   });
 
+  /**
+   * Mutates local episode object nested within IRoom,
+   * revalidates on the server if shouldRevalidate === true
+   *
+   * @param playlistUid Parent uid of playlist of IEpisode
+   * @param updatedEpisode The updated IEpisode object
+   * @param shouldRevalidate passed along to mutate of useSWR
+   */
   const mutateEpisode = (
     playlistUid: IPlaylist["uid"],
-    updated: IEpisode,
+    updatedEpisode: IEpisode,
     shouldRevalidate?: boolean
   ) => {
     mutate(
@@ -33,8 +48,10 @@ export const useSWRRoom = (
           );
           if (playlistDraft) {
             playlistDraft.episodes[
-              playlistDraft.episodes.findIndex((e) => e.uid === updated.uid)
-            ] = updated;
+              playlistDraft.episodes.findIndex(
+                (e) => e.uid === updatedEpisode.uid
+              )
+            ] = updatedEpisode;
           }
         }
       }),
@@ -42,6 +59,10 @@ export const useSWRRoom = (
     );
   };
 
-  // Needs some weird Typescript fix..
+  // Needs Typescript fix to make sure `typeof data === IResponse<IRoom>`
   return { data: data as IResponse<IRoom> | undefined, mutateEpisode, ...rest };
 };
+
+// rpc call wrapped in fetcher so it can be used by useSWR
+const roomFetcher = async (uid: IRoom["uid"]) =>
+  RPCClientFactory(roomFetchMeta).call({ uid });

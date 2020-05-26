@@ -194,7 +194,7 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
                       state.isSaving = true;
                     });
                     uploader.uploadFile(
-                      blobToFile(mp3Recording, episode.title)
+                      blobToFile(mp3Recording, `${episode.title}.mp3`)
                     );
                   }
                 },

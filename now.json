@@ -1,5 +1,7 @@
 {
   "version": 2,
+  "region": ["bru"],
+  "public": false,
   "env": {
     "DIRECTUS_CLOUD_TOKEN": "@production-directus-cloud-token",
     "MY_AWS_ACCESS_BUCKET": "@tapesme-aws-bucket",

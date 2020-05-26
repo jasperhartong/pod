@@ -9,6 +9,7 @@ import { IRoom } from "@/app-schema/IRoom";
 import axios from "axios";
 import HttpStatus from "http-status-codes";
 import { DateTime } from "luxon";
+import { notEmpty } from "../../../utils/typescript";
 import meta from "./room.import.meta";
 
 const uids = ["famhartong", "v6p4vd", "yjcx3c", "3jyqrn", "678cp7", "demo"];
@@ -35,7 +36,7 @@ export default RPCHandlerFactory(meta, async (reqData) => {
   const roomResponses = await Promise.all(uids.map((uid) => importRoom(uid)));
   const rooms = roomResponses
     .map((r) => (r.ok ? r.data : undefined))
-    .filter((r) => r !== undefined) as IRoom[];
+    .filter(notEmpty);
 
   if (!rooms.length) {
     return ERR<IRoom>("No room imported", HttpStatus.BAD_REQUEST);

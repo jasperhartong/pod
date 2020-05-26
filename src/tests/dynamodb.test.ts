@@ -1,5 +1,6 @@
 import { DynamoTableTapes } from "@/api/collection-storage/backends/dynamodb/dynamodb-table-tapes";
 import { generateUid } from "@/api/collection-storage/backends/dynamodb/dynamodb-utils";
+import { unwrap } from "@/api/IResponse";
 import { IEpisode } from "@/app-schema/IEpisode";
 import { IPlaylist } from "@/app-schema/IPlaylist";
 import { IRoom } from "@/app-schema/IRoom";
@@ -165,9 +166,7 @@ describe("📦 The TapesDynamoTable", () => {
     );
 
     expect(episodeUpdate.ok).toBe(true);
-    if (episodeUpdate.ok) {
-      expect(episodeUpdate.data).toEqual({ ...episode1a, title: "updated" });
-    }
+    expect(unwrap(episodeUpdate)).toEqual({ ...episode1a, title: "updated" });
   });
 
   it("😊 can update nested fields in an existing episode", async () => {
@@ -194,16 +193,30 @@ describe("📦 The TapesDynamoTable", () => {
     );
 
     expect(episodeUpdate.ok).toBe(true);
-    if (episodeUpdate.ok) {
-      expect(episodeUpdate.data).toEqual({
-        ...episode1a,
-        image_file: {
-          data: {
-            full_url: "updated",
-          },
+    expect(unwrap(episodeUpdate)).toEqual({
+      ...episode1a,
+      image_file: {
+        data: {
+          full_url: "updated",
         },
-      });
-    }
+      },
+    });
+  });
+
+  it("😊 can fetch all rooms", async () => {
+    const room1 = generateRoomData({ title: "room 1" });
+    const room1Response = await backend.createRoom(room1);
+    const room2 = generateRoomData({ title: "room 2" });
+    const room2Response = await backend.createRoom(room2);
+
+    const allRoomsResponse = await backend.getRooms();
+    expect(allRoomsResponse.ok).toEqual(true);
+
+    expect(
+      unwrap(allRoomsResponse)
+        // Filter out so we can compare what we just shot in
+        .filter((room) => [room1.uid, room2.uid].includes(room.uid))
+    ).toEqual([unwrap(room2Response), unwrap(room1Response)]);
   });
 
   it("🚧 cannot create room with same uid twice", async () => {

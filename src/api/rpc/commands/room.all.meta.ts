@@ -4,7 +4,7 @@ import * as t from "io-ts";
 
 export default RPCMeta(
   "room",
-  "import",
+  "all",
   t.type({
     secret: t.string,
   }),

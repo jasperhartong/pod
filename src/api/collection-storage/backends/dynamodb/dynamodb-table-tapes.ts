@@ -15,6 +15,7 @@ import { IEpisode, TEpisode } from "@/app-schema/IEpisode";
 import { IPlaylist, TPlaylist } from "@/app-schema/IPlaylist";
 import { IRoom, TRoom } from "@/app-schema/IRoom";
 import { formatErrors } from "@/utils/io-ts";
+import { notEmpty } from "@/utils/typescript";
 import aws from "aws-sdk";
 import { isLeft, isRight } from "fp-ts/lib/Either";
 import { DateTime } from "luxon";
@@ -68,6 +69,19 @@ export class DynamoTableTapes extends DynamodbTableBase {
     episode: (playlistUid: IPlaylist["uid"], episodeUid: IEpisode["uid"]) => {
       return `PLAYLIST#${playlistUid}:EPISODE#${episodeUid}`;
     },
+  };
+
+  private sortLatestFirst = (
+    a: aws.DynamoDB.DocumentClient.AttributeMap,
+    b: aws.DynamoDB.DocumentClient.AttributeMap
+  ) => {
+    if (a[CREATED_ON_KEY] < b[CREATED_ON_KEY]) {
+      return 1;
+    }
+    if (a[CREATED_ON_KEY] > b[CREATED_ON_KEY]) {
+      return -1;
+    }
+    return 0;
   };
 
   private createdOnKeyValue = (schema: IBase) => {
@@ -289,6 +303,42 @@ export class DynamoTableTapes extends DynamodbTableBase {
     );
   }
 
+  async getRooms(): Promise<IResponse<IRoom[]>> {
+    /* Needs to use scan: tends to be slower */
+    const params: aws.DynamoDB.DocumentClient.ScanInput = {
+      TableName: this.tableConfig.TableName,
+      FilterExpression: `begins_with(${SORT_KEY_NAME}, :ROOM_SK_PREFIX)`,
+      ExpressionAttributeValues: {
+        ":ROOM_SK_PREFIX": this.sortKeyValue.room(""),
+      },
+    };
+
+    try {
+      console.time(`DynamoTableTapes::getRooms::scanData`);
+      const scanData = await this.docClient.scan(params).promise();
+      console.timeEnd(`DynamoTableTapes::getRooms::scanData`);
+
+      if (!scanData.Items) {
+        return OK([]);
+      }
+      return OK(
+        scanData.Items.sort(this.sortLatestFirst)
+          .map((roomItem) => {
+            // Encode roomItem to IRoom
+            this.deleteDynamoKeys(roomItem);
+            const maybeRoom = TRoom.decode(roomItem);
+            if (isRight(maybeRoom)) {
+              return maybeRoom.right;
+            }
+            return undefined;
+          })
+          .filter(notEmpty)
+      );
+    } catch (error) {
+      return ERR((error as aws.AWSError).message);
+    }
+  }
+
   async getRoom(roomUid: IRoom["uid"]): Promise<IResponse<IRoom>> {
     const params = {
       TableName: this.tableConfig.TableName,
@@ -325,15 +375,7 @@ export class DynamoTableTapes extends DynamodbTableBase {
       }
 
       // Sort from latest to oldest
-      const sortedItems = queryData.Items.sort((a, b) => {
-        if (a[CREATED_ON_KEY] < b[CREATED_ON_KEY]) {
-          return 1;
-        }
-        if (a[CREATED_ON_KEY] > b[CREATED_ON_KEY]) {
-          return -1;
-        }
-        return 0;
-      });
+      const sortedItems = queryData.Items.sort(this.sortLatestFirst);
 
       // Get roomItem
       const roomItem = sortedItems.find((item) =>

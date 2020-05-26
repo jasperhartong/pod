@@ -2,6 +2,7 @@ import { ERR, IResponse } from "@/api/IResponse";
 import episodeCreate from "@/api/rpc/commands/episode.create";
 import episodeUpdate from "@/api/rpc/commands/episode.update";
 import playlistCreate from "@/api/rpc/commands/playlist.create";
+import roomAll from "@/api/rpc/commands/room.all";
 import roomCreate from "@/api/rpc/commands/room.create";
 import roomFetch from "@/api/rpc/commands/room.fetch";
 import roomImport from "@/api/rpc/commands/room.import";
@@ -17,6 +18,7 @@ const handlers = {
   [roomFetch.commandId]: roomFetch,
   [roomCreate.commandId]: roomCreate,
   [roomImport.commandId]: roomImport,
+  [roomAll.commandId]: roomAll,
 };
 
 export default async (

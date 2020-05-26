@@ -31,6 +31,7 @@ describe("📦 RPC API Integration test", () => {
 
     /* Create room */
     const roomResponse = await roomCreate.call({
+      secret: "IGKjygsxlk",
       data: { title: "New Room" },
     });
 

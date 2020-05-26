@@ -11,7 +11,13 @@ import HttpStatus from "http-status-codes";
 import { DateTime } from "luxon";
 import meta from "./room.import.meta";
 
+const uids = ["famhartong", "v6p4vd", "yjcx3c", "3jyqrn", "678cp7", "demo"];
+
 export default RPCHandlerFactory(meta, async (reqData) => {
+  if (reqData.secret !== "IGKjygsxlk") {
+    return ERR("No valid secret passed along", HttpStatus.FORBIDDEN);
+  }
+
   console.debug(`dynamoTableTapes.initiate`);
   const tableInitiation = await dynamoTableTapes.initiate();
   if (!tableInitiation.ok) {
@@ -26,9 +32,7 @@ export default RPCHandlerFactory(meta, async (reqData) => {
     console.error(tableBackup.error);
   }
 
-  const roomResponses = await Promise.all(
-    reqData.uids.map((uid) => importRoom(uid))
-  );
+  const roomResponses = await Promise.all(uids.map((uid) => importRoom(uid)));
   const rooms = roomResponses
     .map((r) => (r.ok ? r.data : undefined))
     .filter((r) => r !== undefined) as IRoom[];

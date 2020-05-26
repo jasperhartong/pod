@@ -28,6 +28,7 @@ export const RPCHandlerFactory = <Tq, Oq, Iq, Ts, Os, Is>(
     };
 
     public handleUnsafe = async (reqData: any): Promise<IResponse<Ts>> => {
+      console.time(`RPCHandlerFactory::handleUnsafe::${this.commandId}`);
       // Validate request data
       const reqValidation = this.meta.reqValidator.decode(reqData);
       if (isLeft(reqValidation)) {
@@ -53,16 +54,17 @@ export const RPCHandlerFactory = <Tq, Oq, Iq, Ts, Os, Is>(
           resValidation.left
         )}`;
         this.logError(formattedErrors);
-
         return ERR(formattedErrors, HttpStatus.METHOD_FAILURE);
       }
 
       // Send back succesful response
+      console.timeEnd(`RPCHandlerFactory::handleUnsafe::${this.commandId}`);
       return OK(response.data);
     };
 
     private logError = (errorMessage: string) => {
       console.error(`RPCHandler::Error (${this.commandId}): ${errorMessage}`);
+      console.timeEnd(`RPCHandlerFactory::handleUnsafe::${this.commandId}`);
     };
   }
 

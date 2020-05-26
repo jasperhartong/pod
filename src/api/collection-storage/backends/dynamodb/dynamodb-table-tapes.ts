@@ -316,7 +316,10 @@ export class DynamoTableTapes extends DynamodbTableBase {
     };
 
     try {
+      console.time(`DynamoTableTapes::getRoomWithNested::queryData`);
       const queryData = await this.docClient.query(params).promise();
+      console.timeEnd(`DynamoTableTapes::getRoomWithNested::queryData`);
+
       if (!queryData.Items) {
         return ERR<IRoom>("no items found");
       }

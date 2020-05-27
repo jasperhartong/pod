@@ -1,6 +1,5 @@
 import { IERR } from "@/api/IResponse";
-import roomFetch from "@/api/rpc/commands/room.fetch";
-import { podcastXML } from "@/utils/podcast";
+import roomRss from "@/api/rpc/commands/room.rss";
 import { NextApiRequest, NextApiResponse } from "next";
 
 type XMLString = string;
@@ -10,13 +9,12 @@ export default async (
   res: NextApiResponse<IERR | XMLString>
 ) => {
   const uid = req.query.roomUid as string;
-  const roomFetched = await roomFetch.call({ uid });
-  if (!roomFetched.ok) {
-    return res.status(404).json(roomFetched);
+  const roomRssResponse = await roomRss.call({ uid });
+  if (!roomRssResponse.ok) {
+    return res.status(404).json(roomRssResponse);
   }
 
-  const xml = podcastXML(roomFetched.data);
   // TODO: Add CDN caching
   res.setHeader("Content-type", "text/xml;charset=UTF-8");
-  return res.send(xml);
+  return res.send(roomRssResponse.data);
 };

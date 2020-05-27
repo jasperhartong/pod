@@ -6,6 +6,7 @@ import roomAll from "@/api/rpc/commands/room.all";
 import roomCreate from "@/api/rpc/commands/room.create";
 import roomFetch from "@/api/rpc/commands/room.fetch";
 import roomImport from "@/api/rpc/commands/room.import";
+import roomRss from "@/api/rpc/commands/room.rss";
 import signedUrlCreate from "@/api/rpc/commands/signedurl.create";
 import HttpStatus from "http-status-codes";
 import { NextApiRequest, NextApiResponse } from "next";
@@ -19,6 +20,7 @@ const handlers = {
   [roomCreate.commandId]: roomCreate,
   [roomImport.commandId]: roomImport,
   [roomAll.commandId]: roomAll,
+  [roomRss.commandId]: roomRss,
 };
 
 export default async (

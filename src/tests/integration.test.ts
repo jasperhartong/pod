@@ -6,6 +6,7 @@ import episodeUpdate from "@/api/rpc/commands/episode.update";
 import playlistCreate from "@/api/rpc/commands/playlist.create";
 import roomCreate from "@/api/rpc/commands/room.create";
 import roomFetch from "@/api/rpc/commands/room.fetch";
+import roomRss from "@/api/rpc/commands/room.rss";
 import testTableConfig from "../../jest-dynamodb-config";
 
 beforeAll(() => {
@@ -138,6 +139,13 @@ describe("📦 RPC API Integration test", () => {
       ],
       title: "New Room",
     });
+
+    /* Check RSS */
+    const roomRssResponse = await roomRss.call({ uid: roomUid });
+    expect(roomRssResponse.ok).toBe(true);
+    expect(unwrap(roomRssResponse).includes(`<title>New Episode</title>`)).toBe(
+      true
+    );
     /* End of test case */
   });
 });

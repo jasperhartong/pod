@@ -303,6 +303,26 @@ export class DynamoTableTapes extends DynamodbTableBase {
     );
   }
 
+  async deleteEpisode(
+    roomUid: IRoom["uid"],
+    playlistUid: IPlaylist["uid"],
+    episodeUid: IEpisode["uid"]
+  ): Promise<IResponse<undefined>> {
+    const params: aws.DynamoDB.DocumentClient.DeleteItemInput = {
+      TableName: this.tableConfig.TableName,
+      Key: {
+        [PARTITION_KEY_NAME]: this.partitionKeyValue(roomUid),
+        [SORT_KEY_NAME]: this.sortKeyValue.episode(playlistUid, episodeUid),
+      },
+    };
+    try {
+      await this.docClient.delete(params).promise();
+      return OK(undefined);
+    } catch (error) {
+      return ERR((error as aws.AWSError).message);
+    }
+  }
+
   async getRooms(): Promise<IResponse<IRoom[]>> {
     /* Needs to use scan: tends to be slower */
     const params: aws.DynamoDB.DocumentClient.ScanInput = {

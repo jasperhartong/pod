@@ -2,6 +2,7 @@ import * as dynamodb from "@/api/collection-storage/backends/dynamodb";
 import { DynamoTableTapes } from "@/api/collection-storage/backends/dynamodb/dynamodb-table-tapes";
 import { unwrap } from "@/api/IResponse";
 import episodeCreate from "@/api/rpc/commands/episode.create";
+import episodeDelete from "@/api/rpc/commands/episode.delete";
 import episodeUpdate from "@/api/rpc/commands/episode.update";
 import playlistCreate from "@/api/rpc/commands/playlist.create";
 import roomCreate from "@/api/rpc/commands/room.create";
@@ -26,17 +27,7 @@ beforeAll(() => {
 });
 
 describe("📦 RPC API Integration test", () => {
-  it("😊 Can create room with defaults", async () => {
-    /* Create room */
-    const roomResponse = await roomCreate.call({
-      data: {},
-    });
-
-    expect(roomResponse.ok).toBe(true);
-    expect(unwrap(roomResponse).title).toEqual("Untitled Room");
-  });
-
-  it("😊 Can creat room, playlist, episode and update episode twice", async () => {
+  it("😊 Can creat room, playlist, episode and update episode twice and delete stuff again", async () => {
     //  Double check that we're correctly mocking
     expect(dynamodb.dynamoTableTapes.tableName).toBe(`TAPESTEST`);
 
@@ -155,6 +146,43 @@ describe("📦 RPC API Integration test", () => {
     expect(unwrap(roomRssResponse).includes(`<title>New Episode</title>`)).toBe(
       true
     );
+
+    /* Delete Episode */
+    const episodeDeleteResponse = await episodeDelete.call({
+      roomUid,
+      playlistUid,
+      episodeUid,
+    });
+    expect(episodeDeleteResponse.ok).toBe(true);
+
+    /* Fetch back the whole room again, containing playlist without episode */
+    const roomFetchResponse2 = await roomFetch.call({ uid: roomUid });
+    expect(roomFetchResponse2.ok).toBe(true);
+    expect(unwrap(roomFetchResponse2)).toEqual({
+      uid: roomUid,
+      cover_file: {
+        data: {
+          full_url: "",
+        },
+      },
+      created_on: unwrap(roomResponse).created_on,
+      playlists: [
+        {
+          uid: playlistUid,
+          cover_file: {
+            data: {
+              full_url: "http://image.com/png.jpg",
+            },
+          },
+          created_on: unwrap(playlistResponse).created_on,
+          description: "description",
+          title: "New Playlist",
+          episodes: [],
+        },
+      ],
+      title: "New Room",
+    });
+
     /* End of test case */
   });
 });

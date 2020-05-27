@@ -1,5 +1,6 @@
 import { ERR, IResponse } from "@/api/IResponse";
 import episodeCreate from "@/api/rpc/commands/episode.create";
+import episodeDelete from "@/api/rpc/commands/episode.delete";
 import episodeUpdate from "@/api/rpc/commands/episode.update";
 import playlistCreate from "@/api/rpc/commands/playlist.create";
 import roomAll from "@/api/rpc/commands/room.all";
@@ -15,6 +16,7 @@ const handlers = {
   [playlistCreate.commandId]: playlistCreate,
   [episodeCreate.commandId]: episodeCreate,
   [episodeUpdate.commandId]: episodeUpdate,
+  [episodeDelete.commandId]: episodeDelete,
   [signedUrlCreate.commandId]: signedUrlCreate,
   [roomFetch.commandId]: roomFetch,
   [roomCreate.commandId]: roomCreate,

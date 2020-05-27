@@ -22,6 +22,7 @@ export const useRPC = <Tq, Oq, Iq, Ts, Os, Is>(
     } else {
       setError(theCall.error);
     }
+    return theCall;
   };
 
   return { call, isValidating, data, error };

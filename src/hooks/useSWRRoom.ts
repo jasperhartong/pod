@@ -34,7 +34,7 @@ export const useSWRRoom = (
    * @param updatedEpisode The updated IEpisode object
    * @param shouldRevalidate passed along to mutate of useSWR
    */
-  const mutateEpisode = (
+  const mutateEpisodeUpdate = (
     playlistUid: IPlaylist["uid"],
     updatedEpisode: IEpisode,
     shouldRevalidate?: boolean
@@ -59,8 +59,44 @@ export const useSWRRoom = (
     );
   };
 
+  /**
+   * Deletes local episode object nested within IRoom,
+   * revalidates on the server if shouldRevalidate === true
+   *
+   * @param playlistUid Parent uid of playlist of IEpisode
+   * @param episodeUid The deleted IEpisode uid
+   * @param shouldRevalidate passed along to mutate of useSWR
+   */
+  const mutateEpisodeDelete = (
+    playlistUid: IPlaylist["uid"],
+    episodeUid: IEpisode["uid"],
+    shouldRevalidate?: boolean
+  ) => {
+    mutate(
+      produce(data, (draft) => {
+        // Even with Immer.. updating data deep down nested arrays is quite a feat to pull off
+        if (draft && draft.ok) {
+          const playlistDraft = draft.data.playlists.find(
+            (p) => p.uid === playlistUid
+          );
+          if (playlistDraft) {
+            playlistDraft.episodes = playlistDraft.episodes.filter(
+              (e) => e.uid !== episodeUid
+            );
+          }
+        }
+      }),
+      shouldRevalidate
+    );
+  };
+
   // Needs Typescript fix to make sure `typeof data === IResponse<IRoom>`
-  return { data: data as IResponse<IRoom> | undefined, mutateEpisode, ...rest };
+  return {
+    data: data as IResponse<IRoom> | undefined,
+    mutateEpisodeUpdate,
+    mutateEpisodeDelete,
+    ...rest,
+  };
 };
 
 // rpc call wrapped in fetcher so it can be used by useSWR

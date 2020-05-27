@@ -1,15 +1,15 @@
 import { toDbDate } from "@/api/collection-storage/backends/directus-utils";
+import episodeDeleteMeta from "@/api/rpc/commands/episode.delete.meta";
 import episodeUpdateMeta from "@/api/rpc/commands/episode.update.meta";
-import { RPCClientFactory } from "@/api/rpc/rpc-client";
 import { IEpisode } from "@/app-schema/IEpisode";
 import { IPlaylist } from "@/app-schema/IPlaylist";
 import { IRoom } from "@/app-schema/IRoom";
 import { useRouter } from "@/hooks/useRouter";
+import { useRPC } from "@/hooks/useRPC";
 import { useSWRRoom } from "@/hooks/useSWRRoom";
 import { Box, Button } from "@material-ui/core";
 import IconHeadset from "@material-ui/icons/Headset";
 import { DateTime } from "luxon";
-import { useState } from "react";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
 import { AdminHeaderClose } from "./layout/admin-header-close";
 import { AdminInstructionsLayout } from "./layout/admin-instruction-layout";
@@ -23,13 +23,17 @@ interface Props {
 
 export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
   const router = useRouter();
-  const { mutateEpisode } = useSWRRoom(room.uid);
-  const [isValidating, setIsValidating] = useState<boolean>(false);
+  const { mutateEpisodeUpdate, mutateEpisodeDelete } = useSWRRoom(room.uid);
+  const { call: deleteEpisode, isValidating: isDeleting } = useRPC(
+    episodeDeleteMeta
+  );
+  const { call: updateEpisode, isValidating: isUpdating } = useRPC(
+    episodeUpdateMeta
+  );
 
   const handlePublish = async () => {
-    setIsValidating(true);
     const published_on = toDbDate(DateTime.utc());
-    const updating = await RPCClientFactory(episodeUpdateMeta).call({
+    const updating = await updateEpisode({
       roomUid: room.uid,
       playlistUid: playlist.uid,
       episodeUid: episode.uid,
@@ -40,7 +44,7 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
     });
     if (updating.ok) {
       // Mutate local data and move on
-      mutateEpisode(
+      mutateEpisodeUpdate(
         playlist.uid,
         {
           ...episode,
@@ -53,9 +57,26 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
       router.push(`/rooms/[roomUid]/admin`, `/rooms/${room.uid}/admin`);
     } else {
       alert("Publiceren mislukt, probeer nogmaals");
-      setIsValidating(false);
     }
   };
+
+  const handleDelete = async () => {
+    if (!confirm("Weet u het zeker?")) {
+      return;
+    }
+    const deletion = await deleteEpisode({
+      roomUid: room.uid,
+      playlistUid: playlist.uid,
+      episodeUid: episode.uid,
+    });
+    if (deletion.ok) {
+      mutateEpisodeDelete(playlist.uid, episode.uid);
+      router.push(`/rooms/[roomUid]/admin`, `/rooms/${room.uid}/admin`);
+    } else {
+      alert("Verwijderen is mislukt");
+    }
+  };
+
   return (
     <AdminDualPaneLayout
       image={playlist.cover_file.data.full_url}
@@ -91,7 +112,7 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
             {episode.status === "draft" && (
               <>
                 <Button
-                  disabled={isValidating}
+                  disabled={isUpdating}
                   onClick={handlePublish}
                   variant="contained"
                   fullWidth
@@ -150,6 +171,15 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
                 </Button>
               </>
             )}
+            <Box pt={2} />
+            <Button
+              disabled={isDeleting}
+              onClick={handleDelete}
+              variant="outlined"
+              fullWidth
+            >
+              Verwijder
+            </Button>
           </Box>
           {/* We can easily allow to re-record stuff :) */}
           {/* <Box mt={2}>

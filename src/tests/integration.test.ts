@@ -26,13 +26,22 @@ beforeAll(() => {
 });
 
 describe("📦 RPC API Integration test", () => {
+  it("😊 Can create room with defaults", async () => {
+    /* Create room */
+    const roomResponse = await roomCreate.call({
+      data: {},
+    });
+
+    expect(roomResponse.ok).toBe(true);
+    expect(unwrap(roomResponse).title).toEqual("Untitled Room");
+  });
+
   it("😊 Can creat room, playlist, episode and update episode twice", async () => {
     //  Double check that we're correctly mocking
     expect(dynamodb.dynamoTableTapes.tableName).toBe(`TAPESTEST`);
 
     /* Create room */
     const roomResponse = await roomCreate.call({
-      secret: "IGKjygsxlk",
       data: { title: "New Room" },
     });
 

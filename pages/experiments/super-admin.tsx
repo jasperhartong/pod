@@ -96,7 +96,7 @@ const SuperAdmin = () => {
           onClick={() => {
             const title = prompt("Please enter room title");
             if (title) {
-              createRoom({ secret, data: { title } });
+              createRoom({ data: { title } });
             }
           }}
         >

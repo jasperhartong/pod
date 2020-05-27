@@ -3,6 +3,7 @@ import { IPlaylist } from "@/app-schema/IPlaylist";
 import { IRoom } from "@/app-schema/IRoom";
 import { toXML } from "jstoxml";
 import { DateTime } from "luxon";
+import path from "path";
 import { futureEpisodePage, roomPageUrl } from "../urls";
 
 export const podcastXML = (room: IRoom): string => {
@@ -156,7 +157,10 @@ const itemFromEpisode = (
       _attrs: {
         url: encodeURI(episode.audio_file || ""),
         // length: "8727310",
-        type: "audio/x-mp4",
+        // Poor mans version of getting file type
+        type: `audio/x-${
+          path.extname(episode.audio_file || "").replace(".", "") || "mp4"
+        }`,
       },
     },
     {

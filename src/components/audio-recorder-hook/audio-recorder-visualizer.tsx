@@ -1,7 +1,7 @@
 import { makeStyles } from "@material-ui/core";
 import { CSSProperties } from "@material-ui/styles";
 import { useEffect, useRef } from "react";
-import { AppColors } from "../../theme";
+import themeOptionsProvider from "src/theme";
 
 /* 
   For usage with useAudioRecorder
@@ -30,14 +30,16 @@ const useStyles = makeStyles((theme) => ({
 const defaultBandCount = 32;
 const defaultHeight = 240;
 const defaultWidth = 240;
-const defaultColor = AppColors.RED;
+const defaultColor = themeOptionsProvider.theme.palette.error.main;
 
-export const AudioRecorderVisualizer = (props: Props) => {
-  const bandCount = props.bandCount || defaultBandCount;
-  const height = props.height || defaultHeight;
-  const width = props.width || defaultWidth;
-  const color = props.color || defaultColor;
-
+export const AudioRecorderVisualizer = ({
+  uniqueId,
+  getFrequencyData,
+  bandCount = defaultBandCount,
+  height = defaultHeight,
+  width = defaultWidth,
+  color = defaultColor,
+}: Props) => {
   const animationFrameRef = useRef<number>(0);
   const domElementsRef = useRef<(HTMLElement | null)[]>([null]);
   const frequencyBandArrayRef = useRef<number[]>(
@@ -78,13 +80,13 @@ export const AudioRecorderVisualizer = (props: Props) => {
   };
 
   const animateSpectrum = () => {
-    props.getFrequencyData(animationCallback);
+    getFrequencyData(animationCallback);
     animationFrameRef.current = requestAnimationFrame(animateSpectrum);
   };
 
   useEffect(() => {
     domElementsRef.current = frequencyBandArrayRef.current.map((num) =>
-      document.getElementById(`audio-visualizer-${props.uniqueId}${num}`)
+      document.getElementById(`audio-visualizer-${uniqueId}${num}`)
     );
     // Start animation loop on mount
     animationFrameRef.current = requestAnimationFrame(animateSpectrum);
@@ -97,7 +99,7 @@ export const AudioRecorderVisualizer = (props: Props) => {
       <div className={classes.flexContainer} style={{ height, width }}>
         {frequencyBandArrayRef.current.map((num) => (
           <div
-            id={`audio-visualizer-${props.uniqueId}${num}`}
+            id={`audio-visualizer-${uniqueId}${num}`}
             key={num}
             style={{
               backgroundColor: color,

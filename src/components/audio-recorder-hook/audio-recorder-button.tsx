@@ -1,6 +1,5 @@
 import { ButtonBase, makeStyles } from "@material-ui/core";
 import { useCallback } from "react";
-import { AppColors } from "src/theme";
 
 const useStyles = makeStyles((theme) => {
   const buttonSize = 56; // hard-coded size like Fab
@@ -30,7 +29,7 @@ const useStyles = makeStyles((theme) => {
       position: "absolute",
       width: "100%",
       height: "100%",
-      backgroundColor: AppColors.RED,
+      backgroundColor: theme.palette.error.main,
       transformOrigin: "center",
       // When shrinking: first shrink with `transform`, then change border-radius
       transition: `opacity ${shortDuration} ${defaultTransition} ${noDelay},

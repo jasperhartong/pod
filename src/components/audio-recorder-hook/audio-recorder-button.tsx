@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => {
   const defaultTransition = theme.transitions.easing.easeOut;
   const shortDuration = `${theme.transitions.duration.short}ms`;
   const longDuration = `${theme.transitions.duration.complex}ms`;
-  const longDelay = `${theme.transitions.duration.complex}ms`;
+  const withDelay = `${theme.transitions.duration.complex}ms`;
   const noDelay = `0ms`;
 
   return {
@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme) => {
       transformOrigin: "center",
       // When shrinking: first shrink with `transform`, then change border-radius
       transition: `opacity ${shortDuration} ${defaultTransition} ${noDelay},
-        border-radius ${longDuration} ${defaultTransition} ${longDelay},
+        border-radius ${longDuration} ${defaultTransition} ${withDelay},
         transform ${shortDuration} ${defaultTransition} ${noDelay}`,
     },
     idle: {
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => {
         // When growing: first change border-radius, then grow with `transform`
         transition: `opacity ${shortDuration} ${defaultTransition} ${noDelay},
           border-radius ${longDuration} ${defaultTransition} ${noDelay},
-          transform ${shortDuration} ${defaultTransition} ${longDelay}`,
+          transform ${shortDuration} ${defaultTransition} ${withDelay}`,
       },
     },
     requestingAccess: {

@@ -1,7 +1,8 @@
+import { AudioRecorderButton } from "@/components/audio-recorder-hook/audio-recorder-button";
 import { AudioRecorderVisualizer } from "@/components/audio-recorder-hook/audio-recorder-visualizer";
 import useAudioRecorder from "@/hooks/useAudioRecorder";
 import { formatBytes } from "@/utils/audio-context";
-import { Box, Button, Container } from "@material-ui/core";
+import { Box, Button, Container, Grid } from "@material-ui/core";
 import { Duration } from "luxon";
 import { useState } from "react";
 
@@ -28,6 +29,7 @@ const Recorder = () => {
   const {
     isListening,
     isRecording,
+    isRequestingAccess,
     startListening,
     stopListening,
     startRecording,
@@ -44,19 +46,23 @@ const Recorder = () => {
 
   return (
     <Container>
-      {[
-        startListening,
-        stopListening,
-        startRecording,
-        stopRecording,
-        clearData,
-      ].map((method) => (
+      {[startListening, stopListening, clearData].map((method) => (
         <li key={method.name}>
           <Button key={method.name} onClick={() => method()} variant="outlined">
             {method.name}
           </Button>
         </li>
       ))}
+      <Grid container alignItems="center" justify="space-around">
+        <Grid item>
+          <AudioRecorderButton
+            onStartRecording={startRecording}
+            onStopRecording={stopRecording}
+            isRecording={isRecording}
+            isRequestingAccess={isRequestingAccess}
+          />
+        </Grid>
+      </Grid>
       <Box p={4}>
         {!!dataSize && <div>Recorded {formatBytes(dataSize)}</div>}
 

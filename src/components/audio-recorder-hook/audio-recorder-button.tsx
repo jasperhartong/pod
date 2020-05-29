@@ -4,6 +4,12 @@ import { AppColors } from "src/theme";
 
 const useStyles = makeStyles((theme) => {
   const buttonSize = 56; // hard-coded size like Fab
+  // define several consts for more readable transitions
+  const defaultTransition = theme.transitions.easing.easeOut;
+  const shortDuration = `${theme.transitions.duration.short}ms`;
+  const longDuration = `${theme.transitions.duration.complex}ms`;
+  const longDelay = `${theme.transitions.duration.complex}ms`;
+  const noDelay = `0ms`;
 
   return {
     outerRing: {
@@ -17,8 +23,8 @@ const useStyles = makeStyles((theme) => {
       borderWidth: 2,
       borderRadius: "100%",
       transition: `all`,
-      transitionDuration: `${theme.transitions.duration.short}ms`,
-      transitionTimingFunction: theme.transitions.easing.easeOut,
+      transitionDuration: `${shortDuration}`,
+      transitionTimingFunction: defaultTransition,
     },
     innerRing: {
       position: "absolute",
@@ -26,14 +32,19 @@ const useStyles = makeStyles((theme) => {
       height: "100%",
       backgroundColor: AppColors.RED,
       transformOrigin: "center",
-      transition: `all`,
-      transitionDuration: `${theme.transitions.duration.short}ms`,
-      transitionTimingFunction: theme.transitions.easing.easeOut,
+      // When shrinking: first shrink with `transform`, then change border-radius
+      transition: `opacity ${shortDuration} ${defaultTransition} ${noDelay},
+        border-radius ${longDuration} ${defaultTransition} ${longDelay},
+        transform ${shortDuration} ${defaultTransition} ${noDelay}`,
     },
     idle: {
       "& $innerRing": {
         borderRadius: buttonSize,
         transform: "scale(0.85)",
+        // When growing: first change border-radius, then grow with `transform`
+        transition: `opacity ${shortDuration} ${defaultTransition} ${noDelay},
+          border-radius ${longDuration} ${defaultTransition} ${noDelay},
+          transform ${shortDuration} ${defaultTransition} ${longDelay}`,
       },
     },
     requestingAccess: {
@@ -83,6 +94,7 @@ export const AudioRecorderButton = ({
     <ButtonBase
       centerRipple={true}
       focusRipple={true}
+      disableTouchRipple={true}
       className={`${classes.outerRing} ${ringStateClass}`}
       onClick={handleClick}
     >

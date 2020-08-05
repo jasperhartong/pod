@@ -1,13 +1,16 @@
 {
   "version": 2,
-  "regions": ["bru"],
+  "regions": [
+    "bru"
+  ],
   "public": false,
   "env": {
     "DIRECTUS_CLOUD_TOKEN": "@production-directus-cloud-token",
     "MY_AWS_ACCESS_BUCKET": "@tapesme-aws-bucket",
     "MY_AWS_ACCESS_REGION": "@tapesme-aws-region",
     "MY_AWS_ACCESS_KEY_ID": "@tapesme-aws-key-id",
-    "MY_AWS_SECRET_KEY": "@tapesme-aws-secret"
+    "MY_AWS_SECRET_KEY": "@tapesme-aws-secret",
+    "SUPER_ADMIN_SECRET": "@tapesme-super-admin-secret"
   },
   "build": {
     "env": {
@@ -15,7 +18,8 @@
       "MY_AWS_ACCESS_BUCKET": "@tapesme-aws-bucket",
       "MY_AWS_ACCESS_REGION": "@tapesme-aws-region",
       "MY_AWS_ACCESS_KEY_ID": "@tapesme-aws-key-id",
-      "MY_AWS_SECRET_KEY": "@tapesme-aws-secret"
+      "MY_AWS_SECRET_KEY": "@tapesme-aws-secret",
+      "SUPER_ADMIN_SECRET": "@tapesme-super-admin-secret"
     }
   }
 }

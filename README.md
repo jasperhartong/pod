@@ -65,19 +65,19 @@ const room: IResponse<IRoom> = await RPCClientFactory(roomFetchMeta).call({
 });
 ```
 
-# Learn More
+# DynamoDB Backups
 
-# Learn More
+## Remote AWS Table backups
 
-To learn more about Next.js, take a look at the following resources:
+```javascript
+import { dynamoTableTapes } from "@/api/collection-storage/backends/dynamodb";
+await dynamoTableTapes.backup();
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Local backup
 
-You can check out [the Next.js GitHub repository](https://github.com/zeit/next.js/) - your feedback and contributions are welcome!
+Creating a _local_ backup of the DynamoDB table. Uses `npm install -g dynamodump`
 
-# Deploy on ZEIT Now
-
-The easiest way to deploy your Next.js app is to use the [ZEIT Now Platform](https://zeit.co/import?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+```
+AWS_ACCESS_KEY_ID=[KEY] AWS_SECRET_ACCESS_KEY=[KEY] dynamodump export-all-data --region=eu-central-1
+```

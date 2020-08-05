@@ -108,13 +108,13 @@ const subscribeLinksForCurrentHost = (uid: IRoom["uid"]) => {
 
   const subscribeLinks: SubscribeLink[] = [
     {
-      label: "Apple Podcast (iPad / iPhone)",
+      label: "Apple Podcast",
       url: rssUrl("podcast:", host, uid),
     },
-    {
-      label: "Apple Podcast (Mac)",
-      url: rssUrl("pcast:", host, uid),
-    },
+    // {
+    //   label: "Apple Podcast (Mac)",
+    //   url: rssUrl("pcast:", host, uid),
+    // },
     { label: "RSS Feed", url: rssUrl("feed:", host, uid) },
     {
       label: "XML Feed",

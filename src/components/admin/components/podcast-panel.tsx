@@ -1,15 +1,6 @@
 import { IRoom } from "@/app-schema/IRoom";
 import useSharing from "@/hooks/useSharing";
-import {
-  Box,
-  Button,
-  Divider,
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
-  Grid,
-  Typography,
-} from "@material-ui/core";
+import { Box, Button, Divider, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Grid, Typography } from "@material-ui/core";
 import IconCopySuccess from "@material-ui/icons/CheckCircle";
 import IconExpandMore from "@material-ui/icons/ExpandMore";
 import IconCopy from "@material-ui/icons/FileCopy";
@@ -45,49 +36,48 @@ export const PodcastPanel = ({ room }: { room: IRoom }) => {
         id="subscribe-header"
       >
         <Grid container alignContent="center">
-          <Typography>De Podcast feed</Typography>
+          <Typography>Abboneer op de Podcast feed</Typography>
         </Grid>
       </ExpansionPanelSummary>
       <ExpansionPanelDetails id="subscribe-content">
         <Box width="100%">
           {subscribeLinks.map((link) => (
             <Box key={`${link.url}${link.label}`} mb={2}>
-              <Typography variant="subtitle2">{link.label}</Typography>
-              <Grid container>
+              {/* <Typography variant="subtitle2">{link.label}</Typography> */}
+              <Grid container justify="space-between">
                 <Button href={link.url}>
-                  <IconNewWindow fontSize="small" style={{ marginRight: 8 }} />
-                  Open
+                  <IconNewWindow fontSize="small" style={{ marginRight: 8 }} />{" "}
+                  {link.label}
                 </Button>
-                {hasNativeShare && (
-                  <Button
-                    onClick={() =>
-                      nativeShare(
-                        `Podcast: ${room.title}`,
-                        `${link.label} – powered by Tapes.me`,
-                        link.url
-                      )
-                    }
-                  >
-                    <IconShare fontSize="small" style={{ marginRight: 8 }} />{" "}
-                    Deel
-                  </Button>
-                )}
-                <Button onClick={() => handleCopy(link.url)}>
-                  {link.url === didCopy ? (
-                    <>
-                      <IconCopySuccess
-                        fontSize="small"
-                        style={{ marginRight: 8 }}
-                      />{" "}
-                      Gekopieerd
-                    </>
-                  ) : (
-                    <>
-                      <IconCopy fontSize="small" style={{ marginRight: 8 }} />{" "}
-                      Kopieer
-                    </>
+                <Grid item={true}>
+                  {hasNativeShare && (
+                    <Button
+                      onClick={() =>
+                        nativeShare(
+                          `Podcast: ${room.title}`,
+                          `${link.label} – powered by Tapes.me`,
+                          link.url
+                        )
+                      }
+                    >
+                      <IconShare fontSize="small" style={{ marginRight: 8 }} />{" "}
+                    </Button>
                   )}
-                </Button>
+                  <Button onClick={() => handleCopy(link.url)}>
+                    {link.url === didCopy ? (
+                      <>
+                        <IconCopySuccess
+                          fontSize="small"
+                          style={{ marginRight: 8 }}
+                        />
+                      </>
+                    ) : (
+                        <>
+                          <IconCopy fontSize="small" style={{ marginRight: 8 }} />
+                        </>
+                      )}
+                  </Button>
+                </Grid>
               </Grid>
               <Box mt={1}>
                 <Divider />

@@ -3,6 +3,7 @@ import { IRoom } from "@/app-schema/IRoom";
 import { Box, Grid, List, Typography } from "@material-ui/core";
 import dynamic from "next/dynamic";
 import { useImmer } from "use-immer";
+import { PodcastPanel } from "./admin/components/podcast-panel";
 import AppContainer from "./app-container";
 import PageFooter from "./page-footer";
 import PlaylistGrid from "./playlist-grid";
@@ -57,6 +58,8 @@ export const ListenRoom = ({ room }: { room: IRoom }) => {
             </Box>
           </Box>
         ))}
+
+      <PodcastPanel room={room} />
 
       <PageFooter secondaryText={room.uid} />
 

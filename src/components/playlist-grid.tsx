@@ -1,13 +1,6 @@
 import { IEpisode } from "@/app-schema/IEpisode";
 import { IPlaylist } from "@/app-schema/IPlaylist";
-import {
-  Box,
-  ButtonBase,
-  Fab,
-  makeStyles,
-  Paper,
-  Typography,
-} from "@material-ui/core";
+import { Box, ButtonBase, Fab, makeStyles, Paper, Typography } from "@material-ui/core";
 import PauseIcon from "@material-ui/icons/Pause";
 import PlayIcon from "@material-ui/icons/PlayArrow";
 import LazyLoad from "react-lazyload";
@@ -51,6 +44,7 @@ const PlaylistGrid = (props: Props) => {
       {/* Current episodes */}
       {/* Busines Logic: Only show playlists that contain published episodes */}
       {playlist.episodes
+        .reverse()
         .filter((e) => e.status === "published")
         .map((episode) => (
           <div

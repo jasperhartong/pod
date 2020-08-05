@@ -1,24 +1,19 @@
 import roomAllMeta from "@/api/rpc/commands/room.all.meta";
 import roomCreateMeta from "@/api/rpc/commands/room.create.meta";
 import roomImportMeta from "@/api/rpc/commands/room.import.meta";
+import { IRoom } from "@/app-schema/IRoom";
+import { ImageCoverDropZone } from "@/components/admin/components/image-cover-dropzone";
 import { LoaderCentered } from "@/components/admin/layout/loader-centered";
 import AppContainer from "@/components/app-container";
 import { ErrorPage } from "@/components/error-page";
 import { useRouter } from "@/hooks/useRouter";
 import { useRPC } from "@/hooks/useRPC";
-import {
-  Box,
-  Button,
-  Divider,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-} from "@material-ui/core";
+import { Box, Button, Divider, List, ListItem, ListItemText, Typography } from "@material-ui/core";
 import { DateTime } from "luxon";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const SuperAdmin = () => {
+  const [roomCoverUrl, setRoomCoverUrl] = useState<IRoom["cover_file"]["data"]["full_url"]>("");
   const router = useRouter();
   const secret = router.query.secret as string;
 
@@ -91,12 +86,21 @@ const SuperAdmin = () => {
         <Divider />
         <Box pt={4} />
 
+        <Box p={2} textAlign="center">
+          <ImageCoverDropZone
+            onSuccess={(downloadUrl) =>
+              setRoomCoverUrl(downloadUrl)
+            }
+            onDelete={() => setRoomCoverUrl("")}
+          />
+        </Box>
+
         <Button
           disabled={isCreatingRoom}
           onClick={() => {
             const title = prompt("Please enter room title");
             if (title) {
-              createRoom({ data: { title } });
+              createRoom({ data: { title, cover_file: { data: { full_url: roomCoverUrl } } } });
             }
           }}
         >

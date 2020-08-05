@@ -23,23 +23,25 @@ interface Props {
 export const EpisodeNew = ({ room, playlist }: Props) => {
   const router = useRouter();
   const episodeFormContext = useEpisodeFormContext();
-  const { revalidate } = useSWRRoom(room.slug);
+  const { revalidate } = useSWRRoom(room.uid);
 
   const handleSubmit = async (formData: EpisodeFormValues) => {
     const response = await RPCClientFactory(episodeCreateMeta).call({
-      playlistId: playlist.id,
+      roomUid: room.uid,
+      playlistUid: playlist.uid,
       data: {
         title: formData.title,
         image_url: formData.imageUrl,
-        status: "draft",
+        audio_file: null,
+        published_on: null,
       },
     });
     if (response.ok) {
       // Make sure to update local state with API truth and then move on..
       await revalidate();
       router.push(
-        `/rooms/[roomSlug]/admin/[playlistId]/record-episode/[episodeId]`,
-        `/rooms/${room.slug}/admin/${playlist.id}/record-episode/${response.data.id}`
+        `/rooms/[roomUid]/admin/[playlistUid]/record-episode/[episodeUid]`,
+        `/rooms/${room.uid}/admin/${playlist.uid}/record-episode/${response.data.uid}`
       );
     } else {
       alert("De aflevering kan niet bewaard worden.");
@@ -56,14 +58,12 @@ export const EpisodeNew = ({ room, playlist }: Props) => {
     <AdminDualPaneLayout
       title={"Nieuwe aflevering"}
       subtitle={watchedTitle || defaultTitle}
-      image={
-        playlist.cover_file.data.thumbnails.find((t) => t.width > 400)?.url
-      }
+      image={playlist.cover_file.data.full_url}
       blur={40}
       action={
         <AdminHeaderClose
-          url={`/rooms/[roomSlug]/admin/[playlistId]`}
-          as={`/rooms/${room.slug}/admin/${playlist.id}`}
+          url={`/rooms/[roomUid]/admin/[playlistUid]`}
+          as={`/rooms/${room.uid}/admin/${playlist.uid}`}
         />
       }
       firstItem={

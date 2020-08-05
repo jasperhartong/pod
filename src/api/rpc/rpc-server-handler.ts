@@ -1,3 +1,4 @@
+import { formatErrors } from "@/utils/io-ts";
 import { isLeft } from "fp-ts/lib/Either";
 import HttpStatus from "http-status-codes";
 import { ERR, IResponse, OK } from "../IResponse";
@@ -20,38 +21,52 @@ export const RPCHandlerFactory = <Tq, Oq, Iq, Ts, Os, Is>(
       this.commandId = `${this.meta.domain}.${this.meta.action}`;
     }
 
-    public handle = async (reqData: any): Promise<IResponse<Ts>> => {
+    public call = async (reqData: Tq): Promise<IResponse<Ts>> => {
+      /* Type safe call (used when directly calling serverside) */
+      return this.handleUnsafe(reqData);
+      // TODO: Could probaby use a faster shortcut code path
+    };
+
+    public handleUnsafe = async (reqData: any): Promise<IResponse<Ts>> => {
+      console.time(`RPCHandlerFactory::handleUnsafe::${this.commandId}`);
       // Validate request data
       const reqValidation = this.meta.reqValidator.decode(reqData);
       if (isLeft(reqValidation)) {
-        console.error(reqValidation.left);
-        // TODO: wrap io-ts Errors errors into ERR
-        return ERR("invalid request", HttpStatus.BAD_REQUEST);
+        // const formattedErrors = formatErrors(reqValidation.left);
+        const formattedErrors = `RPCHandler:: Request Validation Error: ${formatErrors(
+          reqValidation.left
+        )}`;
+        this.logError(formattedErrors);
+        return ERR(formattedErrors, HttpStatus.BAD_REQUEST);
       }
 
       // Retrieve result
       const response = await this.handler(reqValidation.right);
       if (!response.ok) {
-        return ERR(response.error);
+        this.logError(response.error);
+        return ERR(response.error, response.status);
       }
 
       // Validate response
       const resValidation = this.meta.resValidator.decode(response.data);
       if (isLeft(resValidation)) {
-        console.error(
-          "RPCHandler:: Response Validation Error: " +
-            resValidation.left.map((error) =>
-              error.context.map(({ key }) => key).join(".")
-            )
-        );
-
-        // TODO: wrap io-ts Errors errors into ERR
-        return ERR("invalid response payload", HttpStatus.METHOD_FAILURE);
+        const formattedErrors = `RPCHandler:: Response Validation Error: ${formatErrors(
+          resValidation.left
+        )}`;
+        this.logError(formattedErrors);
+        return ERR(formattedErrors, HttpStatus.METHOD_FAILURE);
       }
 
       // Send back succesful response
+      console.timeEnd(`RPCHandlerFactory::handleUnsafe::${this.commandId}`);
       return OK(response.data);
     };
+
+    private logError = (errorMessage: string) => {
+      console.error(`RPCHandler::Error (${this.commandId}): ${errorMessage}`);
+      console.timeEnd(`RPCHandlerFactory::handleUnsafe::${this.commandId}`);
+    };
   }
+
   return new RPCHandler(meta, handler);
 };

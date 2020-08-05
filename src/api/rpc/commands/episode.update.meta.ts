@@ -1,14 +1,14 @@
-import { TEpisodePartial } from "@/app-schema/IEpisode";
+import { RPCMeta } from "@/api/rpc/rpc-meta";
+import { TEpisode, TEpisodeUpdatable } from "@/app-schema/IEpisode";
+import { TPlaylist } from "@/app-schema/IPlaylist";
+import { TRoom } from "@/app-schema/IRoom";
 import * as t from "io-ts";
-import { RPCMeta } from "../rpc-meta";
 
 const reqDataValidator = t.type({
-  id: TEpisodePartial.props.id,
-  data: TEpisodePartial,
+  roomUid: TRoom.props.uid,
+  playlistUid: TPlaylist.props.uid,
+  episodeUid: TEpisode.props.uid,
+  data: TEpisodeUpdatable,
 });
 
-const resDataValidator = t.type({
-  id: t.number,
-});
-
-export default RPCMeta("episode", "update", reqDataValidator, resDataValidator);
+export default RPCMeta("episode", "update", reqDataValidator, TEpisode);

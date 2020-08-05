@@ -1,5 +1,6 @@
-import { optional } from "@/utils/io-ts";
+import { TNullableWithFallback, TStringWithFallback } from "@/utils/io-ts";
 import * as t from "io-ts";
+import { IBase } from "./IBase";
 import { TDateString } from "./IDateString";
 import { TImageData } from "./IFileData";
 
@@ -11,17 +12,21 @@ export const TEpisodeStatus = t.keyof({
 });
 
 export const TEpisode = t.type({
-  id: t.number,
+  ...IBase.props,
   status: TEpisodeStatus,
-  created_on: TDateString,
-  title: t.string,
+  title: TStringWithFallback,
   image_file: t.type({ data: TImageData }),
-  audio_file: optional(t.string),
-  published_on: optional(TDateString),
-});
-
-export const TEpisodePartial = t.partial({
-  ...TEpisode.props,
+  audio_file: TNullableWithFallback(t.string),
+  published_on: TNullableWithFallback(TDateString),
 });
 
 export type IEpisode = t.TypeOf<typeof TEpisode>;
+
+// Restrict updatable fields, also ensure they can be nulled if nullable, but don't use fallback
+export const TEpisodeUpdatable = t.partial({
+  status: TEpisodeStatus,
+  title: t.string,
+  image_file: t.type({ data: TImageData }),
+  audio_file: t.union([t.string, t.null]),
+  published_on: t.union([TDateString, t.null]),
+});

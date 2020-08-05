@@ -1,14 +1,16 @@
+import { TStringWithFallback } from "@/utils/io-ts";
 import * as t from "io-ts";
+import { withFallback } from "io-ts-types/lib/withFallback";
+import { IBase } from "./IBase";
 import { TImageData } from "./IFileData";
 import { TPlaylist } from "./IPlaylist";
 
 export const TRoom = t.type({
-  id: t.number,
-  slug: t.string,
-  title: t.string,
+  ...IBase.props,
+  title: TStringWithFallback,
   cover_file: t.type({ data: TImageData }),
   // alias
-  playlists: t.array(TPlaylist),
+  playlists: withFallback(t.array(TPlaylist), []),
 });
 
 export type IRoom = t.TypeOf<typeof TRoom>;

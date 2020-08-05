@@ -28,3 +28,14 @@ export const ERR = <T>(
   error: string,
   status: HttpStatusCode = HttpStatus.INTERNAL_SERVER_ERROR
 ): IResponse<T> => ({ ok: false, error, status });
+
+export const unwrap = <T>(response: IResponse<T>) => {
+  /*
+    unsafe unwrap method that can be used to read the response data without handling the failure case
+    const foo<string> = unwrap(await methodReturningIResponseString())
+  */
+  if (!response.ok) {
+    throw Error("Unwrapping failed");
+  }
+  return response.data;
+};

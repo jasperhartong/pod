@@ -1,16 +1,20 @@
+import { TStringWithFallback } from "@/utils/io-ts";
 import * as t from "io-ts";
-import { TDateString } from "./IDateString";
+import { withFallback } from "io-ts-types/lib/withFallback";
+import { IBase } from "./IBase";
 import { TEpisode } from "./IEpisode";
 import { TImageData } from "./IFileData";
 
 export const TPlaylist = t.type({
-  id: t.number,
-  created_on: TDateString,
-  title: t.string,
-  description: t.string,
+  ...IBase.props,
+  title: TStringWithFallback,
+  description: TStringWithFallback,
   cover_file: t.type({ data: TImageData }),
   // alias
-  episodes: t.array(TEpisode),
+  episodes: withFallback(t.array(TEpisode), []),
+
+  // future fields should ALWAYS be added withFallback, e.g:
+  // status: withFallback(TEpisodeStatus, "draft"),
 });
 
 export type IPlaylist = t.TypeOf<typeof TPlaylist>;

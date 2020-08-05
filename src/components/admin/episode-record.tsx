@@ -47,7 +47,7 @@ const initialState: State = {
 
 export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
   const router = useRouter();
-  const { mutateEpisode } = useSWRRoom(room.slug);
+  const { mutateEpisodeUpdate } = useSWRRoom(room.uid);
   const [localState, dispatch] = useImmer<State>(initialState);
   const recorder = useAudioRecorder();
   const uploader = useSignedMediaUploader({
@@ -62,20 +62,27 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
   });
   const updateEpisodeWithAudioFile = async (downloadUrl: string) => {
     const updatedEpisode = await RPCClientFactory(episodeUpdateMeta).call({
-      id: episode.id,
+      roomUid: room.uid,
+      playlistUid: playlist.uid,
+      episodeUid: episode.uid,
       data: { audio_file: downloadUrl },
     });
     if (!updatedEpisode.ok) {
       dispatch((state) => {
         state.updateError = updatedEpisode.error;
       });
+    } else {
+      // Update local state, then move on
+      mutateEpisodeUpdate(
+        playlist.uid,
+        { ...episode, audio_file: downloadUrl },
+        false
+      );
+      router.push(
+        "/rooms/[roomUid]/admin/[playlistUid]/episode/[episodeUid]",
+        `/rooms/${room.uid}/admin/${playlist.uid}/episode/${episode.uid}`
+      );
     }
-    // Update local state, then move on
-    mutateEpisode(playlist.id, { ...episode, audio_file: downloadUrl }, false);
-    router.push(
-      "/rooms/[roomSlug]/admin/[playlistId]/episode/[episodeId]",
-      `/rooms/${room.slug}/admin/${playlist.id}/episode/${episode.id}`
-    );
   };
 
   const mp3Recording =
@@ -187,7 +194,7 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
                       state.isSaving = true;
                     });
                     uploader.uploadFile(
-                      blobToFile(mp3Recording, episode.title)
+                      blobToFile(mp3Recording, `${episode.title}.mp3`)
                     );
                   }
                 },
@@ -268,26 +275,21 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
 
   return (
     <AdminDualPaneLayout
-      image={
-        playlist.cover_file.data.thumbnails.find((t) => t.width > 400)?.url
-      }
+      image={playlist.cover_file.data.full_url}
       blur={40}
       title={"Opnemen"}
       subtitle={playlist.title + " • " + episode.title}
       action={
         <AdminHeaderClose
-          url={`/rooms/[roomSlug]/admin/[playlistId]`}
-          as={`/rooms/${room.slug}/admin/${playlist.id}`}
+          url={`/rooms/[roomUid]/admin/[playlistUid]`}
+          as={`/rooms/${room.uid}/admin/${playlist.uid}`}
         />
       }
       firstItem={
         <Box p={2} pb={0} textAlign="center">
           <Box style={{ display: "inline-block" }}>
             <ImageCoverLayout
-              imageUrl={
-                episode.image_file.data.thumbnails.find((t) => t.width > 240)
-                  ?.url
-              }
+              imageUrl={episode.image_file.data.full_url}
               style={{
                 width: 240,
                 height: 240,
@@ -298,7 +300,7 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
                     <>
                       <Box zIndex={2} style={{ background: "rgba(0,0,0,0.4)" }}>
                         <AudioRecorderVisualizer
-                          uniqueId={episode.id.toString()}
+                          uniqueId={episode.uid}
                           getFrequencyData={recorder.getFrequencyData}
                           width={240}
                           height={240}

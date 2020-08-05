@@ -16,7 +16,7 @@ export const ListenRoom = ({ room }: { room: IRoom }) => {
 
   const playingItem: IEpisode | undefined = findEpisodeById(
     room,
-    playerState.playingEpisode?.episodeId
+    playerState.playingEpisode?.episodeUid
   );
 
   return (
@@ -42,15 +42,15 @@ export const ListenRoom = ({ room }: { room: IRoom }) => {
           (p) => p.episodes.filter((e) => e.status === "published").length > 0
         )
         .map((playlist) => (
-          <Box pb={4} key={playlist.id}>
+          <Box pb={4} key={playlist.uid}>
             <List>
               <PlaylistHeader playlist={playlist} />
             </List>
             <Box p={2}>
               <PlaylistGrid
                 playlist={playlist}
-                playingId={playerState.playingEpisode?.episodeId}
-                setPlayingId={start}
+                playingUid={playerState.playingEpisode?.episodeUid}
+                setPlayingUid={start}
                 isPaused={Boolean(playerState.playingEpisode?.isPaused)}
                 setIsPaused={pause}
               />
@@ -58,7 +58,7 @@ export const ListenRoom = ({ room }: { room: IRoom }) => {
           </Box>
         ))}
 
-      <PageFooter secondaryText={room.slug} />
+      <PageFooter secondaryText={room.uid} />
 
       <SnackbarPlayer
         playingItem={playingItem}
@@ -70,15 +70,15 @@ export const ListenRoom = ({ room }: { room: IRoom }) => {
   );
 };
 
-const findEpisodeById = (room: IRoom, episodeId?: number) => {
+const findEpisodeById = (room: IRoom, episodeUid?: IEpisode["uid"]) => {
   return ([] as IEpisode[])
     .concat(...[...room.playlists].map((playlist) => playlist.episodes))
-    .find((episode) => episode.id === episodeId);
+    .find((episode) => episode.uid === episodeUid);
 };
 
 interface PlayerState {
   playingEpisode?: {
-    episodeId: IEpisode["id"];
+    episodeUid: IEpisode["uid"];
     isPaused: boolean;
   };
 }
@@ -86,10 +86,10 @@ interface PlayerState {
 const usePlayerState = () => {
   const [state, dispatch] = useImmer<PlayerState>({});
 
-  const start = (episodeId: IEpisode["id"]) => {
+  const start = (episodeUid: IEpisode["uid"]) => {
     dispatch((state) => {
       state.playingEpisode = {
-        episodeId,
+        episodeUid,
         // always force not be paused when calling start again
         isPaused: false,
       };

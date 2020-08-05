@@ -1,4 +1,3 @@
-import { parseDbDate } from "@/api/collection-storage/backends/directus-utils";
 import { IEpisode } from "@/app-schema/IEpisode";
 import { IPlaylist } from "@/app-schema/IPlaylist";
 import { IRoom } from "@/app-schema/IRoom";
@@ -17,6 +16,8 @@ import {
   Typography,
 } from "@material-ui/core";
 import IconAdd from "@material-ui/icons/Add";
+import { DateTime } from "luxon";
+import LazyLoad from "react-lazyload";
 import AppContainer from "../app-container";
 import PageFooter from "../page-footer";
 import AdminHeader from "./layout/admin-header";
@@ -34,15 +35,13 @@ export const PlaylistDetails = ({
     <AppContainer maxWidth="md">
       <Container maxWidth="sm" style={{ padding: 0 }}>
         <AdminHeader
-          image={
-            playlist.cover_file.data.thumbnails.find((t) => t.width > 400)?.url
-          }
+          image={playlist.cover_file.data.full_url}
           title={playlist.title}
           subtitle={`in ${room.title}`}
           action={
             <AdminHeaderClose
-              url={`/rooms/[roomSlug]/admin`}
-              as={`/rooms/${room.slug}/admin`}
+              url={`/rooms/[roomUid]/admin`}
+              as={`/rooms/${room.uid}/admin`}
             />
           }
         />
@@ -77,8 +76,8 @@ const AdminEpisodeList = ({
           button
           onClick={() =>
             router.push(
-              "/rooms/[roomSlug]/admin/[playlistId]/new-episode",
-              `/rooms/${room.slug}/admin/${playlist.id}/new-episode`
+              "/rooms/[roomUid]/admin/[playlistUid]/new-episode",
+              `/rooms/${room.uid}/admin/${playlist.uid}/new-episode`
             )
           }
         >
@@ -99,9 +98,9 @@ const AdminEpisodeList = ({
         {/* Existing episodes: drafts, published */}
         {playlist.episodes.map((episode) => (
           <AdminEpisodeListItem
-            key={episode.id}
-            roomSlug={room.slug}
-            playlistId={playlist.id}
+            key={episode.uid}
+            roomUid={room.uid}
+            playlistUid={playlist.uid}
             episode={episode}
           />
         ))}
@@ -130,22 +129,22 @@ const AdminEpisodeList = ({
 };
 
 const AdminEpisodeListItem = ({
-  roomSlug,
-  playlistId,
+  roomUid,
+  playlistUid,
   episode,
 }: {
-  roomSlug: IRoom["slug"];
-  playlistId: IPlaylist["id"];
+  roomUid: IRoom["uid"];
+  playlistUid: IPlaylist["uid"];
   episode: IEpisode;
 }) => {
   const router = useRouter();
   const recordLink = {
-    url: "/rooms/[roomSlug]/admin/[playlistId]/record-episode/[episodeId]",
-    as: `/rooms/${roomSlug}/admin/${playlistId}/record-episode/${episode.id}`,
+    url: "/rooms/[roomUid]/admin/[playlistUid]/record-episode/[episodeUid]",
+    as: `/rooms/${roomUid}/admin/${playlistUid}/record-episode/${episode.uid}`,
   };
   const detailsLink = {
-    url: "/rooms/[roomSlug]/admin/[playlistId]/episode/[episodeId]",
-    as: `/rooms/${roomSlug}/admin/${playlistId}/episode/${episode.id}`,
+    url: "/rooms/[roomUid]/admin/[playlistUid]/episode/[episodeUid]",
+    as: `/rooms/${roomUid}/admin/${playlistUid}/episode/${episode.uid}`,
   };
 
   return (
@@ -158,13 +157,17 @@ const AdminEpisodeListItem = ({
       button
     >
       <ListItemAvatar>
-        <Avatar
-          variant="square"
-          alt={episode.title}
-          src={
-            episode.image_file.data.thumbnails.find((t) => t.width > 100)?.url
-          }
-        />
+        <LazyLoad
+          offset={100}
+          once={true}
+          placeholder={<Avatar variant="square" />}
+        >
+          <Avatar
+            variant="square"
+            alt={episode.title}
+            src={episode.image_file.data.full_url}
+          />
+        </LazyLoad>
       </ListItemAvatar>
       <ListItemText
         primary={episode.title}
@@ -175,8 +178,8 @@ const AdminEpisodeListItem = ({
                 ? "Niet gepubliceerd"
                 : "Geen opname"
               : episode.published_on
-              ? parseDbDate(episode.published_on).toRelative()
-              : parseDbDate(episode.created_on).toRelative()}
+              ? DateTime.fromISO(episode.published_on).toRelative()
+              : DateTime.fromISO(episode.created_on).toRelative()}
           </>
         }
       />

@@ -1,18 +1,22 @@
 import * as t from "io-ts";
+import { withFallback } from "io-ts-types/lib/withFallback";
 
-/* 
-https://github.com/gcanti/io-ts/pull/266#issuecomment-474935329
+export const TStringWithFallback = withFallback(t.string, "");
 
-Although the maintainer of io-ts doesn't like this, I think it's helping a lot in my case.
-Beware of the following behavior though
+/*
+  Don't use optional values in schema definitions, can mean 2 things:
+  - either the key is missing
+  - the value is actually set to `undefined`
 
-    const Person = t.interface({
-    name: t.string,
-    age: optional(t.number)
-    })
+  Also, in the second case, `undefined` is not JSON serializable
 
-    Person.decode({name: 'bob'}) // returns right({name: 'bob'})
-    Person.is({name: 'bob'}) // returns false
- */
-export const optional = <T extends t.Type<any, any, any>>(type: T) =>
-  t.union([type, t.null, t.undefined]);
+  Use null values to be explicit.
+
+  Enforce them so even when the key is somehow missing in the data, it will be `null` after decoding
+  */
+export const TNullableWithFallback = <T extends t.Type<any, any, any>>(
+  type: T
+) => withFallback(t.union([type, t.null]), null);
+
+export const formatErrors = (errors: t.Errors) =>
+  errors.map((error) => error.context.map(({ key }) => key).join("."));

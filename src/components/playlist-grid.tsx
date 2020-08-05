@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import PauseIcon from "@material-ui/icons/Pause";
 import PlayIcon from "@material-ui/icons/PlayArrow";
+import LazyLoad from "react-lazyload";
 
 const useStyles = makeStyles((theme) => ({
   gridRoot: {
@@ -34,8 +35,8 @@ const useStyles = makeStyles((theme) => ({
 
 interface Props {
   playlist: IPlaylist;
-  setPlayingId: (id: IEpisode["id"]) => void;
-  playingId?: number;
+  setPlayingUid: (id: IEpisode["uid"]) => void;
+  playingUid?: IEpisode["uid"];
   isPaused: boolean;
   setIsPaused: (paused: boolean) => void;
 }
@@ -43,7 +44,7 @@ interface Props {
 const PlaylistGrid = (props: Props) => {
   const classes = useStyles();
 
-  const { playlist, playingId, setPlayingId, isPaused, setIsPaused } = props;
+  const { playlist, playingUid, setPlayingUid, isPaused, setIsPaused } = props;
 
   return (
     <div className={classes.gridRoot}>
@@ -53,31 +54,34 @@ const PlaylistGrid = (props: Props) => {
         .filter((e) => e.status === "published")
         .map((episode) => (
           <div
-            key={episode.id}
+            key={episode.uid}
             className={classes.tileRoot}
             aria-label={`play ${episode.title}`}
             onClick={() =>
-              episode.id === playingId
+              episode.uid === playingUid
                 ? setIsPaused(!isPaused)
-                : setPlayingId(episode.id)
+                : setPlayingUid(episode.uid)
             }
           >
-            <Paper elevation={8}>
-              <ButtonBase
-                aria-label={`play ${episode.title}`}
-                focusRipple={true}
-                className={classes.imageButton}
-                style={{
-                  backgroundImage: `url(${
-                    episode.image_file.data.thumbnails.find(
-                      (t) => t.height > 100
-                    )!.url
-                  })`,
-                }}
-              />
+            <Paper elevation={3}>
+              <LazyLoad
+                once={true}
+                offset={200}
+                resize={true}
+                placeholder={<div className={classes.imageButton} />}
+              >
+                <ButtonBase
+                  aria-label={`play ${episode.title}`}
+                  focusRipple={true}
+                  className={classes.imageButton}
+                  style={{
+                    backgroundImage: `url(${episode.image_file.data.full_url}`,
+                  }}
+                />
+              </LazyLoad>
             </Paper>
             <EpisodeTitle title={episode.title} />
-            {episode.id === playingId && (
+            {episode.uid === playingUid && (
               <Fab
                 size="large"
                 style={{

@@ -1,5 +1,4 @@
 import { IRoom } from "@/app-schema/IRoom";
-import { useRouter } from "@/hooks/useRouter";
 import {
   Box,
   Button,
@@ -12,6 +11,7 @@ import {
 } from "@material-ui/core";
 import IconHeadset from "@material-ui/icons/Headset";
 import IconMic from "@material-ui/icons/Mic";
+import { useRouter } from "next/dist/client/router";
 import AppContainer from "../app-container";
 import PageFooter from "../page-footer";
 import PlaylistHeader from "../playlist-header";
@@ -48,15 +48,15 @@ export const AdminOverview = ({ room }: { room: IRoom }) => {
             </Grid>
           </Box>
           {room.playlists.map((p) => (
-            <Box style={{ width: "100%" }} key={p.id}>
+            <Box style={{ width: "100%" }} key={p.uid}>
               <List style={{ padding: 0, width: "100%" }}>
                 <PlaylistHeader
-                  key={p.id}
+                  key={p.uid}
                   playlist={p}
                   onClick={() => {
                     router.push(
-                      "/rooms/[roomSlug]/admin/[playlistId]",
-                      `/rooms/${room.slug}/admin/${p.id}`
+                      "/rooms/[roomUid]/admin/[playlistUid]",
+                      `/rooms/${room.uid}/admin/${p.uid}`
                     );
                   }}
                   secondaryAction={
@@ -76,8 +76,8 @@ export const AdminOverview = ({ room }: { room: IRoom }) => {
               fullWidth
               onClick={() => {
                 router.push(
-                  "/rooms/[roomSlug]/admin/new-playlist",
-                  `/rooms/${room.slug}/admin/new-playlist`
+                  "/rooms/[roomUid]/admin/new-playlist",
+                  `/rooms/${room.uid}/admin/new-playlist`
                 );
               }}
             >

@@ -1,29 +1,21 @@
-import { TEpisode, TEpisodeStatus } from "@/app-schema/IEpisode";
+import { RPCMeta } from "@/api/rpc/rpc-meta";
+import { TEpisode } from "@/app-schema/IEpisode";
 import { TPlaylist } from "@/app-schema/IPlaylist";
+import { TRoom } from "@/app-schema/IRoom";
+import { TNullableWithFallback } from "@/utils/io-ts";
 import * as t from "io-ts";
-import { RPCMeta } from "../rpc-meta";
 
-const reqDataRequired = t.type({
+const reqData = t.type({
   title: t.string,
-  status: TEpisodeStatus,
   image_url: t.string,
-});
-
-const reqDataOptional = t.partial({
-  audio_file: TEpisode.props.audio_file,
-  published_on: TEpisode.props.published_on,
+  audio_file: TNullableWithFallback(TEpisode.props.audio_file),
+  published_on: TNullableWithFallback(TEpisode.props.published_on),
 });
 
 const reqDataValidator = t.type({
-  playlistId: TPlaylist.props.id,
-  data: t.intersection([reqDataRequired, reqDataOptional]),
+  roomUid: TRoom.props.uid,
+  playlistUid: TPlaylist.props.uid,
+  data: reqData,
 });
 
-export default RPCMeta(
-  "episode",
-  "create",
-  reqDataValidator,
-  t.type({
-    id: t.number,
-  })
-);
+export default RPCMeta("episode", "create", reqDataValidator, TEpisode);

@@ -1,9 +1,10 @@
+import { RPCMeta } from "@/api/rpc/rpc-meta";
+import { TPlaylist } from "@/app-schema/IPlaylist";
 import { TRoom } from "@/app-schema/IRoom";
 import * as t from "io-ts";
-import { RPCMeta } from "../rpc-meta";
 
 const reqDataValidator = t.type({
-  roomId: TRoom.props.id,
+  roomUid: TRoom.props.uid,
   data: t.type({
     title: t.string,
     description: t.string,
@@ -11,11 +12,4 @@ const reqDataValidator = t.type({
   }),
 });
 
-export default RPCMeta(
-  "playlist",
-  "create",
-  reqDataValidator,
-  t.type({
-    id: t.number,
-  })
-);
+export default RPCMeta("playlist", "create", reqDataValidator, TPlaylist);

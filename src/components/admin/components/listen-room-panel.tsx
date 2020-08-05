@@ -52,7 +52,7 @@ export const ListenRoomPanel = ({ room }: { room: IRoom }) => {
                   nativeShare(
                     `${room.title}`,
                     `Luisterkamer – powered by Tapes.me`,
-                    `${basePath}/rooms/${room.slug}`
+                    `${basePath}/rooms/${room.uid}`
                   )
                 }
               >
@@ -66,9 +66,9 @@ export const ListenRoomPanel = ({ room }: { room: IRoom }) => {
           <Button
             fullWidth
             variant={hasNativeShare ? "outlined" : "contained"}
-            onClick={() => handleCopy(`${basePath}/rooms/${room.slug}`)}
+            onClick={() => handleCopy(`${basePath}/rooms/${room.uid}`)}
           >
-            {`/rooms/${room.slug}` === didCopy ? (
+            {`/rooms/${room.uid}` === didCopy ? (
               <>
                 <IconCopySuccess fontSize="small" style={{ marginRight: 8 }} />{" "}
                 Gekopieerd
@@ -82,7 +82,7 @@ export const ListenRoomPanel = ({ room }: { room: IRoom }) => {
           </Button>
           <Box pt={2} />
 
-          <NextLink href="/rooms/[roomSlug]" as={`/rooms/${room.slug}`}>
+          <NextLink href="/rooms/[roomUid]" as={`/rooms/${room.uid}`}>
             <Button fullWidth variant="outlined">
               Open Luisterkamer
             </Button>

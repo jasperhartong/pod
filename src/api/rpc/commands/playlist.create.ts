@@ -1,25 +1,24 @@
-import { collectionsBackend } from "@/api/collection-storage";
-import { OK } from "@/api/IResponse";
+import { dynamoTableTapes } from "@/api/collection-storage/backends/dynamodb";
+import { generateUid } from "@/api/collection-storage/backends/dynamodb/dynamodb-utils";
+import { IPlaylist } from "@/app-schema/IPlaylist";
+import { DateTime } from "luxon";
 import { RPCHandlerFactory } from "../rpc-server-handler";
 import meta from "./playlist.create.meta";
 
 export default RPCHandlerFactory(meta, async (reqData) => {
-  const imageUpload = await collectionsBackend.addExternalImage(
-    reqData.data.image_url
-  );
-  if (!imageUpload.ok) {
-    return imageUpload;
-  }
-  const playlistCreation = await collectionsBackend.createPlaylist(
-    {
-      title: reqData.data.title,
-      description: reqData.data.description,
+  const uid = generateUid();
+  const playlist: IPlaylist = {
+    uid,
+    created_on: DateTime.utc().toJSON(),
+    title: reqData.data.title,
+    description: reqData.data.description,
+    cover_file: {
+      data: {
+        full_url: reqData.data.image_url,
+      },
     },
-    reqData.roomId.toString(),
-    imageUpload.data.id.toString()
-  );
-  if (!playlistCreation.ok) {
-    return playlistCreation;
-  }
-  return OK(playlistCreation.data);
+    episodes: [],
+  };
+
+  return dynamoTableTapes.createPlaylist(reqData.roomUid, playlist);
 });

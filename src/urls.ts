@@ -7,16 +7,13 @@ export const baseUrl =
     ? "http://localhost:3000"
     : "https://tapes.me";
 
-export const rssUrl = (
-  protocol: string,
-  host: string,
-  roomSlug: IRoom["slug"]
-) => `${protocol}//${host}/api/rss/${roomSlug}`;
+export const rssUrl = (protocol: string, host: string, roomUid: IRoom["uid"]) =>
+  `${protocol}//${host}/api/rss/${roomUid}`;
 
-export const roomPageUrl = (slug: IRoom["slug"]) => `${baseUrl}/rooms/${slug}`;
+export const roomPageUrl = (uid: IRoom["uid"]) => `${baseUrl}/rooms/${uid}`;
 
 export const futureEpisodePage = (
-  slug: IRoom["slug"],
-  playlistId: IPlaylist["id"],
-  episodeId: IEpisode["id"]
-) => `${baseUrl}/rooms/${slug}/admin/${playlistId}/${episodeId}`;
+  uid: IRoom["uid"],
+  playlistUid: IPlaylist["uid"],
+  episodeUid: IEpisode["uid"]
+) => `${baseUrl}/rooms/${uid}/admin/${playlistUid}/${episodeUid}`;

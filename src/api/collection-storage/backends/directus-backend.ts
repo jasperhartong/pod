@@ -1,12 +1,9 @@
 import { ERR, OK } from "@/api/IResponse";
-import { IBackend } from "@/app-schema/IBackend";
-import { IEpisode } from "@/app-schema/IEpisode";
+import { TDateString } from "@/app-schema/IDateString";
 import { IImageData } from "@/app-schema/IFileData";
-import { IPlaylist } from "@/app-schema/IPlaylist";
-import { IRoom } from "@/app-schema/IRoom";
 import DirectusSDK from "@directus/sdk-js";
-import axios, { AxiosResponse } from "axios";
 import HttpStatus from "http-status-codes";
+import * as t from "io-ts";
 
 const token = process.env.DIRECTUS_CLOUD_TOKEN;
 const project = "dcMJTq1b80lIY4CT";
@@ -15,7 +12,73 @@ if (!token) {
   throw Error(`process.env.DIRECTUS_CLOUD_TOKEN not set`);
 }
 
-class DirectusTapesMeBackend implements IBackend {
+/* 
+https://github.com/gcanti/io-ts/pull/266#issuecomment-474935329
+
+    const Person = t.interface({
+    name: t.string,
+    age: optional(t.number)
+    })
+
+    Person.decode({name: 'bob'}) // returns right({name: 'bob'})
+    Person.is({name: 'bob'}) // returns false
+ */
+export const optional = <T extends t.Type<any, any, any>>(type: T) =>
+  t.union([type, t.null, t.undefined]);
+
+// Typings for Room Stored in Directus
+const TDirectusThumbnail = t.type({
+  url: t.string,
+  relative_url: t.string,
+  dimension: t.string,
+  width: t.number,
+  height: t.number,
+});
+
+const TDirectusImageData = t.type({
+  full_url: t.string,
+  thumbnails: t.array(TDirectusThumbnail),
+});
+
+const TDirectusEpisodeStatus = t.keyof({
+  // https://github.com/gcanti/io-ts#union-of-string-literals
+  published: null,
+  draft: null,
+  deleted: null,
+});
+
+const TDirectusEpisode = t.type({
+  id: t.number,
+  status: TDirectusEpisodeStatus,
+  created_on: TDateString,
+  title: t.string,
+  image_file: t.type({ data: TDirectusImageData }),
+  audio_file: optional(t.string),
+  published_on: optional(TDateString),
+});
+
+const TDirectusPlaylist = t.type({
+  id: t.number,
+  created_on: TDateString,
+  title: t.string,
+  description: t.string,
+  cover_file: t.type({ data: TDirectusImageData }),
+  // alias
+  episodes: t.array(TDirectusEpisode),
+});
+
+const TDirectusRoom = t.type({
+  id: t.number,
+  slug: t.string,
+  title: t.string,
+  cover_file: t.type({ data: TDirectusImageData }),
+  // alias
+  playlists: t.array(TDirectusPlaylist),
+});
+
+type IDirectusRoom = t.TypeOf<typeof TDirectusRoom>;
+
+class DirectusTapesMeBackend {
   constructor(
     private client = new DirectusSDK({
       url: "https://api.directus.cloud/",
@@ -30,7 +93,7 @@ class DirectusTapesMeBackend implements IBackend {
 
   public getRoomBySlug = async (roomSlug: string) => {
     try {
-      const roomResponse = await this.client.getItems<IRoom[]>(
+      const roomResponse = await this.client.getItems<IDirectusRoom[]>(
         this.roomCollection,
         {
           filter: {
@@ -54,140 +117,140 @@ class DirectusTapesMeBackend implements IBackend {
         roomResponse.data[0].playlists
           .reverse()
           .map((p) => p.episodes.reverse());
-        return OK<IRoom>(roomResponse.data[0]);
+        return OK<IDirectusRoom>(roomResponse.data[0]);
       }
     } catch (error) {
       console.error(error);
-      return ERR<IRoom>("Room fetch errored");
+      return ERR<IDirectusRoom>("Room fetch errored");
     }
 
-    return ERR<IRoom>("Room not found", HttpStatus.NOT_FOUND);
+    return ERR<IDirectusRoom>("Room not found", HttpStatus.NOT_FOUND);
   };
 
-  public createPlaylist = async (
-    playlist: Partial<IPlaylist>,
-    roomId: string,
-    imageFileId: string
-  ) => {
-    try {
-      const itemResponse = await this.client.createItem<
-        Partial<IPlaylist | { cover_file: string; room: string }>
-      >(this.playlistCollection, {
-        ...playlist,
-        cover_file: imageFileId,
-        room: roomId,
-      });
-      return OK<{ id: IPlaylist["id"] }>({
-        id: (itemResponse.data as IPlaylist).id,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-    return ERR<{ id: IPlaylist["id"] }>(
-      "Playlist could not be created",
-      HttpStatus.BAD_REQUEST
-    );
-  };
+  // public createPlaylist = async (
+  //   playlist: Partial<IPlaylist>,
+  //   roomId: string,
+  //   imageFileId: string
+  // ) => {
+  //   try {
+  //     const itemResponse = await this.client.createItem<
+  //       Partial<IPlaylist | { cover_file: string; room: string }>
+  //     >(this.playlistCollection, {
+  //       ...playlist,
+  //       cover_file: imageFileId,
+  //       room: roomId,
+  //     });
+  //     return OK<{ id: IPlaylist["id"] }>({
+  //       id: (itemResponse.data as IPlaylist).id,
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  //   return ERR<{ id: IPlaylist["id"] }>(
+  //     "Playlist could not be created",
+  //     HttpStatus.BAD_REQUEST
+  //   );
+  // };
 
-  public getEpisode = async (episodeId: string) => {
-    try {
-      const itemResponse = await this.client.getItem<IEpisode>(
-        this.episodeCollection,
-        episodeId,
-        {
-          fields: ["*", "audio_file.data", "image_file.data"],
-        }
-      );
-      return OK<IEpisode>(itemResponse.data);
-    } catch (error) {
-      console.error(error);
-    }
-    return ERR<IEpisode>("Episode not found", HttpStatus.NOT_FOUND);
-  };
+  // public getEpisode = async (episodeId: string) => {
+  //   try {
+  //     const itemResponse = await this.client.getItem<IEpisode>(
+  //       this.episodeCollection,
+  //       episodeId,
+  //       {
+  //         fields: ["*", "audio_file.data", "image_file.data"],
+  //       }
+  //     );
+  //     return OK<IEpisode>(itemResponse.data);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  //   return ERR<IEpisode>("Episode not found", HttpStatus.NOT_FOUND);
+  // };
 
-  public createEpisode = async (
-    episode: Partial<IEpisode>,
-    playlistId: string,
-    imageFileId: string
-  ) => {
-    try {
-      const itemResponse = await this.client.createItem<
-        Partial<
-          | Omit<IEpisode, "image_file"> /* setting image by id */
-          | { image_file: string; playlist: string }
-        >
-      >(this.episodeCollection, {
-        ...episode,
-        image_file: imageFileId,
-        playlist: playlistId,
-      });
-      return OK<{ id: IEpisode["id"] }>({
-        id: (itemResponse.data as IEpisode).id,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-    return ERR<{ id: IEpisode["id"] }>(
-      "Episode could not be created",
-      HttpStatus.BAD_REQUEST
-    );
-  };
+  // public createEpisode = async (
+  //   episode: Partial<IEpisode>,
+  //   playlistId: string,
+  //   imageFileId: string
+  // ) => {
+  //   try {
+  //     const itemResponse = await this.client.createItem<
+  //       Partial<
+  //         | Omit<IEpisode, "image_file"> /* setting image by id */
+  //         | { image_file: string; playlist: string }
+  //       >
+  //     >(this.episodeCollection, {
+  //       ...episode,
+  //       image_file: imageFileId,
+  //       playlist: playlistId,
+  //     });
+  //     return OK<{ id: IEpisode["id"] }>({
+  //       id: (itemResponse.data as IEpisode).id,
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  //   return ERR<{ id: IEpisode["id"] }>(
+  //     "Episode could not be created",
+  //     HttpStatus.BAD_REQUEST
+  //   );
+  // };
 
-  public updateEpisode = async (
-    episodeId: string,
-    episode: Partial<IEpisode>
-  ) => {
-    try {
-      const itemResponse = await this.client.updateItem<Partial<IEpisode>>(
-        this.episodeCollection,
-        episodeId,
-        episode
-      );
-      return OK<{ id: IEpisode["id"] }>({
-        id: (itemResponse.data as IEpisode).id,
-      });
-    } catch (error) {
-      console.error(error);
-    }
-    return ERR<{ id: IEpisode["id"] }>(
-      "Episode could not be updated",
-      HttpStatus.BAD_REQUEST
-    );
-  };
+  // public updateEpisode = async (
+  //   episodeId: string,
+  //   episode: Partial<IEpisode>
+  // ) => {
+  //   try {
+  //     const itemResponse = await this.client.updateItem<Partial<IEpisode>>(
+  //       this.episodeCollection,
+  //       episodeId,
+  //       episode
+  //     );
+  //     return OK<{ id: IEpisode["id"] }>({
+  //       id: (itemResponse.data as IEpisode).id,
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  //   return ERR<{ id: IEpisode["id"] }>(
+  //     "Episode could not be updated",
+  //     HttpStatus.BAD_REQUEST
+  //   );
+  // };
 
-  public addExternalImage = async (url: string) => {
-    console.warn(`addExternalImage:: ${url}`);
+  // public addExternalImage = async (url: string) => {
+  //   console.warn(`addExternalImage:: ${url}`);
 
-    try {
-      // Needs to be done with raw api; Directus SDK doesn't support this call (...)
-      const fileUpload = await axios.post<
-        { url: string },
-        AxiosResponse<{ data: IDBFileUpload }>
-      >(
-        `${this.client.config.url}${this.client.config.project}/files`,
-        {
-          data: url,
-        },
-        {
-          headers: {
-            authorization: `Bearer ${this.client.config.token}`,
-            "content-type": "application/json;charset=utf-8",
-          },
-        }
-      );
+  //   try {
+  //     // Needs to be done with raw api; Directus SDK doesn't support this call (...)
+  //     const fileUpload = await axios.post<
+  //       { url: string },
+  //       AxiosResponse<{ data: IDBFileUpload }>
+  //     >(
+  //       `${this.client.config.url}${this.client.config.project}/files`,
+  //       {
+  //         data: url,
+  //       },
+  //       {
+  //         headers: {
+  //           authorization: `Bearer ${this.client.config.token}`,
+  //           "content-type": "application/json;charset=utf-8",
+  //         },
+  //       }
+  //     );
 
-      return OK<{ file: IImageData; id: string }>({
-        file: fileUpload.data.data.data,
-        id: fileUpload.data.data.id.toString(),
-      });
-    } catch (error) {
-      console.error(error);
-    }
-    return ERR<{ file: IImageData; id: string }>(
-      "External Image could not be added to backend",
-      HttpStatus.INTERNAL_SERVER_ERROR
-    );
-  };
+  //     return OK<{ file: IImageData; id: string }>({
+  //       file: fileUpload.data.data.data,
+  //       id: fileUpload.data.data.id.toString(),
+  //     });
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  //   return ERR<{ file: IImageData; id: string }>(
+  //     "External Image could not be added to backend",
+  //     HttpStatus.INTERNAL_SERVER_ERROR
+  //   );
+  // };
 }
 
 const directusTapesMeBackend = new DirectusTapesMeBackend();

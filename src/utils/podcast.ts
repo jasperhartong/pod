@@ -1,8 +1,9 @@
-import { parseDbDate } from "@/api/collection-storage/backends/directus-utils";
 import { IEpisode } from "@/app-schema/IEpisode";
 import { IPlaylist } from "@/app-schema/IPlaylist";
 import { IRoom } from "@/app-schema/IRoom";
 import { toXML } from "jstoxml";
+import { DateTime } from "luxon";
+import path from "path";
 import { futureEpisodePage, roomPageUrl } from "../urls";
 
 export const podcastXML = (room: IRoom): string => {
@@ -62,7 +63,7 @@ export const podcastXML = (room: IRoom): string => {
             title: room.title,
           },
           {
-            link: roomPageUrl(room.slug),
+            link: roomPageUrl(room.uid),
           },
           {
             language: "nl",
@@ -71,7 +72,7 @@ export const podcastXML = (room: IRoom): string => {
             copyright: "Copyright 2020",
           },
           {
-            "itunes:subtitle": room.slug,
+            "itunes:subtitle": room.title,
           },
           {
             "itunes:author": room.title,
@@ -156,14 +157,17 @@ const itemFromEpisode = (
       _attrs: {
         url: encodeURI(episode.audio_file || ""),
         // length: "8727310",
-        type: "audio/x-mp4",
+        // Poor mans version of getting file type
+        type: `audio/x-${
+          path.extname(episode.audio_file || "").replace(".", "") || "mp4"
+        }`,
       },
     },
     {
-      guid: futureEpisodePage(room.slug, playlist.id, episode.id),
+      guid: futureEpisodePage(room.uid, playlist.uid, episode.uid),
     },
     {
-      pubDate: parseDbDate(
+      pubDate: DateTime.fromISO(
         episode.published_on || episode.created_on
       ).toRFC2822(),
     },

@@ -1,6 +1,7 @@
 import { IEpisode } from "@/app-schema/IEpisode";
 import { IRoom } from "@/app-schema/IRoom";
-import { Box, Grid, List, Typography } from "@material-ui/core";
+import { Box, Divider, Grid, List, Typography } from "@material-ui/core";
+import IconSurroundSound from "@material-ui/icons/SurroundSound";
 import dynamic from "next/dynamic";
 import { useImmer } from "use-immer";
 import { PodcastPanel } from "./admin/components/podcast-panel";
@@ -28,14 +29,14 @@ export const ListenRoom = ({ room }: { room: IRoom }) => {
           spacing={1}
           alignContent="center"
           alignItems="center"
-          justify="space-between"
+          justify="center"
           wrap="nowrap"
         >
-          <Grid item>
-            <Typography variant="h4">{room.title}</Typography>
-          </Grid>
+          <IconSurroundSound fontSize="small" style={{ marginRight: 8, marginTop: -2 }} />
+          <Typography variant="overline" >{room.title}</Typography>
         </Grid>
       </Box>
+      <Divider />
 
       {room.playlists
         // Busines Logic: Only show playlists that contain published episodes

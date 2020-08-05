@@ -39,12 +39,13 @@ const PlaylistGrid = (props: Props) => {
 
   const { playlist, playingUid, setPlayingUid, isPaused, setIsPaused } = props;
 
+  const episodes = playlist.episodes.slice().reverse();
+
   return (
     <div className={classes.gridRoot}>
       {/* Current episodes */}
       {/* Busines Logic: Only show playlists that contain published episodes */}
-      {playlist.episodes
-        .reverse()
+      {episodes
         .filter((e) => e.status === "published")
         .map((episode) => (
           <div

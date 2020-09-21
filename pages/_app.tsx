@@ -11,6 +11,8 @@ import themeOptionsProvider from "../src/theme";
  * - Extended with customized getInitialProps method
  */
 
+const siteName = "Tapes.me";
+
 class MyApp extends App {
   state = {
     theme: themeOptionsProvider.theme,
@@ -35,7 +37,25 @@ class MyApp extends App {
     return (
       <>
         <Head>
-          <title>Tapes.me</title>
+          <title>{siteName}</title>
+          {/* <link rel="icon" href="/public/favicon.ico" /> */}
+          <meta property="og:site_name" content={siteName} />
+          <meta property="og:title" content={siteName} />
+          <meta property="og:description" content={siteName} />
+
+          {/* <meta
+            property="og:image"
+            itemProp="image"
+            content="/public/icon.png"
+          /> */}
+          <meta property="og:type" content="website" />
+          <meta property="og:updated_time" content="1566389369" />
+          <meta charSet="utf-8" />
+          {/* Use minimum-scale=1 to enable GPU rasterization */}
+          <meta
+            name="viewport"
+            content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=0"
+          />
         </Head>
         <style>
           @import url(https://fonts.googleapis.com/css?family=Questrial);

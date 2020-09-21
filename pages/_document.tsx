@@ -1,8 +1,7 @@
 import { ServerStyleSheets } from "@material-ui/styles";
-import Document, { Head, Main, NextScript } from "next/document";
+import Document, { Head, Html, Main, NextScript } from "next/document";
 import React from "react";
 import themeOptionsProvider from "../src/theme";
-
 /**
  * @see https://github.com/mui-org/material-ui/blob/master/examples/nextjs-with-typescript/pages/_document.tsx
  */
@@ -12,26 +11,8 @@ const siteName = "Tapes.me";
 class MyDocument extends Document {
   render() {
     return (
-      <html lang="en">
+      <Html lang="en">
         <Head>
-          {/* <link rel="icon" href="/public/favicon.ico" /> */}
-          <meta property="og:site_name" content={siteName} />
-          <meta property="og:title" content={siteName} />
-          <meta property="og:description" content={siteName} />
-
-          {/* <meta
-            property="og:image"
-            itemProp="image"
-            content="/public/icon.png"
-          /> */}
-          <meta property="og:type" content="website" />
-          <meta property="og:updated_time" content="1566389369" />
-          <meta charSet="utf-8" />
-          {/* Use minimum-scale=1 to enable GPU rasterization */}
-          <meta
-            name="viewport"
-            content="minimum-scale=1, initial-scale=1, width=device-width, shrink-to-fit=no, user-scalable=0"
-          />
           {/* PWA primary color */}
           <meta
             name="theme-color"
@@ -52,7 +33,7 @@ class MyDocument extends Document {
           </noscript>
           {/* End Simple Analytics */}
         </body>
-      </html>
+      </Html>
     );
   }
 }

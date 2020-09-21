@@ -1,4 +1,3 @@
-import { toDbDate } from "@/api/collection-storage/backends/directus-utils";
 import episodeDeleteMeta from "@/api/rpc/commands/episode.delete.meta";
 import episodeUpdateMeta from "@/api/rpc/commands/episode.update.meta";
 import { IEpisode } from "@/app-schema/IEpisode";
@@ -32,7 +31,7 @@ export const EpisodeDetails = ({ room, playlist, episode }: Props) => {
   );
 
   const handlePublish = async () => {
-    const published_on = toDbDate(DateTime.utc());
+    const published_on = DateTime.utc().toJSON();
     const updating = await updateEpisode({
       roomUid: room.uid,
       playlistUid: playlist.uid,

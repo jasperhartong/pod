@@ -44,8 +44,8 @@ export const getStaticProps: GetStaticProps<PageProps> = async ({ params }) => {
     },
     // we will attempt to re-generate the page:
     // - when a request comes in
-    // - at most once every unstable_revalidate seconds
-    unstable_revalidate: revalidationInterval,
+    // - at most once every revalidate seconds
+    revalidate: revalidationInterval,
   };
 };
 

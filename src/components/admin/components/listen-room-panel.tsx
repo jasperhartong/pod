@@ -1,15 +1,7 @@
 import { IRoom } from "@/app-schema/IRoom";
 import { useBasePath } from "@/hooks/useBasePath";
 import useSharing from "@/hooks/useSharing";
-import {
-  Box,
-  Button,
-  ExpansionPanel,
-  ExpansionPanelDetails,
-  ExpansionPanelSummary,
-  Grid,
-  Typography,
-} from "@material-ui/core";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Grid, Typography } from "@material-ui/core";
 import IconCopySuccess from "@material-ui/icons/CheckCircle";
 import IconExpandMore from "@material-ui/icons/ExpandMore";
 import IconCopy from "@material-ui/icons/FileCopy";
@@ -31,8 +23,8 @@ export const ListenRoomPanel = ({ room }: { room: IRoom }) => {
   };
 
   return (
-    <ExpansionPanel square>
-      <ExpansionPanelSummary
+    <Accordion square>
+      <AccordionSummary
         expandIcon={<IconExpandMore />}
         aria-controls="subscribe-content"
         id="subscribe-header"
@@ -40,8 +32,8 @@ export const ListenRoomPanel = ({ room }: { room: IRoom }) => {
         <Grid container alignContent="center">
           <Typography>De Luisterkamer</Typography>
         </Grid>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails id="subscribe-content">
+      </AccordionSummary>
+      <AccordionDetails id="subscribe-content">
         <Box width="100%">
           {hasNativeShare && (
             <>
@@ -74,11 +66,11 @@ export const ListenRoomPanel = ({ room }: { room: IRoom }) => {
                 Gekopieerd
               </>
             ) : (
-              <>
-                <IconCopy fontSize="small" style={{ marginRight: 8 }} /> Kopieer
+                <>
+                  <IconCopy fontSize="small" style={{ marginRight: 8 }} /> Kopieer
                 Luisterkamer link
               </>
-            )}
+              )}
           </Button>
           <Box pt={2} />
 
@@ -98,7 +90,7 @@ export const ListenRoomPanel = ({ room }: { room: IRoom }) => {
             ]}
           />
         </Box>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   );
 };

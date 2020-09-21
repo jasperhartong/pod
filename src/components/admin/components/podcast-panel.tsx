@@ -1,6 +1,6 @@
 import { IRoom } from "@/app-schema/IRoom";
 import useSharing from "@/hooks/useSharing";
-import { Box, Button, Divider, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, Grid, Typography } from "@material-ui/core";
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Divider, Grid, Typography } from "@material-ui/core";
 import IconCopySuccess from "@material-ui/icons/CheckCircle";
 import IconExpandMore from "@material-ui/icons/ExpandMore";
 import IconCopy from "@material-ui/icons/FileCopy";
@@ -29,8 +29,8 @@ export const PodcastPanel = ({ room }: { room: IRoom }) => {
   };
 
   return (
-    <ExpansionPanel square>
-      <ExpansionPanelSummary
+    <Accordion square>
+      <AccordionSummary
         expandIcon={<IconExpandMore />}
         aria-controls="subscribe-content"
         id="subscribe-header"
@@ -38,8 +38,8 @@ export const PodcastPanel = ({ room }: { room: IRoom }) => {
         <Grid container alignContent="center">
           <Typography>Abboneer op de Podcast feed</Typography>
         </Grid>
-      </ExpansionPanelSummary>
-      <ExpansionPanelDetails id="subscribe-content">
+      </AccordionSummary>
+      <AccordionDetails id="subscribe-content">
         <Box width="100%">
           {subscribeLinks.map((link) => (
             <Box key={`${link.url}${link.label}`} mb={2}>
@@ -95,8 +95,8 @@ export const PodcastPanel = ({ room }: { room: IRoom }) => {
             ]}
           />
         </Box>
-      </ExpansionPanelDetails>
-    </ExpansionPanel>
+      </AccordionDetails>
+    </Accordion>
   );
 };
 

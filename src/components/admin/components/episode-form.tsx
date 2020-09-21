@@ -1,16 +1,5 @@
-import {
-  Box,
-  Button,
-  FormGroup,
-  LinearProgress,
-  TextField,
-} from "@material-ui/core";
-import {
-  Controller,
-  ErrorMessage,
-  FormContextValues,
-  useForm,
-} from "react-hook-form";
+import { Box, Button, FormGroup, LinearProgress, TextField } from "@material-ui/core";
+import { Controller, ErrorMessage, FormContextValues, useForm } from "react-hook-form";
 import { FormErrorMessageTypography } from "./form-error-message";
 
 /*
@@ -18,7 +7,7 @@ import { FormErrorMessageTypography } from "./form-error-message";
 */
 export interface EpisodeFormValues {
   title: string;
-  imageUrl: string;
+  imageUrl: string | undefined;
 }
 
 export const episodeFormKeys: Record<
@@ -102,8 +91,8 @@ export const EpisodeForm = ({
               variant="indeterminate"
             />
           ) : (
-            "Naar opnemen"
-          )}
+              "Naar opnemen"
+            )}
         </Button>
       </Box>
     </form>

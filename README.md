@@ -41,7 +41,7 @@ _Note: put meta in separate file of below handler as it will be used both on the
 
 ```javascript
 export const roomFetch = RPCHandlerFactory(meta, async (reqData) => {
-  return await collectionsBackend.getRoomBySlug(reqData.uid);
+  return await dynamoTableTapes.getRoomBySlug(reqData.uid);
 });
 ```
 

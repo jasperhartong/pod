@@ -5,7 +5,6 @@
   ],
   "public": false,
   "env": {
-    "DIRECTUS_CLOUD_TOKEN": "@production-directus-cloud-token",
     "MY_AWS_ACCESS_BUCKET": "@tapesme-aws-bucket",
     "MY_AWS_ACCESS_REGION": "@tapesme-aws-region",
     "MY_AWS_ACCESS_KEY_ID": "@tapesme-aws-key-id",
@@ -14,7 +13,6 @@
   },
   "build": {
     "env": {
-      "DIRECTUS_CLOUD_TOKEN": "@production-directus-cloud-token",
       "MY_AWS_ACCESS_BUCKET": "@tapesme-aws-bucket",
       "MY_AWS_ACCESS_REGION": "@tapesme-aws-region",
       "MY_AWS_ACCESS_KEY_ID": "@tapesme-aws-key-id",

@@ -1,6 +1,5 @@
 import roomAllMeta from "@/api/rpc/commands/room.all.meta";
 import roomCreateMeta from "@/api/rpc/commands/room.create.meta";
-import roomImportMeta from "@/api/rpc/commands/room.import.meta";
 import { IRoom } from "@/app-schema/IRoom";
 import { ImageCoverDropZone } from "@/components/admin/components/image-cover-dropzone";
 import { LoaderCentered } from "@/components/admin/layout/loader-centered";
@@ -31,12 +30,6 @@ const SuperAdmin = () => {
     error: creationRoomError,
   } = useRPC(roomCreateMeta);
 
-  const {
-    call: importRoom,
-    isValidating: isImporting,
-    data: importedRooms,
-    error: importError,
-  } = useRPC(roomImportMeta);
 
   useEffect(() => {
     fetchRooms({ secret });
@@ -117,27 +110,6 @@ const SuperAdmin = () => {
         <Divider />
         <Box pt={4} />
 
-        <Button
-          disabled={isImporting}
-          onClick={() =>
-            confirm("Are you sure, this will lead to duplicates") &&
-            importRoom({ secret })
-          }
-        >
-          Import rooms from Directus
-        </Button>
-
-        {importedRooms && (
-          <Box textAlign="center" p={4}>
-            Imported: {importedRooms.map((d) => d.title + ":" + d.uid)}
-          </Box>
-        )}
-
-        {importError && (
-          <Box textAlign="center" p={4}>
-            Error: {importError}
-          </Box>
-        )}
       </Box>
     </AppContainer>
   );

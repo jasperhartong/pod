@@ -5,11 +5,7 @@ import { useRouter } from "@/hooks/useRouter";
 import { useSWRRoom } from "@/hooks/useSWRRoom";
 import { Box } from "@material-ui/core";
 import { ImageCoverDropZone } from "./components/image-cover-dropzone";
-import {
-  PlaylistForm,
-  PlaylistFormValues,
-  usePlaylistFormContext,
-} from "./components/playlist-form";
+import { PlaylistForm, PlaylistFormValues, usePlaylistFormContext } from "./components/playlist-form";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
 import { AdminHeaderClose } from "./layout/admin-header-close";
 import { AdminInstructionsLayout } from "./layout/admin-instruction-layout";
@@ -29,7 +25,7 @@ export const PlaylistNew = ({ room }: Props) => {
       data: {
         title: formData.title,
         description: formData.description || "",
-        image_url: formData.imageUrl,
+        image_url: formData.imageUrl || "",
       },
     });
     if (playlistCreation.ok) {

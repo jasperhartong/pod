@@ -1,12 +1,5 @@
 import { useSignedDokaImageUploadDropZone } from "@/hooks/useSignedUploadDropZone";
-import {
-  Box,
-  CircularProgress,
-  Grow,
-  IconButton,
-  Typography,
-  useTheme,
-} from "@material-ui/core";
+import { Box, CircularProgress, Grow, IconButton, Typography, useTheme } from "@material-ui/core";
 import IconDelete from "@material-ui/icons/DeleteOutline";
 import ImageIcon from "@material-ui/icons/Image";
 import { makeStyles } from "@material-ui/styles";
@@ -74,17 +67,17 @@ export const ImageCoverDropZone = ({
                   {[undefined, 0, 100].includes(
                     dropZone.uploadPercentCompleted
                   ) ? (
-                    <CircularProgress
-                      key="indeterminate"
-                      variant="indeterminate"
-                    />
-                  ) : (
-                    <CircularProgress
-                      key="determinate"
-                      value={dropZone.uploadPercentCompleted}
-                      variant="determinate"
-                    />
-                  )}
+                      <CircularProgress
+                        key="indeterminate"
+                        variant="indeterminate"
+                      />
+                    ) : (
+                      <CircularProgress
+                        key="determinate"
+                        value={dropZone.uploadPercentCompleted}
+                        variant="determinate"
+                      />
+                    )}
                 </>
               )}
 
@@ -101,22 +94,24 @@ export const ImageCoverDropZone = ({
         }
         bottomRightAction={
           <Grow in={hasImage}>
-            {/* Show delete button when there's an image */}
-            <IconButton
-              style={{
-                background: theme.palette.action.selected,
-                color: theme.palette.getContrastText(
-                  theme.palette.action.selected
-                ),
-              }}
-              onClick={(event: MouseEvent<HTMLElement>) => {
-                event.preventDefault();
-                event.stopPropagation();
-                _onDelete();
-              }}
-            >
-              <IconDelete fontSize="small" />
-            </IconButton>
+            <div>
+              {/* Show delete button when there's an image */}
+              <IconButton
+                style={{
+                  background: theme.palette.action.selected,
+                  color: theme.palette.getContrastText(
+                    theme.palette.action.selected
+                  ),
+                }}
+                onClick={(event: MouseEvent<HTMLElement>) => {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  _onDelete();
+                }}
+              >
+                <IconDelete fontSize="small" />
+              </IconButton>
+            </div>
           </Grow>
         }
       />

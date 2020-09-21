@@ -5,11 +5,7 @@ import { IRoom } from "@/app-schema/IRoom";
 import { useRouter } from "@/hooks/useRouter";
 import { useSWRRoom } from "@/hooks/useSWRRoom";
 import { Box } from "@material-ui/core";
-import {
-  EpisodeForm,
-  EpisodeFormValues,
-  useEpisodeFormContext,
-} from "./components/episode-form";
+import { EpisodeForm, EpisodeFormValues, useEpisodeFormContext } from "./components/episode-form";
 import { ImageCoverDropZone } from "./components/image-cover-dropzone";
 import AdminDualPaneLayout from "./layout/admin-dual-pane";
 import { AdminHeaderClose } from "./layout/admin-header-close";
@@ -31,7 +27,7 @@ export const EpisodeNew = ({ room, playlist }: Props) => {
       playlistUid: playlist.uid,
       data: {
         title: formData.title,
-        image_url: formData.imageUrl,
+        image_url: formData.imageUrl || "",
         audio_file: null,
         published_on: null,
       },

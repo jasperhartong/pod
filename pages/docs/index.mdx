@@ -1,0 +1,88 @@
+import AppContainer from "@/components/app-container";
+import Link from "next/link";
+
+<AppContainer maxWidth="md"><div className="docs-page" style={{ padding: 16}}>
+
+# 📓 Tapes.me: Open-Takeaways
+
+## What's Open-Takeaways?
+
+Many side-projects come and go, some stick around slightly longer, but most of them never outgrow there initial best intentions. Making the repository public and calling that code dump "open-source" also doesn't feel like much value to anyone.
+
+So, let's try something else: **"Open-Takeaways"**. Sharing code-fragments, ideas and demo's of these side-projects within easy to read articles. Not with the intention of continueing the project in the open, but to guide others that tackle similar challenges with actual implementations.
+
+Jump to [my open-takeaways](#open-takeaways) if you want to skip the backstory.
+
+## The backstory of Pod / Tapes.me
+
+One week after the COVID19 lock-down began in the Netherlands (march 2020), my mother thought of a nice way to keep in touch with her grandchildren (my nieces and nephew). She started picking out children books to read, recording herself on her iMac (she's so tech-savvy ❤️) and queueing up recordings to send inside our family WhatsApp Group. Lovely and Brilliant!
+
+I was immediatly inspired by her idea.. my code-nerve started itching..
+
+Some opportunities for improvement I saw in the above process:
+
+* WhatsApp Groups are not really made for persistent storage: the recordings just dissappear between other conversations
+* The recording and queuing of episodes was quite a hassle on the iMac (often requiring the help of my dad)
+* There was not a simple way for my nieces and nephew to listen back to chapters by themselves
+* This whole process the whole process sounded like some form of private Podcasting to me.. shoulnd't it just be that?
+
+So I set down and created Tapes.me, an web-app consisting of:
+
+* A "recording room", for my mom to add new episodes, record and publish them
+* A "listening room", for the kids to easily pick episodes to listen to
+* A RSS feed, for the parents to subscribe to in their Podcast App
+
+After it was finished.. the lock-down started to loosen up again and this whole thing dwindled down with it. So now there's a private podcasting web-app, with no users left for it, brilliant :)
+
+NB: Of course this project has two names, which side-project doesn't? You need to pick a repository name way early in the process. Then, a few days in, you decide to buy a domain name which becomes the actual name from then on. Right?
+
+<div id="open-takeaways" />
+
+## My Open-Takeaways
+
+The below Takeaways assume the reader has some knowledge about TypeScript and React.
+
+<h3>👂 <Link href={"/docs/recording-audio"} as={"/docs/recording-audio"}>Recording Audio with React</Link></h3>
+
+* A React Hook abstracting away audio recording controls
+* A React recorder button component mimicking iOS Voice Memos
+* A React component for visualizing incoming recordings
+* Several gotcha's about implementing audio recording on the web
+
+-------
+
+### 🌏 Signed S3 uploading in React `(coming soon)`
+
+* A serverless endpoint for retrieving signed URL's
+* A React Hook for signed media uploading
+* A React Component for dropping files
+
+-------
+
+### 🕹 An RPC API experiment `(coming soon)`
+
+* Sharing as much code as possible between client and server
+* A React Hook for calling serverside methods savely
+* Using io-ts to add typesafety to unknown objects
+* On response interface all the way down
+
+-------
+
+### 💾 An experiment with storing relationships in DynamoDB `(coming soon)`
+
+* Defining relationships with storage keys
+* Serverless configurations
+
+-------
+
+Other possible topics:
+
+* DirectusDB backend
+* Certain Nextjs features (back then experimental revalidation)
+* Doka.js
+* Podcast feed with jstoxml
+* Using MDX for documentation (nice and meta)
+
+
+</div></AppContainer>
+

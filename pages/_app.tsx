@@ -4,7 +4,10 @@ import App from "next/app";
 import Head from "next/head";
 import React from "react";
 import "../src/lib/doka/doka.min.css";
+import "../src/lib/prism/prism-vsc-dark-plus.css";
 import themeOptionsProvider from "../src/theme";
+
+
 
 /**
  * @see https://github.com/mui-org/material-ui/blob/master/examples/nextjs-with-typescript/pages/_app.tsx

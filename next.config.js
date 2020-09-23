@@ -2,7 +2,18 @@ const withBundleAnalyzer = require("@next/bundle-analyzer")({
   enabled: process.env.ANALYZE === "true",
 });
 
-module.exports = withBundleAnalyzer({
+const rehypePrism = require('@mapbox/rehype-prism');
+const withMDX = require('@next/mdx')({
+  extension: /\.mdx?$/,
+  options: {
+    rehypePlugins: [
+      rehypePrism
+    ]
+  }
+});
+
+module.exports = withMDX(withBundleAnalyzer({
+  pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   webpack: function (cfg) {
     const originalEntry = cfg.entry;
     cfg.entry = async () => {
@@ -20,4 +31,4 @@ module.exports = withBundleAnalyzer({
 
     return cfg;
   },
-});
+}));

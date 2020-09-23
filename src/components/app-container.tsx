@@ -1,11 +1,5 @@
 import { useRouter } from "@/hooks/useRouter";
-import {
-  Box,
-  Container,
-  Fade,
-  LinearProgress,
-  makeStyles,
-} from "@material-ui/core";
+import { Box, Container, Fade, LinearProgress, makeStyles } from "@material-ui/core";
 import { Breakpoint } from "@material-ui/core/styles/createBreakpoints";
 import { ReactNode, useEffect, useRef, useState } from "react";
 

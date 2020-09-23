@@ -58,11 +58,11 @@ export const AudioRecorderVisualizer = ({
       // Would've been even better to actually get the averages per set of covered amplitudeValues, laterrr
       const amplitudeValue =
         newAmplitudeData[
-          Math.floor(
-            ((newAmplitudeData.length * (1 - magicSkipTopSpectrumPercentage)) /
-              frequencyBandArrayRef.current.length) *
-              bandIndex
-          )
+        Math.floor(
+          ((newAmplitudeData.length * (1 - magicSkipTopSpectrumPercentage)) /
+            frequencyBandArrayRef.current.length) *
+          bandIndex
+        )
         ];
 
       if (element && amplitudeValue !== undefined) {
@@ -74,7 +74,7 @@ export const AudioRecorderVisualizer = ({
         // opacity needs no clamping.
         element.style.opacity = `${
           (amplitudeValue / 256) * magicOpacityAmplification
-        }`;
+          }`;
       }
     });
   };

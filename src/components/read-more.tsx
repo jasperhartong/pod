@@ -1,5 +1,6 @@
 import { makeStyles } from '@material-ui/core';
 import Collapse from '@material-ui/core/Collapse';
+import { fade } from '@material-ui/core/styles/colorManipulator';
 import { MouseEvent, ReactNode, useCallback, useRef, useState } from "react";
 
 interface Props {
@@ -15,12 +16,12 @@ const useStyles = makeStyles(theme => ({
         "&:after": {
             position: "absolute",
             display: "block",
-            height: "20%",
+            height: "30%",
             bottom: 0,
             left: 0,
             right: 0,
             content: `" "`,
-            backgroundImage: `linear-gradient(transparent, ${theme.palette.background.default})`
+            backgroundImage: `linear-gradient(${fade(theme.palette.background.default, 0)}, ${theme.palette.background.default})`
         }
     },
     linkWrapper: {
@@ -34,7 +35,7 @@ const useStyles = makeStyles(theme => ({
 
 export const ReadMore = ({
     children,
-    collapsedHeight = 300,
+    collapsedHeight = 360,
     moreText = "Read more",
     lessText = "Read less"
 }: Props) => {

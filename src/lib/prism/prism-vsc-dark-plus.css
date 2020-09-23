@@ -4,7 +4,7 @@
 	font-size: 1rem;
 }
 
-.docs-page p, .docs-page li, .docs-page ol, .docs-page div {
+.docs-page p, .docs-page li, .docs-page ol, .docs-page a {
 	font-family: Helvetica, Arial, sans-serif;
 	color: #DDD;
 }
@@ -27,6 +27,13 @@
 .docs-page hr {
 	border-color:white;
 	opacity: 0.15;
+}
+
+.docs-link {
+	cursor: pointer;
+}
+.docs-link h3 {
+	text-decoration: underline;
 }
 
 /* Actual prism styles */

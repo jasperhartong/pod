@@ -1,7 +1,7 @@
 import AppContainer from "@/components/app-container";
 import Link from "next/link";
 
-<AppContainer maxWidth="md"><div className="docs-page" style={{ padding: 16}}>
+<AppContainer maxWidth="sm"><div className="docs-page">
 
 # 📓 Tapes.me: Open-Takeaways
 
@@ -13,7 +13,10 @@ So, let's try something else: **"Open-Takeaways"**. Sharing code-fragments, idea
 
 Jump to [my open-takeaways](#open-takeaways) if you want to skip the backstory.
 
-## The backstory of Pod / Tapes.me
+
+## The backstory of Tapes.me
+
+<img src="/docs-images/tapes.me.png" alt="Pucture showing Tapes.me in action" />
 
 One week after the COVID19 lock-down began in the Netherlands (march 2020), my mother thought of a nice way to keep in touch with her grandchildren (my nieces and nephew). She started picking out children books to read, recording herself on her iMac (she's so tech-savvy ❤️) and queueing up recordings to send inside our family WhatsApp Group. Lovely and Brilliant!
 
@@ -34,20 +37,17 @@ So I set down and created Tapes.me, an web-app consisting of:
 
 After it was finished.. the lock-down started to loosen up again and this whole thing dwindled down with it. So now there's a private podcasting web-app, with no users left for it, brilliant :)
 
-NB: Of course this project has two names, which side-project doesn't? You need to pick a repository name way early in the process. Then, a few days in, you decide to buy a domain name which becomes the actual name from then on. Right?
+NB: Of course this project has two names, which side-project doesn't? You need to pick a repository name way early in the process – "pod". Then, a few days in, you decide to buy a domain name – "tapes.me" – which becomes the actual name from then on. Right?
 
 <div id="open-takeaways" />
 
 ## My Open-Takeaways
 
-The below Takeaways assume the reader has some knowledge about TypeScript and React.
-
 <h3>👂 <Link href={"/docs/recording-audio"} as={"/docs/recording-audio"}>Recording Audio with React</Link></h3>
 
-* A React Hook abstracting away audio recording controls
-* A React recorder button component mimicking iOS Voice Memos
-* A React component for visualizing incoming recordings
-* Several gotcha's about implementing audio recording on the web
+How to use React to build a record button mimicking iOS Voice Memos and a funky audio visualizer. Details necessary polyfills and cross-browsers API standardization.
+
+`React | WebAudio | Nextjs`
 
 -------
 
@@ -56,6 +56,8 @@ The below Takeaways assume the reader has some knowledge about TypeScript and Re
 * A serverless endpoint for retrieving signed URL's
 * A React Hook for signed media uploading
 * A React Component for dropping files
+
+`React | Amazon S3 | Serverless | Nextjs`
 
 -------
 
@@ -66,12 +68,16 @@ The below Takeaways assume the reader has some knowledge about TypeScript and Re
 * Using io-ts to add typesafety to unknown objects
 * On response interface all the way down
 
+`React | Serverless | Nextjs`
+
 -------
 
 ### 💾 An experiment with storing relationships in DynamoDB `(coming soon)`
 
 * Defining relationships with storage keys
 * Serverless configurations
+
+`React | Amazon DynamoDB | Serverless | Nextjs`
 
 -------
 

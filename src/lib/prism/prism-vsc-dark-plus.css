@@ -4,14 +4,14 @@
 	font-size: 1rem;
 }
 
-.docs-page p, .docs-page li, .docs-page ol {
+.docs-page p, .docs-page li, .docs-page ol, .docs-page div {
 	font-family: Helvetica, Arial, sans-serif;
 	color: #DDD;
 }
 
 .docs-page h1, .docs-page h2, .docs-page h3  {
 	margin-top: 40px;
-	margin-bottom: 8px;
+	margin-bottom: 0px;
 }
 
 .docs-page img {

@@ -6,7 +6,7 @@
 
 .docs-page p, .docs-page li, .docs-page ol, .docs-page a {
 	font-family: Helvetica, Arial, sans-serif;
-	color: #DDD;
+	opacity: 0.80;
 }
 
 .docs-page h1, .docs-page h2, .docs-page h3  {
@@ -19,10 +19,10 @@
 }
 
 .docs-page code {
-	color: #9cdcfe;	
+	color: #569CD6;	
 }
 .docs-page a {
-	color: #9cdcfe;	
+	color: #569CD6;	
 }
 .docs-page hr {
 	border-color:white;

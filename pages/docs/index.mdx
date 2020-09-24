@@ -9,15 +9,13 @@ import Link from "next/link";
 
 _Many side-projects come and go, some stick around slightly longer, but most of them never outgrow there initial best intentions._
 
-_Just making the code publicly available and calling that "Open Source" also doesn't feel like much value to anyone. So, I'm trying something else:_
+_Just making the code publicly available and calling that "Open Source" doesn't feel like adding much value for anyone. So, I'm trying something else:_
 
 _**"Open Takeaways" (OT)**: short articles containing ideas, code-fragments and demo's with the intention to guide others that tackle similar challenges._
 
-------
+## Side-project: "Tapes.me"
 
-## Side-project 1: "Tapes.me"
-
-<ReadMore moreText="Continue reading the backstory" lessText="Hide backstory">
+<ReadMore moreText="Continue the backstory..." lessText="Hide backstory">
 
 One week after the COVID19 lock-down began in the Netherlands (march 2020), my mother thought of a nice way to keep in touch with her grandchildren (my nieces and nephew).
 
@@ -46,19 +44,21 @@ NB: Of course this project has two names, which side-project doesn't? You need t
 
 </ReadMore>
 
+<div style={{padding: 16}}/>
 
-<Link href={"/docs/recording-audio"} as={"/docs/recording-audio"}><div className="docs-link">
 
-### OT: Recording Audio with React
+
+### 1. Recording Audio with React
 
 <code>React | WebAudio | Nextjs</code>
 
 How to use React to build a record button mimicking iOS Voice Memos and a funky audio visualizer. Details necessary polyfills and cross-browsers API standardization.
 
-</div></Link>
+<Link href={"/docs/recording-audio"} as={"/docs/recording-audio"}>Read the full article →</Link>
 
+<div className="docs-later">
 
-### OT: Signed S3 uploading in React `(coming soon)`
+### 2. Signed S3 uploading in React
 
 <code>React | Amazon S3 | Serverless | Nextjs</code>  
 
@@ -66,7 +66,9 @@ How to use React to build a record button mimicking iOS Voice Memos and a funky 
 * A React Hook for signed media uploading
 * A React Component for dropping files
 
-### OT: An RPC API experiment `(coming soon)`
+<a>Coming soon</a>
+
+### 3. An RPC API experiment
 
 <code>React | Serverless | Nextjs</code>  
 
@@ -75,14 +77,26 @@ How to use React to build a record button mimicking iOS Voice Memos and a funky 
 * Using io-ts to add typesafety to unknown objects
 * On response interface all the way down
 
-### OT: An experiment with storing relationships in DynamoDB `(coming soon)`
+<a>Coming soon</a>
+
+### 4. An experiment with storing relationships in DynamoDB
 
 <code>React | Amazon DynamoDB | Serverless | Nextjs</code>
 
 * Defining relationships with storage keys
 * Serverless configurations
 
-<div style={{paddingBottom: 16}}/>
+<a>Coming soon</a>
+
+</div>
+
+<div style={{paddingBottom: 32}}/>
+
+---
+
+<a href="https://twitter.com/jasperhartong" target="_Blank"> @jasperhartong</a>
+
+`©2020`
 
 </div></AppContainer>
 

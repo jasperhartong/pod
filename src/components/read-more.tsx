@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
         }
     },
     linkWrapper: {
-        paddingTop: theme.spacing(1)
+        paddingTop: theme.spacing(3)
     },
     root: {
         outline: "none"

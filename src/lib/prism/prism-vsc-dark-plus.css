@@ -9,7 +9,7 @@
 	opacity: 0.80;
 }
 
-.docs-page h1, .docs-page h2, .docs-page h3  {
+.docs-page h1, .docs-page h2, .docs-page h3, .docs-page h4  {
 	margin-top: 40px;
 	margin-bottom: 0px;
 }
@@ -19,21 +19,18 @@
 }
 
 .docs-page code {
-	color: #569CD6;	
+	opacity: 0.4;
 }
 .docs-page a {
 	color: #569CD6;	
 }
 .docs-page hr {
-	border-color:white;
 	opacity: 0.15;
+	margin: 16px 0;
 }
 
-.docs-link {
-	cursor: pointer;
-}
-.docs-link h3 {
-	text-decoration: underline;
+.docs-later {
+	opacity: 0.25;
 }
 
 /* Actual prism styles */

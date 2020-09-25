@@ -5,23 +5,9 @@ import { AudioRecorderVisualizer } from "@/components/audio-recorder-hook/audio-
 import AppContainer from "@/components/app-container";
 import Link from "next/link";
 
-<AppContainer maxWidth="sm"><div className="docs-page">
+<!-- DEMO CODE -->
 
-📓 <Link href={"/docs"} as={"/docs"}>Back to overview</Link>
-
------
-
-# Recording Audio with React
-
-After wrapping up a simple page to listen to a collection of audio (using the easy-to-use lib [ReactPlayer](https://github.com/CookPete/react-player)), the time came to add some audio recording capabilities to the app. How hard could it be?
-
-Well, quite hard and véry frustrating, as Chrome, Safari and Firefox all have slightly inconsistent Audio API's and recording behavior.
-
-Time for two small demo's of the end result:
-
-## A simple record button
-
-export const AudioRecorderButtonWithState = () => {
+export const AudioRecorderDemo = () => {
     const {
     isRecording,
     isRequestingAccess,
@@ -29,7 +15,8 @@ export const AudioRecorderButtonWithState = () => {
     stopRecording,
     dataBlobs,
     dataSeconds,
-    clearData
+    clearData,
+    getFrequencyData
   } = useAudioRecorder();
   return (
       <div style={{display: "flex", flexDirection:"column", alignItems: "center", padding: 32}}>
@@ -44,55 +31,20 @@ export const AudioRecorderButtonWithState = () => {
                 seconds: dataSeconds,
             }).toFormat("mm:ss")}
         </div>
-        {dataBlobs.length === 0 && ( <code>Yes, you can press that button 👆</code>)}
+        {dataBlobs.length === 0 && !isRecording && ( <code>Yes, you can press that button 👆</code>)}
+        { isRecording && <>
+          <AudioRecorderVisualizer
+            uniqueId="demo"
+            getFrequencyData={getFrequencyData}
+          />
+          <p>Make some noise now! 😁</p>
+          </>
+        }
         {dataBlobs.length === 1 && ( <audio src={URL.createObjectURL(dataBlobs[0])} controls></audio>)}
         {dataBlobs.length === 1 && ( <button onClick={clearData}>Clear recording</button>)}
     </div>
   )
 }
-
-<AudioRecorderButtonWithState />
-
-This design might look slightly familiar, as it's a reimplementation from the [Apple Voice Memos app](https://support.apple.com/en-us/HT206775).
-
-The button component is completely decoupled from the recording logic and only needs to be provided with 4 simple props. Internally it can be in 3 different states (idle, recording and requestingAccess), each with their own visual representation.
-
-```tsx
-interface Props {
-  isRecording: boolean;
-  isRequestingAccess: boolean;
-  onStartRecording: () => void;
-  onStopRecording: () => void;
-}
-
-<AudioRecorderButton
-    onStartRecording={startRecording}
-    onStopRecording={stopRecording}
-    isRecording={isRecording}
-    isRequestingAccess={isRequestingAccess}
-/>
-```
-<sub>
-
-Source: [audio-recorder-button.tsx](https://github.com/jasperhartong/pod/blob/master/src/components/audio-recorder-hook/audio-recorder-button.tsx)
-
-</sub>
-
-#### Main Takeaways
-
-* The `AudioRecorderButton` is based on the `ButtonBase` of the [Material-UI](https://material-ui.com) framework. This ensures it correctly handles the easily overlooked basics of a button (e.g. focusability, accesability). This is stuff that I don't try to built completely from scratch, as it's easy to get wrong.
-* The styling of the three different states is based by only changing a single className on the root of the component. This keeps the component clean, but does require some magic syntax in CSS-in-JS.
-
-## A React component for visualizing incoming recordings
-
-
-```tsx
-<AudioRecorderVisualizer
-    uniqueId="demo"
-    getFrequencyData={getFrequencyData}
-/>
-```
-
 
 export const AudioRecorderVisualizerWithState = () => {
   const { getFrequencyData, startListening, stopListening, isListening } = useAudioRecorder();
@@ -110,12 +62,95 @@ export const AudioRecorderVisualizerWithState = () => {
       
     {isListening
         ? <button onClick={stopListening}>Stop listening and hide visualizer</button>
-        : <button onClick={startListening}>Start listening and show visualizer</button>}
+        : <button onClick={startListening}>Click to start listening and show visualizer</button>}
     </div>
   );
 }
 
+<!-- END DEMO CODE -->
+
+<AppContainer maxWidth="sm"><div className="docs-page">
+
+📓 <Link href={"/docs"} as={"/docs"}>Back to overview</Link>
+
+-----
+
+# Recording Audio with React
+
+After wrapping up a simple page to listen to a collection of audio (using the easy-to-use lib [ReactPlayer](https://github.com/CookPete/react-player)), the time came to add some audio recording capabilities to the app. How hard could it be?
+
+Well, quite hard and véry frustrating, as Chrome, Safari and Firefox all have inconsistent Web Audio API's and recording behavior.
+
+But, before iving into the implementation and takeaways...
+
+## It's demo time!
+
+<AudioRecorderDemo />
+
+The button design might look slightly familiar, as it's a reimplementation from the [Apple© Voice Memos app](https://support.apple.com/en-us/HT206775) 😇.
+
+## The recording button component
+
+
+
+The button component is completely decoupled from the recording logic (which is capsulized in a Hook, more on that later) and only needs to be provided with 4 simple props.
+
+```tsx
+interface Props {
+  isRecording: boolean;
+  isRequestingAccess: boolean;
+  onStartRecording: () => void;
+  onStopRecording: () => void;
+}
+```
+<sub style={{marginTop: -14, paddingRight: 4, display: "block", background: "#1e1e1e", textAlign: "right"}}>
+
+[audio-recorder-button.tsx#L66-L71](https://github.com/jasperhartong/pod/blob/master/src/components/audio-recorder-hook/audio-recorder-button.tsx#L66-L71)
+
+</sub>
+
+Internally it can be in 3 different states, each with their own visual representation: `idle`, `requestingAccess` and `recording`.
+
+<div style={{ display: "flex", justifyContent: "space-around", padding: 24 }}>
+<AudioRecorderButton
+    onStartRecording={() => {}}
+    onStopRecording={() => {}}
+    isRecording={false}
+    isRequestingAccess={false} />
+
+<AudioRecorderButton
+    onStartRecording={() => {}}
+    onStopRecording={() => {}}
+    isRecording={false}
+    isRequestingAccess={true} />
+
+<AudioRecorderButton
+    onStartRecording={() => {}}
+    onStopRecording={() => {}}
+    isRecording={true}
+    isRequestingAccess={false} />
+</div>
+
+
+
+
+#### Main Takeaways
+
+* The `AudioRecorderButton` is based on the [ButtonBase of Material-UI](https://material-ui.com/api/button-base/). This ensures it correctly handles the easily overlooked basics of a button (e.g. focusability, accesability). This is stuff that I don't try to built completely from scratch, as it's easy to get wrong.
+* The styling of the three different states is based by only changing a single className on the root of the component. This keeps the component clean, but does require some [magic "$" syntax in CSS-in-JS](https://cssinjs.org/jss-plugin-nested?v=v10.4.0#use-rulename-to-reference-a-local-rule-within-the-same-style-sheet) to reference nested classes. 
+
+## The audio visualizer
+
 <AudioRecorderVisualizerWithState />
+
+
+```tsx
+<AudioRecorderVisualizer
+    uniqueId="demo"
+    getFrequencyData={getFrequencyData}
+/>
+```
+
 
 ## Implementation details
 

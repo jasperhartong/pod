@@ -29,6 +29,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
   },
+  frequencyBand: {
+    transition: "all 50ms ease-in-out"
+  }
 }));
 
 const defaultBandCount = 32;
@@ -85,7 +88,8 @@ export const AudioRecorderVisualizer = ({
     animationFrameRef.current = requestAnimationFrame(animateSpectrum);
   };
 
-  /* Orchestrated mounting in order to have the following sequence
+  /* Orchestrated mounting:
+    0. Track mounted state
     1. Don't render anything server side
     2. Generate uniqueId on client side
     3. Render the frequency band divs with the unique id
@@ -118,6 +122,7 @@ export const AudioRecorderVisualizer = ({
           <div
             id={`audio-visualizer-${uniqueId}${num}`}
             key={num}
+            className={classes.frequencyBand}
             style={{
               backgroundColor: color,
               minWidth: width / bandCount,

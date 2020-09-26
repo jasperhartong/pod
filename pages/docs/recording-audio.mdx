@@ -53,18 +53,6 @@ Internally it can be in 3 different states, each with their own visual represent
 
 The design of the visualizer component is kept quite simple. Most of the dynamics come from syncing the opacity of the individual bars wih their length and tweaking the relation between the frequency spectrum and the ratio of changing the length of the bars.
 
-<GithubLink url="https://github.com/jasperhartong/pod/blob/master/src/components/audio-recorder-hook/audio-recorder-visualizer.tsx#L51-L53" />
-
-```tsx
-const magicHeightAmplification = 1.4;
-const magicOpacityAmplification = 2;
-const magicSkipTopSpectrumPercentage = 0.35; // drops top part of amplitude spectrum (not used in voice)
-```
-
-Yes, there are these brilliant "magic" values in the code that just took some toying around for it to look nice for voice recordings 🧙‍♂️.
-
-<LoopingAudioRecorderVisualizer />
-
 Again this component is completely decoupled from the actual recording logic, this time it does take some more optional properties for quicker experimentation.
 
 ```tsx
@@ -74,10 +62,32 @@ interface Props {
   ) => void;
   bandCount?: number;
   height?: CSSProperties["height"];
-  width?: number; // For now only number, as we want to divide it to be able to calculate bandwidth
+  width?: number;
   color?: CSSProperties["color"];
 }
 ```
+
+Internally there are these brilliant "magic" values that just took some toying around for it to look nice for voice recordings 🧙‍♂️.
+
+<GithubLink url="https://github.com/jasperhartong/pod/blob/master/src/components/audio-recorder-hook/audio-recorder-visualizer.tsx#L51-L53" />
+
+```tsx
+const magicHeightAmplification = 1.4;
+const magicOpacityAmplification = 2;
+const magicSkipTopSpectrumPercentage = 0.35; // drops top part of amplitude spectrum (not used in voice)
+```
+
+<LoopingAudioRecorderVisualizer />
+
+
+
+### Main Takeaways
+
+#### Fluent animations
+* By using `requestAnimationFrame` to give the browser control about when there are enough resources to recalculate a frame of the animation.
+* Instead of using React state to rerender, it's doing direct manipulation of the DOM and the style properties.
+* By creating references towards the DOM nodes upon mounting, these style adjustments can be made without repeated look ups.
+* Skipping "regular" React state based updating does take some extra orchestration to mount this component correctly. Especially since Next.js also does server side rendering out of the box, leading to a mismatch between id's created on the server and client.
 
 
 

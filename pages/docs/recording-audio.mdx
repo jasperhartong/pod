@@ -17,17 +17,13 @@ After wrapping up a simple page to listen to a collection of audio (using the ea
 
 Well, quite hard and véry frustrating, as Chrome, Safari and Firefox all have inconsistent Web Audio API's and recording behavior.
 
-But, before diving into the implementation and takeaways...
-
-## It's demo time!
+But, before diving into the implementation and takeaways... it's demo time:
 
 <AudioRecorderDemo />
 
-The button design might look slightly familiar, as it's a reimplementation from the [Apple© Voice Memos app](https://support.apple.com/en-us/HT206775) 😇.
-
 ## The recording button component
 
-
+The design might look slightly familiar, as it's a reimplementation from the [Apple© Voice Memos app](https://support.apple.com/en-us/HT206775) 😇.
 
 The button component is completely decoupled from the recording logic (which is capsulized in a Hook, more on that later) and only needs to be provided with 4 simple props.
 

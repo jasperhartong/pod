@@ -1,4 +1,5 @@
 import useAudioRecorder from "@/hooks/useAudioRecorder";
+import { Paper } from "@material-ui/core";
 import { Duration } from "luxon";
 import { AudioRecorderButton } from "../audio-recorder-hook/audio-recorder-button";
 import { AudioRecorderVisualizer } from "../audio-recorder-hook/audio-recorder-visualizer";
@@ -15,29 +16,36 @@ export const AudioRecorderDemo = () => {
         getFrequencyData
     } = useAudioRecorder();
     return (
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: 32 }}>
-            <AudioRecorderButton
-                onStartRecording={() => { clearData(); startRecording() }}
-                onStopRecording={stopRecording}
-                isRecording={isRecording}
-                isRequestingAccess={isRequestingAccess}
-            />
-            <div style={{ margin: 16 }}>
-                {Duration.fromObject({
-                    seconds: dataSeconds,
-                }).toFormat("mm:ss")}
-            </div>
-            {dataBlobs.length === 0 && !isRecording && (<code>Yes, you can press that button 👆</code>)}
-            {isRecording && <>
-                <AudioRecorderVisualizer
-                    uniqueId="demo"
-                    getFrequencyData={getFrequencyData}
+        <Paper elevation={0} variant="outlined">
+            <div style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                padding: 32
+            }}>
+                <AudioRecorderButton
+                    onStartRecording={() => { clearData(); startRecording() }}
+                    onStopRecording={stopRecording}
+                    isRecording={isRecording}
+                    isRequestingAccess={isRequestingAccess}
                 />
-                <p>Make some noise now! 😁</p>
-            </>
-            }
-            {dataBlobs.length === 1 && (<audio src={URL.createObjectURL(dataBlobs[0])} controls></audio>)}
-            {dataBlobs.length === 1 && (<button onClick={clearData}>Clear recording</button>)}
-        </div>
+                <div style={{ margin: 16 }}>
+                    {Duration.fromObject({
+                        seconds: dataSeconds,
+                    }).toFormat("mm:ss")}
+                </div>
+                {dataBlobs.length === 0 && !isRecording && (<code>Yes, you can press that button 👆</code>)}
+                {isRecording && <>
+                    <AudioRecorderVisualizer
+                        uniqueId="demo"
+                        getFrequencyData={getFrequencyData}
+                    />
+                    <p>Make some noise now! 😁</p>
+                </>
+                }
+                {dataBlobs.length === 1 && (<audio src={URL.createObjectURL(dataBlobs[0])} controls></audio>)}
+                {dataBlobs.length === 1 && (<button onClick={clearData}>Clear recording</button>)}
+            </div>
+        </Paper>
     )
 }

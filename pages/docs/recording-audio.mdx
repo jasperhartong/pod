@@ -3,6 +3,7 @@ import AppContainer from "@/components/app-container";
 import { LoopingAudioRecorderButton } from "@/components/docs/looping-audio-recorder-button";
 import { LoopingAudioRecorderVisualizer } from "@/components/docs/looping-audio-recorder-visualizer";
 import { AudioRecorderDemo }  from "@/components/docs/audio-recorder-demo";
+import { GithubLink }  from "@/components/docs/github-link";
 
 
 <AppContainer maxWidth="sm"><div className="docs-page">
@@ -27,6 +28,8 @@ The design might look slightly familiar, as it's a reimplementation from the [Ap
 
 The button component is completely decoupled from the recording logic (which is capsulized in a Hook, more on that later) and only needs to be provided with 4 simple props.
 
+<GithubLink url="https://github.com/jasperhartong/pod/blob/master/src/components/audio-recorder-hook/audio-recorder-button.tsx#L66-L71" />
+
 ```tsx
 interface Props {
   isRecording: boolean;
@@ -35,11 +38,6 @@ interface Props {
   onStopRecording: () => void;
 }
 ```
-<sub style={{marginTop: -14, paddingRight: 4, display: "block", background: "#1e1e1e", textAlign: "right"}}>
-
-[audio-recorder-button.tsx#L66-L71](https://github.com/jasperhartong/pod/blob/master/src/components/audio-recorder-hook/audio-recorder-button.tsx#L66-L71)
-
-</sub>
 
 Internally it can be in 3 different states, each with their own visual representation: `idle`, `requestingAccess` and `recording`:
 
@@ -48,19 +46,41 @@ Internally it can be in 3 different states, each with their own visual represent
 
 #### Main Takeaways
 
-* The `AudioRecorderButton` is based on the [ButtonBase of Material-UI](https://material-ui.com/api/button-base/). This ensures it correctly handles the easily overlooked basics of a button (e.g. focusability, accesability). This is stuff that I don't try to built completely from scratch, as it's easy to get wrong.
-* The styling of the three different states is based by only changing a single className on the root of the component. This keeps the component clean, but does require some [magic "$" syntax in CSS-in-JS](https://cssinjs.org/jss-plugin-nested?v=v10.4.0#use-rulename-to-reference-a-local-rule-within-the-same-style-sheet) to reference nested classes. 
+* The `AudioRecorderButton` is based on the [ButtonBase of Material-UI](https://material-ui.com/api/button-base/). This ensures it correctly handles the easily overlooked basics of a button (e.g. focusability, accesability). This basic stuff is easy to get wroong when building completely from scratch.
+* The styling of the three different states is based by only changing a single className on the root of the component. This keeps the component clean, but does require the ["$" syntax in CSS-in-JS](https://cssinjs.org/jss-plugin-nested?v=v10.4.0#use-rulename-to-reference-a-local-rule-within-the-same-style-sheet) to reference nested classes. 
 
-## The audio visualizer
+## The visualizer component
+
+The design of the visualizer component is kept quite simple. Most of the dynamics come from syncing the opacity of the individual bars wih their length and tweaking the relation between the frequency spectrum and the ratio of changing the length of the bars.
+
+<GithubLink url="https://github.com/jasperhartong/pod/blob/master/src/components/audio-recorder-hook/audio-recorder-visualizer.tsx#L51-L53" />
+
+```tsx
+const magicHeightAmplification = 1.4;
+const magicOpacityAmplification = 2;
+const magicSkipTopSpectrumPercentage = 0.35; // drops top part of amplitude spectrum (not used in voice)
+```
+
+Yes, there are these brilliant "magic" values in the code that just took some toying around for it to look nice for voice recordings 🧙‍♂️.
 
 <LoopingAudioRecorderVisualizer />
 
+Again this component is completely decoupled from the actual recording logic, this time however, it takes in quite a big set of different properties. It just allows for quicker experimentations
 
 ```tsx
-<AudioRecorderVisualizer
-    uniqueId="demo"
-    getFrequencyData={getFrequencyData}
-/>
+interface Props {
+  getFrequencyData: (
+    callback: (audioByteFrequencyData: Uint8Array) => void
+  ) => void;
+  bandCount?: number;
+  height?: CSSProperties["height"];
+  width?: number; // For now only number, as we want to divide it to be able to calculate bandwidth
+  color?: CSSProperties["color"];
+}
+```
+
+```tsx
+<AudioRecorderVisualizer getFrequencyData={getFrequencyData} />
 ```
 
 

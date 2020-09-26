@@ -36,10 +36,7 @@ export const AudioRecorderDemo = () => {
                 </div>
                 {dataBlobs.length === 0 && !isRecording && (<code>Yes, you can press that button 👆</code>)}
                 {isRecording && <>
-                    <AudioRecorderVisualizer
-                        uniqueId="demo"
-                        getFrequencyData={getFrequencyData}
-                    />
+                    <AudioRecorderVisualizer getFrequencyData={getFrequencyData} />
                     <p>Make some noise now! 😁</p>
                 </>
                 }

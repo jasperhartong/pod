@@ -8,13 +8,7 @@ import { useRouter } from "@/hooks/useRouter";
 import useSignedMediaUploader from "@/hooks/useSignedMediaUploader";
 import { useSWRRoom } from "@/hooks/useSWRRoom";
 import { blobToFile } from "@/utils/audio-context";
-import {
-  Box,
-  Button,
-  CircularProgress,
-  LinearProgress,
-  Typography,
-} from "@material-ui/core";
+import { Box, Button, CircularProgress, LinearProgress, Typography } from "@material-ui/core";
 import IconUploadSuccess from "@material-ui/icons/CloudDone";
 import IconUpload from "@material-ui/icons/CloudUpload";
 import IconUploadError from "@material-ui/icons/Warning";
@@ -300,7 +294,6 @@ export const EpisodeRecord = ({ room, playlist, episode }: Props) => {
                     <>
                       <Box zIndex={2} style={{ background: "rgba(0,0,0,0.4)" }}>
                         <AudioRecorderVisualizer
-                          uniqueId={episode.uid}
                           getFrequencyData={recorder.getFrequencyData}
                           width={240}
                           height={240}
@@ -389,15 +382,15 @@ const RecordingButtonGroup = ({
             recording
               ? buttonConfig.approve.action
               : isRecording
-              ? buttonConfig.stop.action
-              : buttonConfig.start.action
+                ? buttonConfig.stop.action
+                : buttonConfig.start.action
           }
         >
           {recording
             ? buttonConfig.approve.label
             : isRecording
-            ? buttonConfig.stop.label
-            : buttonConfig.start.label}
+              ? buttonConfig.stop.label
+              : buttonConfig.start.label}
         </Button>
 
         {recording && (

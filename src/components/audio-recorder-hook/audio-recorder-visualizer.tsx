@@ -1,14 +1,18 @@
 import { makeStyles } from "@material-ui/core";
 import { CSSProperties } from "@material-ui/styles";
 import { useEffect, useRef } from "react";
+import { useUID } from 'react-uid';
 import themeOptionsProvider from "src/theme";
 
 /* 
   For usage with useAudioRecorder
  */
 
+const magicHeightAmplification = 1.4;
+const magicOpacityAmplification = 2;
+const magicSkipTopSpectrumPercentage = 0.35; // drops top part of amplitude spectrum (not used in voice)
+
 interface Props {
-  uniqueId: string;
   getFrequencyData: (
     callback: (audioByteFrequencyData: Uint8Array) => void
   ) => void;
@@ -33,7 +37,6 @@ const defaultWidth = 240;
 const defaultColor = themeOptionsProvider.theme.palette.error.main;
 
 export const AudioRecorderVisualizer = ({
-  uniqueId,
   getFrequencyData,
   bandCount = defaultBandCount,
   height = defaultHeight,
@@ -45,12 +48,10 @@ export const AudioRecorderVisualizer = ({
   const frequencyBandArrayRef = useRef<number[]>(
     Array.from(Array(bandCount).keys())
   );
+  const uniqueId = useUID()
 
   const classes = useStyles();
 
-  const magicHeightAmplification = 1.4;
-  const magicOpacityAmplification = 2;
-  const magicSkipTopSpectrumPercentage = 0.35; // drops top part of amplitude spectrum (not used in voice)
   const animationCallback = (newAmplitudeData: Uint8Array) => {
     frequencyBandArrayRef.current.forEach((bandIndex) => {
       const element = domElementsRef.current[bandIndex];

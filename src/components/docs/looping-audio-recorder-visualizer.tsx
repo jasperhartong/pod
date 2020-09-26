@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { AudioRecorderVisualizer } from "../audio-recorder-hook/audio-recorder-visualizer";
 
 const REFRESH_RATE = 32; //ms
-const BAND_COUNT = 50;
+const BAND_COUNT = 100;
 const MAX_AMPLITUDE = 160;
 const MAX_AMPLITUDE_CHANGE = 8;
 
@@ -22,7 +22,7 @@ const hslString = (h: number) => `hsla(${h}, 100%, 25%)`;
 
 export const LoopingAudioRecorderVisualizer = () => {
     const amplitudeArray = useRef<Uint8Array>(randomAmplitudeArray())
-    const [color, setColor] = useState<string>(hslString(0))
+    const [currPosY, setCurrPosY] = useState<number>(0)
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -32,7 +32,7 @@ export const LoopingAudioRecorderVisualizer = () => {
     }, []);
 
     useScrollPosition(({ currPos }) => {
-        setColor(_ => hslString(currPos.y / 2))
+        setCurrPosY(currPos.y)
     }, [])
 
     const getFrequencyData = (callback: (audioByteFrequencyData: Uint8Array) => void) => {
@@ -42,11 +42,11 @@ export const LoopingAudioRecorderVisualizer = () => {
     return (
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: 16 }}>
             <AudioRecorderVisualizer
-                uniqueId="demo"
                 getFrequencyData={getFrequencyData}
-                color={color}
+                bandCount={32}
+                color={hslString(currPosY / 2)}
             />
-            <code style={{ marginTop: 16 }}>Random noise</code>
+            <code style={{ marginTop: 16 }}>Random noise also looks kinda nice</code>
         </div>
     );
 }

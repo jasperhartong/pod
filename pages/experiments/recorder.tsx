@@ -73,9 +73,7 @@ const Recorder = () => {
       </Box>
 
       {isListening && (
-        <AudioRecorderVisualizer
-          uniqueId="test"
-          getFrequencyData={getFrequencyData}
+        <AudioRecorderVisualizer getFrequencyData={getFrequencyData}
         />
       )}
 

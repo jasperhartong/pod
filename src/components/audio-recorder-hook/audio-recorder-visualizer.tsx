@@ -1,6 +1,6 @@
 import { makeStyles } from "@material-ui/core";
 import { CSSProperties } from "@material-ui/styles";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useUID } from 'react-uid';
 import themeOptionsProvider from "src/theme";
 
@@ -43,14 +43,14 @@ export const AudioRecorderVisualizer = ({
   width = defaultWidth,
   color = defaultColor,
 }: Props) => {
+  const uniqueId = useUID();
+  const classes = useStyles();
+  const [didMount, setDidMount] = useState<boolean>(false);
   const animationFrameRef = useRef<number>(0);
   const domElementsRef = useRef<(HTMLElement | null)[]>([null]);
   const frequencyBandArrayRef = useRef<number[]>(
     Array.from(Array(bandCount).keys())
   );
-  const uniqueId = useUID()
-
-  const classes = useStyles();
 
   const animationCallback = (newAmplitudeData: Uint8Array) => {
     frequencyBandArrayRef.current.forEach((bandIndex) => {
@@ -85,6 +85,17 @@ export const AudioRecorderVisualizer = ({
     animationFrameRef.current = requestAnimationFrame(animateSpectrum);
   };
 
+  /* Orchestrated mounting in order to have the following sequence
+    1. Don't render anything server side
+    2. Generate uniqueId on client side
+    3. Render the frequency band divs with the unique id
+    4. Set up `domElementsRef` towards just created divs
+    5. Start animation that uses this list in domElementsRef
+    */
+  useEffect(() => {
+    setDidMount(true);
+  }, [])
+
   useEffect(() => {
     domElementsRef.current = frequencyBandArrayRef.current.map((num) =>
       document.getElementById(`audio-visualizer-${uniqueId}${num}`)
@@ -93,7 +104,12 @@ export const AudioRecorderVisualizer = ({
     animationFrameRef.current = requestAnimationFrame(animateSpectrum);
     // Stop animation loop on unmount
     return () => cancelAnimationFrame(animationFrameRef.current);
-  }, []);
+  }, [didMount]);
+
+
+  if (!didMount) {
+    return null;
+  }
 
   return (
     <div>

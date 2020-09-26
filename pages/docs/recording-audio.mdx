@@ -1,73 +1,9 @@
-import { Duration } from "luxon";
-import useAudioRecorder from "@/hooks/useAudioRecorder";
-import { AudioRecorderButton } from "@/components/audio-recorder-hook/audio-recorder-button";
-import { AudioRecorderVisualizer } from "@/components/audio-recorder-hook/audio-recorder-visualizer";
-import AppContainer from "@/components/app-container";
 import Link from "next/link";
+import AppContainer from "@/components/app-container";
+import { LoopingAudioRecorderButton } from "@/components/docs/looping-audio-recorder-button";
+import { LoopingAudioRecorderVisualizer } from "@/components/docs/looping-audio-recorder-visualizer";
+import { AudioRecorderDemo }  from "@/components/docs/audio-recorder-demo";
 
-<!-- DEMO CODE -->
-
-export const AudioRecorderDemo = () => {
-    const {
-    isRecording,
-    isRequestingAccess,
-    startRecording,
-    stopRecording,
-    dataBlobs,
-    dataSeconds,
-    clearData,
-    getFrequencyData
-  } = useAudioRecorder();
-  return (
-      <div style={{display: "flex", flexDirection:"column", alignItems: "center", padding: 32}}>
-        <AudioRecorderButton
-            onStartRecording={() => {clearData(); startRecording()}}
-            onStopRecording={stopRecording}
-            isRecording={isRecording}
-            isRequestingAccess={isRequestingAccess}
-        />
-        <div style={{margin: 16}}>
-            {Duration.fromObject({
-                seconds: dataSeconds,
-            }).toFormat("mm:ss")}
-        </div>
-        {dataBlobs.length === 0 && !isRecording && ( <code>Yes, you can press that button 👆</code>)}
-        { isRecording && <>
-          <AudioRecorderVisualizer
-            uniqueId="demo"
-            getFrequencyData={getFrequencyData}
-          />
-          <p>Make some noise now! 😁</p>
-          </>
-        }
-        {dataBlobs.length === 1 && ( <audio src={URL.createObjectURL(dataBlobs[0])} controls></audio>)}
-        {dataBlobs.length === 1 && ( <button onClick={clearData}>Clear recording</button>)}
-    </div>
-  )
-}
-
-export const AudioRecorderVisualizerWithState = () => {
-  const { getFrequencyData, startListening, stopListening, isListening } = useAudioRecorder();
-  return (
-    <div style={{display: "flex", flexDirection:"column", alignItems: "center", padding: 16}}> 
-      { isListening && <>
-        <AudioRecorderVisualizer
-          uniqueId="demo"
-          getFrequencyData={getFrequencyData}
-        />
-        <p>Make some noise now! 😁</p>
-        </>
-      }
-    
-      
-    {isListening
-        ? <button onClick={stopListening}>Stop listening and hide visualizer</button>
-        : <button onClick={startListening}>Click to start listening and show visualizer</button>}
-    </div>
-  );
-}
-
-<!-- END DEMO CODE -->
 
 <AppContainer maxWidth="sm"><div className="docs-page">
 
@@ -109,29 +45,9 @@ interface Props {
 
 </sub>
 
-Internally it can be in 3 different states, each with their own visual representation: `idle`, `requestingAccess` and `recording`.
+Internally it can be in 3 different states, each with their own visual representation: `idle`, `requestingAccess` and `recording`:
 
-<div style={{ display: "flex", justifyContent: "space-around", padding: 24 }}>
-<AudioRecorderButton
-    onStartRecording={() => {}}
-    onStopRecording={() => {}}
-    isRecording={false}
-    isRequestingAccess={false} />
-
-<AudioRecorderButton
-    onStartRecording={() => {}}
-    onStopRecording={() => {}}
-    isRecording={false}
-    isRequestingAccess={true} />
-
-<AudioRecorderButton
-    onStartRecording={() => {}}
-    onStopRecording={() => {}}
-    isRecording={true}
-    isRequestingAccess={false} />
-</div>
-
-
+<LoopingAudioRecorderButton states={["idle", "requestingAccess", "idle", "recording"]} />
 
 
 #### Main Takeaways
@@ -141,7 +57,7 @@ Internally it can be in 3 different states, each with their own visual represent
 
 ## The audio visualizer
 
-<AudioRecorderVisualizerWithState />
+<LoopingAudioRecorderVisualizer />
 
 
 ```tsx

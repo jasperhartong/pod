@@ -16,6 +16,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/styles": "^4.9.6",
     "@mdx-js/loader": "^1.6.18",
+    "@n8tb1t/use-scroll-position": "^1.0.47",
     "@next/bundle-analyzer": "^9.3.4",
     "@next/mdx": "^9.5.3",
     "@zeit/next-css": "^1.0.1",

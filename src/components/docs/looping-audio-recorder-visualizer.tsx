@@ -1,3 +1,4 @@
+import { useScrollPosition } from '@n8tb1t/use-scroll-position';
 import { useEffect, useRef, useState } from "react";
 import { AudioRecorderVisualizer } from "../audio-recorder-hook/audio-recorder-visualizer";
 
@@ -17,9 +18,11 @@ const changedAmplitudeArray = (array: Uint8Array, min = 0, max = MAX_AMPLITUDE, 
     });
 
 
+const hslString = (h: number) => `hsla(${h}, 100%, 25%)`;
+
 export const LoopingAudioRecorderVisualizer = () => {
     const amplitudeArray = useRef<Uint8Array>(randomAmplitudeArray())
-    const [colors, setColors] = useState<string[]>(["coral", "tomato", "orangeRed", "tomato"]);
+    const [color, setColor] = useState<string>(hslString(0))
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -28,13 +31,9 @@ export const LoopingAudioRecorderVisualizer = () => {
         return () => clearInterval(interval);
     }, []);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            // rotate
-            setColors(colors => [...colors.slice(1), ...colors.slice(0, 1)])
-        }, 2000);
-        return () => clearInterval(interval);
-    }, []);
+    useScrollPosition(({ currPos }) => {
+        setColor(_ => hslString(currPos.y / 2))
+    }, [])
 
     const getFrequencyData = (callback: (audioByteFrequencyData: Uint8Array) => void) => {
         return callback(amplitudeArray.current);
@@ -45,7 +44,7 @@ export const LoopingAudioRecorderVisualizer = () => {
             <AudioRecorderVisualizer
                 uniqueId="demo"
                 getFrequencyData={getFrequencyData}
-                color={colors[0]}
+                color={color}
             />
             <code style={{ marginTop: 16 }}>Random noise</code>
         </div>

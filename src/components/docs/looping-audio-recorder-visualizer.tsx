@@ -5,7 +5,7 @@ import { AudioRecorderVisualizer } from "../audio-recorder-hook/audio-recorder-v
 const REFRESH_RATE = 32; //ms
 const BAND_COUNT = 100;
 const MAX_AMPLITUDE = 160;
-const MAX_AMPLITUDE_CHANGE = 8;
+const MAX_AMPLITUDE_CHANGE = 50;
 
 const randomAmplitudeArray = (length = BAND_COUNT, max = MAX_AMPLITUDE) =>
     new Uint8Array(Array.from({ length }, () => Math.floor(Math.random() * max)));

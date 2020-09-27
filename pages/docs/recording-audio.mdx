@@ -44,10 +44,13 @@ Internally it can be in 3 different states, each with their own visual represent
 <LoopingAudioRecorderButton states={["idle", "requestingAccess", "idle", "recording"]} />
 
 
-#### Main Takeaways
+### 📓 Custom Button Tips
 
-* The `AudioRecorderButton` is based on the [ButtonBase of Material-UI](https://material-ui.com/api/button-base/). This ensures it correctly handles the easily overlooked basics of a button (e.g. focusability, accesability). This basic stuff is easy to get wroong when building completely from scratch.
-* The styling of the three different states is based by only changing a single className on the root of the component. This keeps the component clean, but does require the ["$" syntax in CSS-in-JS](https://cssinjs.org/jss-plugin-nested?v=v10.4.0#use-rulename-to-reference-a-local-rule-within-the-same-style-sheet) to reference nested classes. 
+The `AudioRecorderButton` is based on the [ButtonBase of Material-UI](https://material-ui.com/api/button-base/). This ensures it correctly handles the easily overlooked basics of a button (e.g. focusability, accesability). This basic stuff is easy to get wroong when building completely from scratch.
+
+### 📓 Nested CSS-in-JS syntax
+
+The styling of the three different states is based by only changing a single className on the root of the component. This keeps the component clean, but does require the ["$" syntax in CSS-in-JS](https://cssinjs.org/jss-plugin-nested?v=v10.4.0#use-rulename-to-reference-a-local-rule-within-the-same-style-sheet) to reference nested classes. 
 
 ## The visualizer component
 
@@ -81,15 +84,15 @@ const magicSkipTopSpectrumPercentage = 0.35; // drops top part of amplitude spec
 
 
 
-### Main Takeaways
+### 📓 Tips for fluent animations
 
-#### Fluent animations
-* By using `requestAnimationFrame` to give the browser control about when there are enough resources to recalculate a frame of the animation.
-* Instead of using React state to rerender, it's doing direct manipulation of the DOM and the style properties.
-* By creating references towards the DOM nodes upon mounting, these style adjustments can be made without repeated look ups.
-* Skipping "regular" React state based updating does take some extra orchestration to mount this component correctly. Especially since Next.js also does server side rendering out of the box, leading to a mismatch between id's created on the server and client.
+Use [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame) to give the browser control about when there are enough resources to recalculate a frame of the animation.
 
+Instead of using React state to rerender, perform direct manipulation of the DOM and the style properties. Access the DOM elements by creating references towards the DOM nodes upon mounting, these style adjustments can then be made without repeated look ups.
 
+Skipping "regular" React state based updating does take some extra orchestration to mount this component correctly. Especially since Next.js also does server side rendering out of the box, leading to a mismatch between id's created on the server and client.
+
+[Read source code audio visualizer](https://github.com/jasperhartong/pod/blob/master/src/components/audio-recorder-hook/audio-recorder-visualizer.tsx)
 
 ## Implementation details
 

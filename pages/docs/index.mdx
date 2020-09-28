@@ -1,8 +1,9 @@
-import { ReadMore } from "@/components/read-more";
+import { ReadMore } from "@/components/docs/read-more";
 import AppContainer from "@/components/app-container";
+import { DocsLayout } from "@/components/docs/docs-layout";
 import Link from "next/link";
 
-<AppContainer maxWidth="sm"><div className="docs-page">
+<DocsLayout>
 
 # 📓 Open Takeaways
 <sub>by Jasper Hartong</sub>
@@ -92,17 +93,7 @@ How to use React to build a record button mimicking iOS Voice Memos and a funky 
 
 </div>
 
-<div style={{paddingBottom: 32}}/>
-
----
-
-<a href="https://twitter.com/jasperhartong" target="_Blank"> @jasperhartong</a>
-
-<p>
-    <sub>©2020</sub>
-</p>
-
-</div></AppContainer>
+</DocsLayout>
 
 <!-- 
 Other possible topics:

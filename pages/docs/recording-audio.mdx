@@ -4,9 +4,10 @@ import { LoopingAudioRecorderButton } from "@/components/docs/looping-audio-reco
 import { LoopingAudioRecorderVisualizer } from "@/components/docs/looping-audio-recorder-visualizer";
 import { AudioRecorderDemo }  from "@/components/docs/audio-recorder-demo";
 import { GithubLink }  from "@/components/docs/github-link";
+import { DocsLayout } from "@/components/docs/docs-layout";
 
 
-<AppContainer maxWidth="sm"><div className="docs-page">
+<DocsLayout>
 <div style={{paddingTop:16}} />
 <Link href={"/docs"} as={"/docs"}>← Back to overview</Link>
 
@@ -202,5 +203,9 @@ module.exports = {
 };
 ```
 
+## Epilogue
 
-</div></AppContainer>
+As it's a side-project and was mostly for me to fiddle around, most components are NOT as clean as I would like. Don't expect there to be any tests neither 🤷‍♂️. The code might be usefull as inpsiration though!
+
+
+</DocsLayout>

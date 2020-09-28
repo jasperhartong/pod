@@ -10,6 +10,7 @@ export const AudioRecorderDemo = () => {
         isRequestingAccess,
         startRecording,
         stopRecording,
+        stopListening,
         dataBlobs,
         dataSeconds,
         clearData,
@@ -24,8 +25,9 @@ export const AudioRecorderDemo = () => {
                 padding: 32
             }}>
                 <AudioRecorderButton
-                    onStartRecording={() => { clearData(); startRecording() }}
-                    onStopRecording={stopRecording}
+                    onStartRecording={() => { startRecording() }}
+                    // also stop listening for the demo (no red icon)
+                    onStopRecording={() => { stopRecording(); stopListening(); }}
                     isRecording={isRecording}
                     isRequestingAccess={isRequestingAccess}
                 />
@@ -40,8 +42,8 @@ export const AudioRecorderDemo = () => {
                     <p>Make some noise now! 😁</p>
                 </>
                 }
-                {dataBlobs.length === 1 && (<audio src={URL.createObjectURL(dataBlobs[0])} controls></audio>)}
-                {dataBlobs.length === 1 && (<button onClick={clearData}>Clear recording</button>)}
+                {dataBlobs.map((dataBlob, i) => (<audio key={`${i}`} src={URL.createObjectURL(dataBlob)} controls></audio>))}
+                {dataBlobs.length > 0 && (<button onClick={clearData}>Clear recording</button>)}
             </div>
         </Paper>
     )

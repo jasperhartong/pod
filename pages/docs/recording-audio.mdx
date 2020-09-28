@@ -17,7 +17,7 @@ import { DocsLayout } from "@/components/docs/docs-layout";
 
 After wrapping up a simple page to listen to a collection of audio (using the easy-to-use lib [ReactPlayer](https://github.com/CookPete/react-player)), the time came to add some audio recording capabilities to the app. How hard could it be?
 
-Well, quite hard and véry frustrating, as Chrome, Safari and Firefox all have inconsistent Web Audio API's and recording behavior.
+Well, quite hard and véry frustrating, as Chrome, Safari and Firefox all have inconsistent Web Audio APIs and recording behavior.
 
 But, before diving into the implementation and takeaways... it's demo time:
 
@@ -27,7 +27,7 @@ But, before diving into the implementation and takeaways... it's demo time:
 
 <GithubLink variant="below-header" url="https://github.com/jasperhartong/pod/blob/master/src/components/audio-recorder-hook/audio-recorder-button.tsx" />
 
-The button component is completely decoupled from the recording logic (which is capsulized in a Hook, more on that later) and only needs to be provided with 4 simple props.
+The button component is completely decoupled from the recording logic (which is encapsulated in a Hook, more on that later) and only needs to be provided with 4 simple props.
 
 <GithubLink variant="above-code" url="https://github.com/jasperhartong/pod/blob/master/src/components/audio-recorder-hook/audio-recorder-button.tsx#L66-L71" />
 
@@ -46,11 +46,11 @@ Internally it can be in 3 different states, each with their own visual represent
 
 ### 📓 Good artists copy; great artists steal
 
-The design of the button might look slightly familiar, as it's a reimplementation from the [Apple© Voice Memos app](https://support.apple.com/en-us/HT206775). For me this is just a good excercise to force myself on the implementation of these type of micro interactions, instead of loosing myself in endless design iterations in these side-projects.
+The design of the button might look slightly familiar, as it's a reimagination from the [Apple© Voice Memos app](https://support.apple.com/en-us/HT206775). For me this is just a good exercise to force myself on the implementation of these type of micro interactions, instead of loosing myself in endless design iterations in these side-projects.
 
 ### 📓 Don't create custom UI from scratch
 
-The `AudioRecorderButton` is based on the [ButtonBase of Material-UI](https://material-ui.com/api/button-base/). This ensures it correctly handles the easily overlooked basics of a button (e.g. focusability, accesability). This basic stuff is easy to get wrong when building completely from scratch.
+The `AudioRecorderButton` is based on the [ButtonBase of Material-UI](https://material-ui.com/api/button-base/). This ensures it correctly handles the easily overlooked basics of a button (e.g. accessability, handling focus). This basic stuff is easy to get wrong when building completely from scratch.
 
 ### 📓 Nested CSS-in-JS syntax
 
@@ -92,7 +92,7 @@ const magicSkipTopSpectrumPercentage = 0.35; // drops top part of amplitude spec
 
 ### 📓 Fluent animations might mean letting go of React
 
-Instead of using React state to rerender, perform direct manipulation of the DOM and the style properties. Access the DOM elements by creating references towards the DOM nodes upon mounting, these style adjustments can then be made without repeated look ups.
+Instead of using React state to trigger renderings, perform direct manipulation of the DOM and the style properties. Access the DOM elements by creating references towards the DOM nodes upon mounting, these style adjustments can then be made without repeated look ups.
 
 Skipping "regular" React state based updating does take some extra orchestration to mount this component correctly. Especially since Next.js also does server side rendering out of the box, leading to a mismatch between id's created on the server and client.
 
@@ -105,7 +105,7 @@ The logic of above components are both captured by `useAudioRecorder`. This hook
 - **Start listening and get live audio output**: requests access to the microphone, activates it and from then on will report on frequency data captured
 - **Start recording and get mp3 audio data**: starts saving the audio into MP3 data blobs.
 
-For recording the hook also allows to define a time slice in millisecconds to save the mp3 data in chunks. When not setting a time slice all recording data is ony available after stopping the recording.
+For recording the hook also allows to define a time slice in milliseconds to save the mp3 data in chunks. When not setting a time slice all recording data is ony available after stopping the recording.
 
 The API of the hook currently looks like: 
 
@@ -133,14 +133,14 @@ const {
 ```
 
 A hook is a good place to abstract away logic, in this case it:
-- Gaurds undesired state transitions (e.g. ignore `stopListening` when already recording)
-- Teardowns all the different listeners and callbacks needed for listening and recording upon unmounting (so the browser no longer shows a red marker)
+- Guards undesired state transitions (e.g. ignore `stopListening` when already recording)
+- Tear downs all the different listeners and callbacks needed for listening and recording upon unmounting (so the browser no longer shows a red marker)
 - Prevents the device of sleeping while a recording is active (even on iOS, with the help of noSleep)
 - Ensures access is requested before recording and the app knows about this state
 
-### 📓 Web Audio API's are a mess..
+### 📓 Web Audio APIs are a mess..
 
-It took a lot of trials to settle on the internals of the hook that would work consistently accross different browsers. In the end I settled on the following combination of polyfills and standardization. This combination now seems to work everywhere, well.. almost everywhere.. somehow, when using Airpods on Mobile Safari it breaks in a weird way, quite a buzz-kill.
+It took a lot of trials to settle on the internals of the hook that would work consistently across different browsers. In the end I settled on the following combination of polyfills and standardization. This combination now seems to work everywhere, well.. almost everywhere.. somehow, when using Airpods on Mobile Safari it breaks in a weird way, quite a buzz-kill.
 
 
 #### Step 1: Use a standardized `window.AudioContext`
@@ -205,7 +205,9 @@ module.exports = {
 
 ## Epilogue
 
-As it's a side-project and was mostly for me to fiddle around, most components are NOT as clean as I would like. Don't expect there to be any tests neither 🤷‍♂️. The code might be usefull as inpsiration though!
+As it's a side-project and was mostly for me to fiddle around, most components are NOT as clean as I would like. Don't expect there to be any tests neither 🤷‍♂️. The code might be useful as inspiration though!
+
+If you come across something unclear or want to reach out for any other reason, just contact me on Twitter. 😃
 
 
 </DocsLayout>

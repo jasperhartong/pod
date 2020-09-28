@@ -1,7 +1,24 @@
+import { NextSeo } from 'next-seo';
 import { ReadMore } from "@/components/docs/read-more";
 import AppContainer from "@/components/app-container";
 import { DocsLayout } from "@/components/docs/docs-layout";
 import Link from "next/link";
+
+<NextSeo
+    title="Open Takeaways: Tapes.me"
+    description="Short articles containing ideas, code-fragments and demo's with the intention to guide others that tackle similar challenges."
+    openGraph={{
+        url: 'https://tapes.me/open-takeaways',
+        title: 'Open Takeaways: Tapes.me',
+        description: "Short articles containing ideas, code-fragments and demo's with the intention to guide others that tackle similar challenges.",
+        site_name: 'Tapes.me',
+    }}
+    twitter={{
+        handle: '@jasperhartong',
+        site: '@tapes.me',
+        cardType: 'summary_large_image',
+    }}
+/>
 
 <DocsLayout>
 

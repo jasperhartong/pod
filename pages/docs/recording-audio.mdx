@@ -1,3 +1,4 @@
+import { NextSeo } from 'next-seo';
 import Link from "next/link";
 import AppContainer from "@/components/app-container";
 import { LoopingAudioRecorderButton } from "@/components/docs/looping-audio-recorder-button";
@@ -7,13 +8,29 @@ import { GithubLink }  from "@/components/docs/github-link";
 import { DocsLayout } from "@/components/docs/docs-layout";
 
 
+<NextSeo
+    title="Open Takeaways: Recording audio with React"
+    description="Short articles containing ideas, code-fragments and demo's with the intention to guide others that tackle similar challenges."
+    openGraph={{
+        url: 'https://tapes.me/open-takeaways',
+        title: 'Open Takeaways: Recording audio with React',
+        description: "Short articles containing ideas, code-fragments and demo's with the intention to guide others that tackle similar challenges.",
+        site_name: 'Tapes.me',
+    }}
+    twitter={{
+        handle: '@jasperhartong',
+        site: '@tapes.me',
+        cardType: 'summary_large_image',
+    }}
+/>
+
 <DocsLayout>
 <div style={{paddingTop:16}} />
 <Link href={"/docs"} as={"/docs"}>← Back to overview</Link>
 
 -----
 
-# Recording Audio with React
+# Recording audio with React
 
 After wrapping up a simple page to listen to a collection of audio (using the easy-to-use lib [ReactPlayer](https://github.com/CookPete/react-player)), the time came to add some audio recording capabilities to the app. How hard could it be?
 

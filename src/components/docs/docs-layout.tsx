@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 import AppContainer from "../app-container";
 
+
+
 export const DocsLayout = ({ children }: { children: ReactNode }) =>
     <AppContainer maxWidth="sm">
         <div className="docs-page">

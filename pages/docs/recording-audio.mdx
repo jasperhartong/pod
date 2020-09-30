@@ -67,11 +67,11 @@ The design of the button might look slightly familiar, as it's a reimagination f
 
 ### 📓 Don't create custom UI from scratch
 
-The `AudioRecorderButton` is based on the [ButtonBase of Material-UI](https://material-ui.com/api/button-base/). This ensures it correctly handles the easily overlooked basics of a button (e.g. accessability, handling focus). This basic stuff is easy to get wrong when building completely from scratch.
+The `AudioRecorderButton` is based on the [ButtonBase of Material-UI](https://material-ui.com/api/button-base/). This ensures it correctly handles the easily overlooked basics of a button (e.g. accessability, handling focus). This basic stuff is easy to get wrong otherwise.
 
 ### 📓 Nested CSS-in-JS syntax
 
-The styling of the three different states is based by only changing a single className on the root of the component. This keeps the component clean, but does require the ["$" syntax in CSS-in-JS](https://cssinjs.org/jss-plugin-nested?v=v10.4.0#use-rulename-to-reference-a-local-rule-within-the-same-style-sheet) to reference nested classes. 
+The styling of the three different states is based by only changing a single className on the root of the component. This keeps the component clean, but in "CSS-in-JS" does require the (not very easy to figure out) ["$" syntax](https://cssinjs.org/jss-plugin-nested?v=v10.4.0#use-rulename-to-reference-a-local-rule-within-the-same-style-sheet) to reference nested classes. 
 
 
 ## The visualizer component
@@ -97,7 +97,7 @@ interface Props {
 
 ### 📓 Sprinkle in some magic values
 
-Internally there are these brilliant "magic" values that just took some toying around for it to look nice for voice recordings 🧙‍♂️. While experimenting around it's easiest to move these values into props and create a simple playground for yourself.
+Internally there are these brilliant "magic" values, which just took some toying around for it to look nice for voice recordings 🧙‍♂️. While experimenting around it's easiest to move these values into props and create a simple playground for yourself.
 
 <GithubLink variant="above-code" url="https://github.com/jasperhartong/pod/blob/master/src/components/audio-recorder-hook/audio-recorder-visualizer.tsx#L51-L53" />
 
@@ -122,7 +122,7 @@ The logic of above components are both captured by `useAudioRecorder`. This hook
 - **Start listening and get live audio output**: requests access to the microphone, activates it and from then on will report on frequency data captured
 - **Start recording and get mp3 audio data**: starts saving the audio into MP3 data blobs.
 
-For recording the hook also allows to define a time slice in milliseconds to save the mp3 data in chunks. When not setting a time slice all recording data is ony available after stopping the recording.
+For recording the hook also allows to define a time slice in milliseconds to save the mp3 data in chunks. When not setting a time slice, all recording data is only available after stopping the recording.
 
 The API of the hook currently looks like: 
 
@@ -151,13 +151,21 @@ const {
 
 A hook is a good place to abstract away logic, in this case it:
 - Guards undesired state transitions (e.g. ignore `stopListening` when already recording)
-- Tear downs all the different listeners and callbacks needed for listening and recording upon unmounting (so the browser no longer shows a red marker)
+- Tears down all the different listeners and callbacks needed for listening and recording upon unmounting (so the browser no longer shows a red recorder indicator)
 - Prevents the device of sleeping while a recording is active (even on iOS, with the help of noSleep)
 - Ensures access is requested before recording and the app knows about this state
 
 ### 📓 Web Audio APIs are a mess..
 
-It took a lot of trials to settle on the internals of the hook that would work consistently across different browsers. In the end I settled on the following combination of polyfills and standardization. This combination now seems to work everywhere, well.. almost everywhere.. somehow, when using Airpods on Mobile Safari it breaks in a weird way, quite a buzz-kill.
+* Every browser supports a different file format for audio recording
+* window.AudioContext (which is in essence the Web Audio API) is just all over the place, some features are implemented in one browser, other only in another.
+* Some browsers have a promise based API others don't.
+
+Brilliant.
+
+It took a lot of trials to settle on the internals of the hook that would work consistently across different browsers. In the end I settled on the following combination of polyfills and standardization.
+
+This combination now seems to work everywhere, well.. almost everywhere.. somehow, when using Airpods on Mobile Safari it breaks in a weird way, quite a buzz-kill.
 
 
 #### Step 1: Use a standardized `window.AudioContext`
@@ -222,7 +230,7 @@ module.exports = {
 
 ## Epilogue
 
-As it's a side-project and was mostly for me to fiddle around, most components are NOT as clean as I would like. Don't expect there to be any tests neither 🤷‍♂️. The code might be useful as inspiration though!
+As it's a side-project and was mostly for me to fiddle around, most components are NOT as clean as I would like. Don't expect there to be any tests either 🤷‍♂️. The code might be useful as inspiration though!
 
 If you come across something unclear or want to reach out for any other reason, just contact me on Twitter. 😃
 

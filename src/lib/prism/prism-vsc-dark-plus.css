@@ -1,32 +1,32 @@
-/* docs-page styles  */
-.docs-page {
+/* open-takeaways-page styles  */
+.open-takeaways-page {
 	padding: 0px 16px;
 	font-size: 1rem;
 }
 
-.docs-page p, .docs-page li, .docs-page ol, .docs-page a {
+.open-takeaways-page p, .open-takeaways-page li, .open-takeaways-page ol, .open-takeaways-page a {
 	font-family: Helvetica, Arial, sans-serif;
 	opacity: 0.80;
 }
 
-.docs-page h1, .docs-page h2, .docs-page h3, .docs-page h4  {
+.open-takeaways-page h1, .open-takeaways-page h2, .open-takeaways-page h3, .open-takeaways-page h4  {
 	margin-top: 40px;
 	margin-bottom: 0px;
 }
 
-.docs-page img {
+.open-takeaways-page img {
 	max-width: 100%;
 }
 
-.docs-page a {
+.open-takeaways-page a {
 	color: #569CD6;	
 }
-.docs-page hr {
+.open-takeaways-page hr {
 	opacity: 0.15;
 	margin: 16px 0;
 }
 
-.docs-later {
+.open-takeaways-later {
 	opacity: 0.25;
 }
 

@@ -5,7 +5,7 @@ import AppContainer from "../app-container";
 
 export const DocsLayout = ({ children }: { children: ReactNode }) =>
     <AppContainer maxWidth="sm">
-        <div className="docs-page">
+        <div className="open-takeaways-page">
             {children}
             <div style={{ paddingBottom: 32 }} />
             <hr />

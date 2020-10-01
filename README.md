@@ -1,5 +1,15 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/zeit/next.js/tree/canary/packages/create-next-app).
 
+# Open Takeaways
+
+_Many side-projects come and go, some stick around slightly longer, but most of them never outgrow there initial best intentions._
+
+_Just making the code publicly available and calling that "Open Source" doesn't feel like adding much value for anyone. So, I'm trying something else:_
+
+_**"Open Takeaways" (OT)**: short articles containing ideas, code-fragments and demo's with the intention to guide others that tackle similar challenges._
+
+Read the Open Takeaways of this project on [tapes.me/open-takeaways](https://tapes.me/open-takeaways)
+
 # Getting Started
 
 First, run the development server:

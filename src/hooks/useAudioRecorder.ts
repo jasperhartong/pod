@@ -1,16 +1,7 @@
 import { useNoSleep } from "@/hooks/useNoSleep";
-import {
-  getAudioContext,
-  killMediaStream,
-  killMediaStreamAudioSourceNode,
-  setupStreamWithAnalyzer,
-} from "@/utils/audio-context";
+import { getAudioContext, killMediaStream, killMediaStreamAudioSourceNode, setupStreamWithAnalyzer } from "@/utils/audio-context";
 import { useEffect, useRef } from "react";
-import {
-  IAnalyserNode,
-  IAudioContext,
-  IMediaStreamAudioSourceNode,
-} from "standardized-audio-context";
+import { IAnalyserNode, IAudioContext, IMediaStreamAudioSourceNode } from "standardized-audio-context";
 import { useImmer } from "use-immer";
 
 interface TearDowns {
@@ -150,7 +141,7 @@ const useAudioRecorder = () => {
     );
 
     if (data.size > 0) {
-      blobsRef.current.push(data);
+      blobsRef.current = [...blobsRef.current, data];
 
       // Update hasData state
       dispatch((state) => {
@@ -174,7 +165,7 @@ const useAudioRecorder = () => {
     }
   };
 
-  const startRecording = async (timeSlice?: number) => {
+  const startRecording = async (timeSlice?: number /* in ms */) => {
     if (state.isRecording) {
       return console.debug(
         `useAudioRecorder:: startRecording ignored: already recording`
@@ -323,18 +314,6 @@ const useAudioRecorder = () => {
     callback(amplitudeArray);
   };
 
-  const extractBlobs = async () => {
-    if (state.isRecording) {
-      return undefined;
-    }
-
-    if (!blobsRef.current || blobsRef.current.length === 0) {
-      return undefined;
-    }
-
-    return blobsRef.current;
-  };
-
   const clearData = async () => {
     blobsRef.current = [];
     dispatch((state) => {
@@ -351,7 +330,6 @@ const useAudioRecorder = () => {
     startRecording,
     stopRecording,
     getFrequencyData,
-    extractBlobs,
     clearData,
   };
 };

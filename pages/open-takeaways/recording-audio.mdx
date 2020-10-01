@@ -1,0 +1,238 @@
+import { NextSeo } from 'next-seo';
+import Link from "next/link";
+import AppContainer from "@/components/app-container";
+import { LoopingAudioRecorderButton } from "@/components/open-takeaways/looping-audio-recorder-button";
+import { LoopingAudioRecorderVisualizer } from "@/components/open-takeaways/looping-audio-recorder-visualizer";
+import { AudioRecorderDemo }  from "@/components/open-takeaways/audio-recorder-demo";
+import { GithubLink }  from "@/components/open-takeaways/github-link";
+import { DocsLayout } from "@/components/open-takeaways/docs-layout";
+
+
+<NextSeo
+    title="Open Takeaways: Recording audio with React"
+    description="Short articles containing ideas, code-fragments and demo's with the intention to guide others that tackle similar challenges."
+    openGraph={{
+        url: 'https://tapes.me/open-takeaways',
+        title: 'Open Takeaways: Recording audio with React',
+        description: "Short articles containing ideas, code-fragments and demo's with the intention to guide others that tackle similar challenges.",
+        site_name: 'Tapes.me',
+    }}
+    twitter={{
+        handle: '@jasperhartong',
+        site: '@tapes.me',
+        cardType: 'summary_large_image',
+    }}
+/>
+
+<DocsLayout>
+<div style={{paddingTop:16}} />
+<Link href={"/open-takeaways"} as={"/open-takeaways"}>← Back to overview</Link>
+
+-----
+
+# Recording audio with React
+
+After wrapping up a simple page to listen to a collection of audio (using the easy-to-use lib [ReactPlayer](https://github.com/CookPete/react-player)), the time came to add some audio recording capabilities to the app. How hard could it be?
+
+Well, quite hard and véry frustrating, as Chrome, Safari and Firefox all have inconsistent Web Audio APIs and recording behavior.
+
+But, before diving into the implementation and takeaways... it's demo time:
+
+<AudioRecorderDemo />
+
+## The recording button component
+
+<GithubLink variant="below-header" url="https://github.com/jasperhartong/pod/blob/master/src/components/audio-recorder-hook/audio-recorder-button.tsx" />
+
+The button component is completely decoupled from the recording logic (which is encapsulated in a Hook, more on that later) and only needs to be provided with 4 simple props.
+
+<GithubLink variant="above-code" url="https://github.com/jasperhartong/pod/blob/master/src/components/audio-recorder-hook/audio-recorder-button.tsx#L66-L71" />
+
+```tsx
+interface Props {
+  isRecording: boolean;
+  isRequestingAccess: boolean;
+  onStartRecording: () => void;
+  onStopRecording: () => void;
+}
+```
+
+Internally it can be in 3 different states, each with their own visual representation: `idle`, `requestingAccess` and `recording`:
+
+<LoopingAudioRecorderButton states={["idle", "requestingAccess", "idle", "recording"]} />
+
+### 📓 Good artists copy; great artists steal
+
+The design of the button might look slightly familiar, as it's a reimagination from the [Apple© Voice Memos app](https://support.apple.com/en-us/HT206775). For me this is just a good exercise to force myself on the implementation of these type of micro interactions, instead of loosing myself in endless design iterations in these side-projects.
+
+### 📓 Don't create custom UI from scratch
+
+The `AudioRecorderButton` is based on the [ButtonBase of Material-UI](https://material-ui.com/api/button-base/). This ensures it correctly handles the easily overlooked basics of a button (e.g. accessability, handling focus). This basic stuff is easy to get wrong otherwise.
+
+### 📓 Nested CSS-in-JS syntax
+
+The styling of the three different states is based by only changing a single className on the root of the component. This keeps the component clean, but in "CSS-in-JS" does require the (not very easy to figure out) ["$" syntax](https://cssinjs.org/jss-plugin-nested?v=v10.4.0#use-rulename-to-reference-a-local-rule-within-the-same-style-sheet) to reference nested classes. 
+
+
+## The visualizer component
+<GithubLink variant="below-header" url="https://github.com/jasperhartong/pod/blob/master/src/components/audio-recorder-hook/audio-visualizer.tsx" />
+
+The design of the visualizer component is kept quite simple. Most of the dynamics come from syncing the opacity of the individual bars wih their length and tweaking the relation between the frequency spectrum and the ratio of changing the length of the bars.
+
+<LoopingAudioRecorderVisualizer />
+
+Again this component is completely decoupled from the actual recording logic, this time it does take some more optional properties for quicker experimentation.
+
+```tsx
+interface Props {
+  getFrequencyData: (
+    callback: (audioByteFrequencyData: Uint8Array) => void
+  ) => void;
+  bandCount?: number;
+  height?: CSSProperties["height"];
+  width?: number;
+  color?: CSSProperties["color"];
+}
+```
+
+### 📓 Sprinkle in some magic values
+
+Internally there are these brilliant "magic" values, which just took some toying around for it to look nice for voice recordings 🧙‍♂️. While experimenting around it's easiest to move these values into props and create a simple playground for yourself.
+
+<GithubLink variant="above-code" url="https://github.com/jasperhartong/pod/blob/master/src/components/audio-recorder-hook/audio-recorder-visualizer.tsx#L51-L53" />
+
+```tsx
+const magicHeightAmplification = 1.4;
+const magicOpacityAmplification = 2;
+const magicSkipTopSpectrumPercentage = 0.35; // drops top part of amplitude spectrum (not used in voice)
+```
+
+### 📓 Fluent animations might mean letting go of React
+
+Instead of using React state to trigger renderings, perform direct manipulation of the DOM and the style properties. Access the DOM elements by creating references towards the DOM nodes upon mounting, these style adjustments can then be made without repeated look ups.
+
+Skipping "regular" React state based updating does take some extra orchestration to mount this component correctly. Especially since Next.js also does server side rendering out of the box, leading to a mismatch between id's created on the server and client.
+
+Also, it's wise to use [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame) to give the browser control about when there are enough resources to recalculate a frame of the animation.
+
+## useAudioRecorder Hook
+<GithubLink variant="below-header" url="https://github.com/jasperhartong/pod/blob/master/src/hooks/useAudioRecorder.ts" />
+
+The logic of above components are both captured by `useAudioRecorder`. This hook allows to
+- **Start listening and get live audio output**: requests access to the microphone, activates it and from then on will report on frequency data captured
+- **Start recording and get mp3 audio data**: starts saving the audio into MP3 data blobs.
+
+For recording the hook also allows to define a time slice in milliseconds to save the mp3 data in chunks. When not setting a time slice, all recording data is only available after stopping the recording.
+
+The API of the hook currently looks like: 
+
+```tsx
+const {
+    // Current State
+    isListening: boolean,
+    isRecording,
+    isRequestingAccess,
+    error,
+    // State Transition Methods
+    startListening,
+    stopListening,
+    startRecording,
+    stopRecording,
+    // Live Output
+    getFrequencyData,
+    // Result Output
+    dataBlobs,
+    dataSize,
+    dataSeconds,
+    // Result Output Reset
+    clearData,
+  } = useAudioRecorder();
+```
+
+A hook is a good place to abstract away logic, in this case it:
+- Guards undesired state transitions (e.g. ignore `stopListening` when already recording)
+- Tears down all the different listeners and callbacks needed for listening and recording upon unmounting (so the browser no longer shows a red recorder indicator)
+- Prevents the device of sleeping while a recording is active (even on iOS, with the help of noSleep)
+- Ensures access is requested before recording and the app knows about this state
+
+### 📓 Web Audio APIs are a mess..
+
+* Every browser supports a different file format for audio recording
+* window.AudioContext (which is in essence the Web Audio API) is just all over the place, some features are implemented in one browser, other only in another.
+* Some browsers have a promise based API others don't.
+
+Brilliant.
+
+It took a lot of trials to settle on the internals of the hook that would work consistently across different browsers. In the end I settled on the following combination of polyfills and standardization.
+
+This combination now seems to work everywhere, well.. almost everywhere.. somehow, when using Airpods on Mobile Safari it breaks in a weird way, quite a buzz-kill.
+
+
+#### Step 1: Use a standardized `window.AudioContext`
+
+Best one I found was [standardized-audio-context](https://www.npmjs.com/package/standardized-audio-context)
+
+<GithubLink variant="above-code" url="https://github.com/jasperhartong/pod/blob/master/src/utils/audio-context.ts#L1-L5" />
+
+```ts
+import {
+  AudioContext,
+  IAudioContext,
+  IMediaStreamAudioSourceNode,
+} from "standardized-audio-context";
+```
+
+#### Step 2: Polyfill and standardize `window.MediaRecorder`
+
+Best one I found was [audio-recorder-polyfill](https://www.npmjs.com/package/audio-recorder-polyfill).
+
+
+It's also smart to rely on its polyfilled MP3 encoder, as this eases uploading and listening back the recording afterwards.
+
+<GithubLink variant="above-code" url="https://github.com/jasperhartong/pod/blob/master/src/client-polyfills.js" />
+
+```js
+import AudioRecorder from "audio-recorder-polyfill";
+import mpegEncoder from "audio-recorder-polyfill/mpeg-encoder";
+
+AudioRecorder.encoder = mpegEncoder;
+AudioRecorder.prototype.mimeType = "audio/mpeg";
+window.MediaRecorder = AudioRecorder;
+```
+
+#### Step 3: Load the above polyfills in Nextjs
+
+Save its declaration into a file, e.g. `./src/client-polyfills.js` and load it within the `next.config.js`:
+
+<GithubLink variant="above-code" url="https://github.com/jasperhartong/pod/blob/master/next.config.js" />
+
+```js
+module.exports = {
+  webpack: function (cfg) {
+    const originalEntry = cfg.entry;
+    cfg.entry = async () => {
+      const entries = await originalEntry();
+      // Add client polyfills
+      if (
+        entries["main.js"] &&
+        !entries["main.js"].includes("./src/client-polyfills.js")
+      ) {
+        entries["main.js"].unshift("./src/client-polyfills.js");
+      }
+
+      return entries;
+    };
+
+    return cfg;
+  },
+};
+```
+
+## Epilogue
+
+As it's a side-project and was mostly for me to fiddle around, most components are NOT as clean as I would like. Don't expect there to be any tests either 🤷‍♂️. The code might be useful as inspiration though!
+
+If you come across something unclear or want to reach out for any other reason, just contact me on Twitter. 😃
+
+
+</DocsLayout>

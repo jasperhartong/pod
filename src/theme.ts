@@ -187,4 +187,4 @@ const alwayLightThemeOptionsProvider = new ThemeOptionsProvider(
   ThemePaletteType.LIGHT
 );
 
-export default alwayDarkThemeOptionsProvider;
+export default alwayLightThemeOptionsProvider;

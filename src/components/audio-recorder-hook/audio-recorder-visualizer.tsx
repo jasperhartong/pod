@@ -1,14 +1,18 @@
 import { makeStyles } from "@material-ui/core";
 import { CSSProperties } from "@material-ui/styles";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useUID } from 'react-uid';
 import themeOptionsProvider from "src/theme";
 
 /* 
   For usage with useAudioRecorder
  */
 
+const magicHeightAmplification = 1.4;
+const magicOpacityAmplification = 2;
+const magicSkipTopSpectrumPercentage = 0.35; // drops top part of amplitude spectrum (not used in voice)
+
 interface Props {
-  uniqueId: string;
   getFrequencyData: (
     callback: (audioByteFrequencyData: Uint8Array) => void
   ) => void;
@@ -25,6 +29,9 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
   },
+  frequencyBand: {
+    transition: "all 50ms ease-in-out"
+  }
 }));
 
 const defaultBandCount = 32;
@@ -33,24 +40,21 @@ const defaultWidth = 240;
 const defaultColor = themeOptionsProvider.theme.palette.error.main;
 
 export const AudioRecorderVisualizer = ({
-  uniqueId,
   getFrequencyData,
   bandCount = defaultBandCount,
   height = defaultHeight,
   width = defaultWidth,
   color = defaultColor,
 }: Props) => {
+  const uniqueId = useUID();
+  const classes = useStyles();
+  const [didMount, setDidMount] = useState<boolean>(false);
   const animationFrameRef = useRef<number>(0);
   const domElementsRef = useRef<(HTMLElement | null)[]>([null]);
   const frequencyBandArrayRef = useRef<number[]>(
     Array.from(Array(bandCount).keys())
   );
 
-  const classes = useStyles();
-
-  const magicHeightAmplification = 1.4;
-  const magicOpacityAmplification = 2;
-  const magicSkipTopSpectrumPercentage = 0.35; // drops top part of amplitude spectrum (not used in voice)
   const animationCallback = (newAmplitudeData: Uint8Array) => {
     frequencyBandArrayRef.current.forEach((bandIndex) => {
       const element = domElementsRef.current[bandIndex];
@@ -58,11 +62,11 @@ export const AudioRecorderVisualizer = ({
       // Would've been even better to actually get the averages per set of covered amplitudeValues, laterrr
       const amplitudeValue =
         newAmplitudeData[
-          Math.floor(
-            ((newAmplitudeData.length * (1 - magicSkipTopSpectrumPercentage)) /
-              frequencyBandArrayRef.current.length) *
-              bandIndex
-          )
+        Math.floor(
+          ((newAmplitudeData.length * (1 - magicSkipTopSpectrumPercentage)) /
+            frequencyBandArrayRef.current.length) *
+          bandIndex
+        )
         ];
 
       if (element && amplitudeValue !== undefined) {
@@ -74,7 +78,7 @@ export const AudioRecorderVisualizer = ({
         // opacity needs no clamping.
         element.style.opacity = `${
           (amplitudeValue / 256) * magicOpacityAmplification
-        }`;
+          }`;
       }
     });
   };
@@ -84,6 +88,18 @@ export const AudioRecorderVisualizer = ({
     animationFrameRef.current = requestAnimationFrame(animateSpectrum);
   };
 
+  /* Orchestrated mounting:
+    0. Track mounted state
+    1. Don't render anything server side
+    2. Generate uniqueId on client side
+    3. Render the frequency band divs with the unique id
+    4. Set up `domElementsRef` towards just created divs
+    5. Start animation that uses this list in domElementsRef
+    */
+  useEffect(() => {
+    setDidMount(true);
+  }, [])
+
   useEffect(() => {
     domElementsRef.current = frequencyBandArrayRef.current.map((num) =>
       document.getElementById(`audio-visualizer-${uniqueId}${num}`)
@@ -92,7 +108,12 @@ export const AudioRecorderVisualizer = ({
     animationFrameRef.current = requestAnimationFrame(animateSpectrum);
     // Stop animation loop on unmount
     return () => cancelAnimationFrame(animationFrameRef.current);
-  }, []);
+  }, [didMount]);
+
+
+  if (!didMount) {
+    return null;
+  }
 
   return (
     <div>
@@ -101,6 +122,7 @@ export const AudioRecorderVisualizer = ({
           <div
             id={`audio-visualizer-${uniqueId}${num}`}
             key={num}
+            className={classes.frequencyBand}
             style={{
               backgroundColor: color,
               minWidth: width / bandCount,

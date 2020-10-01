@@ -1,0 +1,121 @@
+import { NextSeo } from 'next-seo';
+import { ReadMore } from "@/components/open-takeaways/read-more";
+import AppContainer from "@/components/app-container";
+import { DocsLayout } from "@/components/open-takeaways/docs-layout";
+import Link from "next/link";
+
+<NextSeo
+    title="Open Takeaways: Tapes.me"
+    description="Short articles containing ideas, code-fragments and demo's with the intention to guide others that tackle similar challenges."
+    openGraph={{
+        url: 'https://tapes.me/open-takeaways',
+        title: 'Open Takeaways: Tapes.me',
+        description: "Short articles containing ideas, code-fragments and demo's with the intention to guide others that tackle similar challenges.",
+        site_name: 'Tapes.me',
+    }}
+    twitter={{
+        handle: '@jasperhartong',
+        site: '@tapes.me',
+        cardType: 'summary_large_image',
+    }}
+/>
+
+<DocsLayout>
+
+# 📓 Open Takeaways
+<sub>by Jasper Hartong</sub>
+
+_Many side-projects come and go, some stick around slightly longer, but most of them never outgrow there initial best intentions._
+
+_Just making the code publicly available and calling that "Open Source" doesn't feel like adding much value for anyone. So, I'm trying something else:_
+
+_**"Open Takeaways" (OT)**: short articles containing ideas, code-fragments and demo's with the intention to guide others that tackle similar challenges._
+
+## Side-project: "Tapes.me"
+
+<ReadMore moreText="Continue the backstory..." lessText="Hide backstory" collapsedHeight={420} >
+
+One week after the COVID19 lock-down began in the Netherlands (march 2020), my mother thought of a nice way to keep in touch with her grandchildren (my nieces and nephew).
+
+She started picking out children books to read, recording herself on her iMac (she's so tech-savvy ❤️) and queueing up recordings to send inside our family WhatsApp Group. Lovely and Brilliant!
+
+I was immediately inspired by her idea.. my code-nerve started itching..
+
+<img src="/open-takeaways-images/tapesme-moneyshot.png" alt="Picture showing Tapes.me in action" />
+
+Some opportunities for improvement I saw in the above process:
+
+* WhatsApp Groups are not really made for persistent storage: the recordings just disappear between other conversations
+* The recording and queuing of episodes was quite a hassle on the iMac (often requiring the help of my dad)
+* There was not a simple way for my nieces and nephew to listen back to chapters by themselves
+* This whole process the whole process sounded like some form of private Podcasting to me.. shouldn't it just be that?
+
+So I set down and created Tapes.me, an web-app consisting of:
+
+* A "recording studio", for my mom to add new episodes, record and publish them
+* A "listening room", for the kids to easily pick episodes to listen to
+* An RSS feed, for the parents to subscribe to in their Podcast App
+
+After it was finished.. the lock-down started to loosen up again and this whole thing dwindled down with it. So now there's a private podcasting web-app, with no users left for it, brilliant :)
+
+NB: Of course this project has two names, which side-project doesn't? You need to pick a repository name way early in the process – "pod". Then, a few days in, you decide to buy a domain name – "tapes.me" – which becomes the actual name from then on. Right?
+
+</ReadMore>
+
+<div style={{padding: 16}}/>
+
+
+
+### 1. Recording Audio with React
+
+<sub>React | WebAudio | Nextjs</sub>
+
+Lessons learned from using React to build a record button mimicking iOS Voice Memos and a funky audio visualizer.
+
+<Link href={"/open-takeaways/recording-audio"} as={"/open-takeaways/recording-audio"}>Read the full article →</Link>
+
+<div className="open-takeaways-later">
+
+### 2. Signed S3 uploading in React
+
+<sub>React | Amazon S3 | Serverless | Nextjs</sub>  
+
+* A serverless endpoint for retrieving signed URL's
+* A React Hook for signed media uploading
+* A React Component for dropping files
+
+<a>Coming soon</a>
+
+### 3. An RPC API experiment
+
+<sub>React | Serverless | Nextjs</sub>  
+
+* Sharing as much code as possible between client and server
+* A React Hook for calling server side methods safely
+* Using io-ts to add type-safety to unknown objects
+* On response interface all the way down
+
+<a>Coming soon</a>
+
+### 4. An experiment with storing relationships in DynamoDB
+
+<sub>React | Amazon DynamoDB | Serverless | Nextjs</sub>
+
+* Defining relationships with storage keys
+* Serverless configurations
+
+<a>Coming soon</a>
+
+</div>
+
+</DocsLayout>
+
+<!-- 
+Other possible topics:
+
+* DirectusDB backend
+* Certain Nextjs features (back then experimental revalidation)
+* Doka.js
+* Podcast feed with jstoxml
+* Using MDX for documentation (nice and meta) 
+ -->

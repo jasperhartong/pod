@@ -5,5 +5,6 @@
     ".next": true,
     ".vscode": true
   },
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "cSpell.enabled": true
 }

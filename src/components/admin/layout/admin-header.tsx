@@ -1,4 +1,4 @@
-import { Box, Typography } from "@material-ui/core";
+import { Box, fade, Typography } from "@material-ui/core";
 import { Theme } from "@material-ui/core/styles/createMuiTheme";
 import { makeStyles } from "@material-ui/styles";
 import { ReactNode } from "react";
@@ -33,8 +33,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     left: 0,
     right: 0,
     padding: theme.spacing(2),
-    background:
-      "linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 70%, rgba(0,0,0,0) 100%)",
+    backgroundImage: `linear-gradient(${fade(theme.palette.background.default, 0.9)}, ${fade(theme.palette.background.default, 0)})`,
   },
   action: {
     position: "absolute",

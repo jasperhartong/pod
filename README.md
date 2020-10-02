@@ -2,7 +2,7 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 # Open Takeaways
 
-_Many side-projects come and go, some stick around slightly longer, but most of them never outgrow there initial best intentions._
+_Many side-projects come and go, some stick around slightly longer, but most of them never outgrow their initial best intentions._
 
 _Just making the code publicly available and calling that "Open Source" doesn't feel like adding much value for anyone. So, I'm trying something else:_
 

@@ -2107,10 +2107,10 @@ automation-events@^2.0.19:
     "@babel/runtime" "^7.11.2"
     tslib "^2.0.1"
 
-aws-sdk@^2.648.0:
-  version "2.756.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.756.0.tgz#87ec4e2a03ed838de6d7b0ce6a62f276e318b4fc"
-  integrity sha512-Hk6DzcsXq1WRg+UVHDH56iQz31kDtg/NRqtJL1A0BrZ/PtNSLTHsQQllpcAi09UxLDMzBoDXymZ8kYg0Migq8w==
+aws-sdk@^2.814.0:
+  version "2.814.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.814.0.tgz#7a1c36006e0b5826f14bd2511b1d229ef6814bb0"
+  integrity sha512-empd1m/J/MAkL6d9OeRpmg9thobULu0wk4v8W3JToaxGi2TD7PIdvE6yliZKyOVAdJINhBWEBhxR4OUIHhcGbQ==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
